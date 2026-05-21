@@ -59,15 +59,19 @@ npm run dev
 ## Project Structure
 
 ```md
-.
-├── src/
-│ ├── layouts/ # Astro layouts
-│ ├── pages/ # Astro pages
-│ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
-│ └── assets/ # Static assets
-├── public/ # Public assets
-├── wrangler.jsonc # Cloudflare Workers config
+src/
+├── layouts/           # Astro layouts
+├── pages/             # Astro pages (routes)
+│   ├── api/           # API endpoints (SSR, zod-validated)
+│   │   └── auth/      # signin, signup, signout
+│   └── auth/          # signin, signup, confirm-email
+├── components/        # UI (Astro for static; React when interactive)
+│   ├── auth/          # sign-in/up forms and shared auth UI
+│   └── ui/            # shadcn/ui primitives
+├── lib/               # Supabase client, helpers, config
+├── styles/            # Global CSS (Tailwind)
+├── middleware.ts      # Session resolution; protected routes
+└── env.d.ts           # Astro/env type declarations
 ```
 
 ## Supabase Configuration
