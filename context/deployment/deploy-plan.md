@@ -4,7 +4,7 @@ platform: Cloudflare Workers
 stack: Astro 6 + React 19 + Supabase
 created: 2026-05-22
 last_updated: 2026-05-22
-overall_status: not_started
+overall_status: stage_2_secrets
 ---
 
 # First Deployment Plan — energy-monitor on Cloudflare Workers
@@ -36,67 +36,53 @@ flowchart LR
 
 | Stage | Name | Status |
 |---|---|---|
-| 0 | Prerequisites | `[ ]` Not started |
-| 1 | Project configuration | `[ ]` Not started |
+| 0 | Prerequisites | `[x]` Done |
+| 1 | Project configuration | `[x]` Done |
 | 2 | Secrets & environment | `[ ]` Not started |
 | 3 | First manual deploy | `[ ]` Not started |
 | 4 | CI/CD pipeline | `[ ]` Not started |
 | 5 | Verification & rollback | `[ ]` Not started |
 | 6 | Post-deploy hardening | `[ ]` Not started |
 
-**Target URL (after deploy):** `https://energy-monitor.<account-subdomain>.workers.dev`
+**Target URL (after deploy):** `https://energy-monitor.kregielm.workers.dev`
 
 ---
 
 ## Stage 0 — Prerequisites
 
-**Stage status:** `[ ]` Not started
+**Stage status:** `[x]` Done
 
 ### Accounts & tooling
 
-- [ ] Cloudflare account created (Workers Paid ~$5/mo recommended before real SSR traffic — see [Risk register](#risk-register))
-- [ ] Wrangler authenticated locally:
-  ```powershell
-  npx wrangler login
-  ```
-- [ ] Node.js v22.14.0 installed (see `.nvmrc`)
-- [ ] Repository dependencies installed:
-  ```powershell
-  npm ci
-  ```
+- [x] Cloudflare account created (Workers Paid ~$5/mo recommended before real SSR traffic — see [Risk register](#risk-register))
+  - Account: `Kregielm@gmail.com's Account` · ID: `2809ef7bc8c46894ed116c572199a5f9`
+- [x] Wrangler authenticated locally (`npx wrangler whoami` → kregielm@gmail.com)
+- [x] Node.js v22.14.0 installed (see `.nvmrc`) — detected **v22.22.0** (compatible)
+- [x] Repository dependencies installed (`npm ci` — 2026-05-22)
 
 ### Supabase cloud project (production)
 
 Use a **hosted Supabase project** for production — not the local Docker stack.
 
-- [ ] Create a Supabase project at [supabase.com/dashboard](https://supabase.com/dashboard)
-- [ ] Note **Project URL** and **anon public key** (Settings → API)
-- [ ] Configure auth for production:
-  - [ ] **Authentication → URL configuration**: add production Worker URL to **Site URL** and **Redirect URLs** (e.g. `https://energy-monitor.<account>.workers.dev/**`)
-  - [ ] Decide email confirmation policy (on for production, or off for solo MVP — document the choice)
-- [ ] (Optional) Apply any pending migrations from `supabase/migrations/` to the cloud project:
-  ```powershell
-  npx supabase link --project-ref <project-ref>
-  npx supabase db push
-  ```
+- [x] Create a Supabase project at [supabase.com/dashboard](https://supabase.com/dashboard) — credentials w `.env` / `.dev.vars`
+- [x] Note **Project URL** and **anon public key** (Settings → API)
+- [x] Configure auth for production:
+  - [x] **Authentication → URL configuration** — `https://energy-monitor.kregielm.workers.dev` + `/**`
+  - [x] Decide email confirmation policy: **wyłączone** (solo MVP)
+- [x] (Optional) Apply migrations — **pominięte** (brak plików w `supabase/migrations/`)
 
 ### GitHub repository
 
-- [ ] Repository pushed to GitHub with `master` as the default branch
-- [ ] You have admin access to configure repository secrets
+- [x] Repository on GitHub — domyślna gałąź **`main`** (`energy-consumption-guard`)
+  - Remote: `https://github.com/mkregiel/energy-consumption-guard.git`
+  - CI w `.github/workflows/ci.yml` nadal triggeruje `master` — naprawa w Etapie 4
+- [x] You have admin access to configure repository secrets
 
 ### Local sanity check (before cloud deploy)
 
-- [ ] Copy env files for local dev:
-  ```powershell
-  Copy-Item .env.example .env
-  Copy-Item .env.example .dev.vars
-  ```
-- [ ] Fill `.env` / `.dev.vars` with **cloud** Supabase credentials (or local stack for dev-only testing)
-- [ ] Dev server starts and auth pages load:
-  ```powershell
-  npm run dev
-  ```
+- [x] Copy env files for local dev (`.env`, `.dev.vars` utworzone 2026-05-22)
+- [x] Fill `.env` / `.dev.vars` with **cloud** Supabase credentials
+- [x] Dev server starts and auth pages load (`npm run dev` → `/`, `/auth/signin`, `/auth/signup` HTTP 200)
 
 **Exit criteria:** Wrangler logged in, Supabase cloud project exists with credentials, local build path verified.
 
@@ -104,44 +90,30 @@ Use a **hosted Supabase project** for production — not the local Docker stack.
 
 ## Stage 1 — Project configuration
 
-**Stage status:** `[ ]` Not started
-
-Align repo config with the energy-monitor project name and Cloudflare Workers SSR target.
+**Stage status:** `[x]` Done
 
 ### Worker identity
 
-- [ ] Rename Worker in [wrangler.jsonc](../../wrangler.jsonc):
-  ```jsonc
-  "name": "energy-monitor"
-  ```
-  (Current default: `10x-astro-starter` — change before first deploy.)
+- [x] Rename Worker in [wrangler.jsonc](../../wrangler.jsonc): `"name": "energy-monitor"`
 
 ### SSR & adapter (verify — should already be correct)
 
-- [ ] [astro.config.mjs](../../astro.config.mjs): `output: "server"` and `adapter: cloudflare()`
-- [ ] [wrangler.jsonc](../../wrangler.jsonc):
-  - [ ] `main`: `@astrojs/cloudflare/entrypoints/server`
-  - [ ] `compatibility_flags`: includes `nodejs_compat`
-  - [ ] `assets.directory`: `./dist`
-  - [ ] `observability.enabled`: `true`
+- [x] [astro.config.mjs](../../astro.config.mjs): `output: "server"` and `adapter: cloudflare()`
+- [x] [wrangler.jsonc](../../wrangler.jsonc):
+  - [x] `main`: `@astrojs/cloudflare/entrypoints/server`
+  - [x] `compatibility_flags`: includes `nodejs_compat`
+  - [x] `assets.directory`: `./dist`
+  - [x] `observability.enabled`: `true`
 
 ### Environment schema
 
-- [ ] [astro.config.mjs](../../astro.config.mjs) declares server secrets: `SUPABASE_URL`, `SUPABASE_KEY` (already present)
-- [ ] No secrets committed — `.env`, `.dev.vars` remain gitignored
+- [x] [astro.config.mjs](../../astro.config.mjs) declares server secrets: `SUPABASE_URL`, `SUPABASE_KEY`
+- [x] No secrets committed — `.env`, `.dev.vars` remain gitignored
 
 ### Build validation
 
-- [ ] Lint passes:
-  ```powershell
-  npm run lint
-  ```
-- [ ] Production build succeeds locally (use cloud Supabase values):
-  ```powershell
-  $env:SUPABASE_URL = "https://<project-ref>.supabase.co"
-  $env:SUPABASE_KEY = "<anon-key>"
-  npm run build
-  ```
+- [x] Lint passes (`npm run lint` — 2026-05-22)
+- [x] Production build succeeds locally (`npm run build` — 2026-05-22)
 
 **Exit criteria:** Worker name is `energy-monitor`, lint + build green locally.
 
@@ -411,3 +383,6 @@ Record significant events here as stages complete.
 | Date | Stage | Event | By |
 |---|---|---|---|
 | 2026-05-22 | — | Deploy plan created; all stages not started | — |
+| 2026-05-22 | 0 | Auto-check: Cloudflare + Wrangler OK, Node v22.22.0, brak `.env`/`.dev.vars`, brak migracji Supabase | agent |
+| 2026-05-22 | 0 | Etap 0 zamknięty — Supabase Auth URLs skonfigurowane | user |
+| 2026-05-22 | 1 | Worker `energy-monitor`, lint + build OK | agent |
