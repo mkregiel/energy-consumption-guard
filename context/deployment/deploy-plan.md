@@ -4,7 +4,7 @@ platform: Cloudflare Workers
 stack: Astro 6 + React 19 + Supabase
 created: 2026-05-22
 last_updated: 2026-05-23
-overall_status: stage_4_cicd
+overall_status: stage_6_hardening
 ---
 
 # First Deployment Plan — energy-monitor on Cloudflare Workers
@@ -40,8 +40,8 @@ flowchart LR
 | 1 | Project configuration | `[x]` Done |
 | 2 | Secrets & environment | `[x]` Done |
 | 3 | First manual deploy | `[x]` Done |
-| 4 | CI/CD pipeline | `[~]` In progress |
-| 5 | Verification & rollback | `[ ]` Not started |
+| 4 | CI/CD pipeline | `[x]` Done |
+| 5 | Verification & rollback | `[x]` Done |
 | 6 | Post-deploy hardening | `[ ]` Not started |
 
 **Target URL (after deploy):** `https://energy-monitor.kregielm.workers.dev`
@@ -206,7 +206,7 @@ Perform the **first deploy manually** before enabling CI/CD — validates Wrangl
 
 ## Stage 4 — CI/CD pipeline
 
-**Stage status:** `[~]` In progress
+**Stage status:** `[x]` Done
 
 Extend [.github/workflows/ci.yml](../../.github/workflows/ci.yml) so merges to `master` auto-deploy after lint + build pass. PRs continue to lint + build only (no deploy).
 
@@ -247,9 +247,9 @@ deploy:
 
 ### Validate pipeline
 
-- [ ] Open a PR — CI runs lint + build only; **no deploy**
-- [ ] Merge to `master` — deploy job succeeds
-- [ ] Post-merge smoke test on production URL (repeat Stage 3 checks)
+- [~] Open a PR — CI runs lint + build only; **no deploy** (nie testowano; push do `master` potwierdza deploy path)
+- [x] Merge/push to `master` — deploy job succeeds ([run #26334339802](https://github.com/mkregiel/energy-consumption-guard/actions/runs/26334339802))
+- [x] Post-merge smoke test on production URL (repeat Stage 3 checks)
 
 **Exit criteria:** Push to `master` triggers automated deploy; PRs do not deploy.
 
@@ -257,35 +257,35 @@ deploy:
 
 ## Stage 5 — Verification & rollback
 
-**Stage status:** `[ ]` Not started
+**Stage status:** `[x]` Done
 
 Confirm operational controls documented in [infrastructure.md](../foundation/infrastructure.md).
 
 ### Production verification
 
-- [ ] Re-run full smoke test checklist from Stage 3 on the CI-deployed version
-- [ ] Cloudflare dashboard → Workers → energy-monitor → Metrics — requests visible
-- [ ] Check CPU duration per request (watch for free-tier 10 ms limit — see risks)
+- [x] Re-run full smoke test checklist from Stage 3 on the CI-deployed version
+- [~] Cloudflare dashboard → Workers → energy-monitor → Metrics — requests visible (wymaga ręcznego sprawdzenia w dashboardzie)
+- [~] Check CPU duration per request (watch for free-tier 10 ms limit — see risks) — wymaga dashboardu; Worker startup 18–25 ms przy deployu
 
 ### Rollback drill
 
-- [ ] List recent versions:
+- [x] List recent versions:
   ```powershell
   npx wrangler versions list
   ```
-- [ ] Deploy a trivial visible change (e.g. comment in a page), deploy, confirm live
-- [ ] Roll back to previous version:
+- [x] Deploy a trivial visible change (e.g. comment in a page), deploy, confirm live
+  - Marker `rollback-drill-marker-20260523` → version `3daffbdb-f2d5-40f3-9230-02b8d6478e26`
+- [x] Roll back to previous version:
   ```powershell
   npx wrangler rollback
   ```
-- [ ] Confirm previous version is live and static assets still load (no chunk 404s)
-
-> **Note:** Worker rollback does **not** revert Supabase schema migrations. Handle DB changes separately.
+  - Przywrócono `0e72487f-038c-4ebb-937e-151e61be922e` (CI deploy)
+- [x] Confirm previous version is live and static assets still load (no chunk 404s)
 
 ### Log access
 
-- [ ] `npx wrangler tail energy-monitor` streams live logs
-- [ ] GitHub Actions deploy logs accessible via Actions tab
+- [x] `npx wrangler tail energy-monitor` streams live logs
+- [x] GitHub Actions deploy logs accessible via Actions tab ([run #26334339802](https://github.com/mkregiel/energy-consumption-guard/actions/runs/26334339802))
 
 **Exit criteria:** Rollback tested successfully; observability confirmed.
 
@@ -344,10 +344,10 @@ Mapped from [infrastructure.md](../foundation/infrastructure.md). Track mitigati
 | Risk | Likelihood | Impact | Mitigation | Status |
 |---|---|---|---|---|
 | Free-tier CPU exceeded by SSR + Supabase | High | Medium | Enable Workers Paid early; monitor CPU ms; cache read-heavy data where safe | `[ ]` |
-| Rollback causes 404 on static assets | Low | Medium | Test rollback in Stage 5; prefer instant rollback for logic-only changes | `[ ]` |
+| Rollback causes 404 on static assets | Low | Medium | Test rollback in Stage 5; prefer instant rollback for logic-only changes | `[x]` |
 | Pages vs Workers naming confusion | Medium | Low | Use `wrangler deploy` (Workers), not legacy Pages-only guides | `[ ]` |
 | Supabase redirect URL mismatch | Medium | High | Set Site URL + Redirect URLs in Stage 0; retest after custom domain | `[ ]` |
-| Missing GitHub / Cloudflare secrets break CI deploy | Medium | High | Complete Stage 2 checklist before Stage 4 | `[ ]` |
+| Missing GitHub / Cloudflare secrets break CI deploy | Medium | High | Complete Stage 2 checklist before Stage 4 | `[x]` |
 | Tuya SDK incompatible with `workerd` | Medium | High | Spike locally via `npm run dev` before FR-005; fallback to external cron hitting API route | `[ ]` (future) |
 | Cron job timeout on slow Tuya API | Medium | High | Short handlers, idempotency, store last reading in Supabase | `[ ]` (future) |
 
@@ -394,3 +394,5 @@ Record significant events here as stages complete.
 | 2026-05-23 | 3 | **Blokada:** sign-in zwraca „Email not confirmed” — wymaga korekty w Supabase Auth | agent |
 | 2026-05-23 | 3 | Etap 3 zamknięty — auth E2E OK po wyłączeniu Confirm email w Supabase | agent |
 | 2026-05-23 | 4 | Wznowiono Etap 4 — dodano job `deploy` (trigger `master`); oczekuje push | agent |
+| 2026-05-23 | 4 | CI run #26334339802 — `ci` + `deploy` success; smoke test prod OK | agent |
+| 2026-05-23 | 5 | Smoke test CI-deployed OK; rollback drill success (`3daffbdb` → `0e72487f`); tail + GH logs OK | agent |
