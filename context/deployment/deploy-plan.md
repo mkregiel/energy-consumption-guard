@@ -40,7 +40,7 @@ flowchart LR
 | 1 | Project configuration | `[x]` Done |
 | 2 | Secrets & environment | `[x]` Done |
 | 3 | First manual deploy | `[x]` Done |
-| 4 | CI/CD pipeline | `[ ]` Not started |
+| 4 | CI/CD pipeline | `[~]` In progress |
 | 5 | Verification & rollback | `[ ]` Not started |
 | 6 | Post-deploy hardening | `[ ]` Not started |
 
@@ -73,9 +73,9 @@ Use a **hosted Supabase project** for production — not the local Docker stack.
 
 ### GitHub repository
 
-- [x] Repository on GitHub — domyślna gałąź **`main`** (`energy-consumption-guard`)
+- [x] Repository on GitHub — gałąź produkcyjna **`master`** (`energy-consumption-guard`)
   - Remote: `https://github.com/mkregiel/energy-consumption-guard.git`
-  - CI w `.github/workflows/ci.yml` nadal triggeruje `master` — naprawa w Etapie 4
+  - `origin/master` opublikowany 2026-05-23; CI triggeruje `master`
 - [x] You have admin access to configure repository secrets
 
 ### Local sanity check (before cloud deploy)
@@ -206,13 +206,13 @@ Perform the **first deploy manually** before enabling CI/CD — validates Wrangl
 
 ## Stage 4 — CI/CD pipeline
 
-**Stage status:** `[ ]` Not started
+**Stage status:** `[~]` In progress
 
 Extend [.github/workflows/ci.yml](../../.github/workflows/ci.yml) so merges to `master` auto-deploy after lint + build pass. PRs continue to lint + build only (no deploy).
 
 ### Workflow changes
 
-- [ ] Add a `deploy` job that:
+- [x] Add a `deploy` job that:
   - runs only on `push` to `master` (not on `pull_request`)
   - `needs: ci` (waits for lint + build)
   - uses `cloudflare/wrangler-action@v3` or equivalent `npx wrangler deploy`
@@ -393,3 +393,4 @@ Record significant events here as stages complete.
 | 2026-05-23 | 3 | Pierwszy deploy OK — `https://energy-monitor.kregielm.workers.dev`; smoke testy HTTP + signup OK | agent |
 | 2026-05-23 | 3 | **Blokada:** sign-in zwraca „Email not confirmed” — wymaga korekty w Supabase Auth | agent |
 | 2026-05-23 | 3 | Etap 3 zamknięty — auth E2E OK po wyłączeniu Confirm email w Supabase | agent |
+| 2026-05-23 | 4 | Wznowiono Etap 4 — dodano job `deploy` (trigger `master`); oczekuje push | agent |
