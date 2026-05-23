@@ -1,5 +1,7 @@
 name: CI
 
+# pull_request: ci only. push to master: ci + deploy.
+
 on:
   push:
     branches: [master]
