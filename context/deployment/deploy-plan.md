@@ -3,8 +3,8 @@ project: energy-monitor
 platform: Cloudflare Workers
 stack: Astro 6 + React 19 + Supabase
 created: 2026-05-22
-last_updated: 2026-05-22
-overall_status: stage_2_secrets
+last_updated: 2026-05-23
+overall_status: stage_4_cicd
 ---
 
 # First Deployment Plan — energy-monitor on Cloudflare Workers
@@ -38,8 +38,8 @@ flowchart LR
 |---|---|---|
 | 0 | Prerequisites | `[x]` Done |
 | 1 | Project configuration | `[x]` Done |
-| 2 | Secrets & environment | `[ ]` Not started |
-| 3 | First manual deploy | `[ ]` Not started |
+| 2 | Secrets & environment | `[x]` Done |
+| 3 | First manual deploy | `[x]` Done |
 | 4 | CI/CD pipeline | `[ ]` Not started |
 | 5 | Verification & rollback | `[ ]` Not started |
 | 6 | Post-deploy hardening | `[ ]` Not started |
@@ -121,7 +121,7 @@ Use a **hosted Supabase project** for production — not the local Docker stack.
 
 ## Stage 2 — Secrets & environment
 
-**Stage status:** `[ ]` Not started
+**Stage status:** `[x]` Done
 
 Secrets live in **two places**: Cloudflare (runtime) and GitHub (CI build + deploy).
 
@@ -129,8 +129,8 @@ Secrets live in **two places**: Cloudflare (runtime) and GitHub (CI build + depl
 
 Set via CLI (recommended) or Cloudflare dashboard → Workers → energy-monitor → Settings → Variables and Secrets.
 
-- [ ] `SUPABASE_URL` — production Supabase project URL
-- [ ] `SUPABASE_KEY` — Supabase **anon** public key (matches README; never commit service role to client-facing Worker unless explicitly reviewed)
+- [x] `SUPABASE_URL` — production Supabase project URL
+- [x] `SUPABASE_KEY` — Supabase **anon** public key (matches README; never commit service role to client-facing Worker unless explicitly reviewed)
 
 ```powershell
 npx wrangler secret put SUPABASE_URL
@@ -143,22 +143,22 @@ Configure at **Settings → Secrets and variables → Actions**.
 
 | Secret | Purpose | Status |
 |---|---|---|
-| `SUPABASE_URL` | CI build (`astro build`) | `[ ]` |
-| `SUPABASE_KEY` | CI build | `[ ]` |
-| `CLOUDFLARE_API_TOKEN` | CI deploy via Wrangler | `[ ]` |
-| `CLOUDFLARE_ACCOUNT_ID` | CI deploy via Wrangler | `[ ]` |
+| `SUPABASE_URL` | CI build (`astro build`) | `[x]` |
+| `SUPABASE_KEY` | CI build | `[x]` |
+| `CLOUDFLARE_API_TOKEN` | CI deploy via Wrangler | `[x]` |
+| `CLOUDFLARE_ACCOUNT_ID` | CI deploy via Wrangler | `[x]` |
 
 #### Creating `CLOUDFLARE_API_TOKEN`
 
-- [ ] Cloudflare dashboard → My Profile → API Tokens → Create Token
-- [ ] Use **Edit Cloudflare Workers** template (or custom token with `Account.Workers Scripts:Edit` + `Account.Account Settings:Read`)
-- [ ] Scope to the target account only
-- [ ] Store token as GitHub secret `CLOUDFLARE_API_TOKEN`
+- [x] Cloudflare dashboard → My Profile → API Tokens → Create Token
+- [x] Use **Edit Cloudflare Workers** template (or custom token with `Account.Workers Scripts:Edit` + `Account.Account Settings:Read`)
+- [x] Scope to the target account only
+- [x] Store token as GitHub secret `CLOUDFLARE_API_TOKEN`
 
 #### Finding `CLOUDFLARE_ACCOUNT_ID`
 
-- [ ] Cloudflare dashboard → Workers & Pages → right sidebar **Account ID**
-- [ ] Store as GitHub secret `CLOUDFLARE_ACCOUNT_ID`
+- [x] Cloudflare dashboard → Workers & Pages → right sidebar **Account ID**
+- [x] Store as GitHub secret `CLOUDFLARE_ACCOUNT_ID`
 
 **Exit criteria:** All four GitHub secrets set; Cloudflare Worker secrets set via `wrangler secret put`.
 
@@ -166,38 +166,39 @@ Configure at **Settings → Secrets and variables → Actions**.
 
 ## Stage 3 — First manual deploy
 
-**Stage status:** `[ ]` Not started
+**Stage status:** `[x]` Done
 
 Perform the **first deploy manually** before enabling CI/CD — validates Wrangler, secrets, and Supabase connectivity without pipeline variables masking errors.
 
 ### Deploy
 
-- [ ] Build:
+- [x] Build:
   ```powershell
   npm run build
   ```
-- [ ] Deploy:
+- [x] Deploy:
   ```powershell
   npx wrangler deploy
   ```
-- [ ] Note the deployed URL from Wrangler output (e.g. `https://energy-monitor.<account>.workers.dev`)
+- [x] Note the deployed URL from Wrangler output (e.g. `https://energy-monitor.<account>.workers.dev`)
+  - **URL:** `https://energy-monitor.kregielm.workers.dev` · Version: `913d934a-be5d-4180-b1a3-e631cfb751f9`
 
 ### Smoke tests
 
-- [ ] **Home / public pages** — HTTP 200, SSR HTML renders (no 500)
-- [ ] **Static assets** — CSS/JS load (no 404 on fingerprinted chunks)
-- [ ] **Auth sign-up** — `/auth/signup` creates a user in Supabase cloud
-- [ ] **Auth sign-in** — `/auth/signin` succeeds, session cookie set
-- [ ] **Protected route** — `/dashboard` redirects to sign-in when logged out; loads when logged in ([middleware.ts](../../src/middleware.ts))
-- [ ] **Sign-out** — session cleared, dashboard redirects again
+- [x] **Home / public pages** — HTTP 200, SSR HTML renders (no 500)
+- [x] **Static assets** — CSS/JS load (no 404 on fingerprinted chunks)
+- [x] **Auth sign-up** — `/api/auth/signup` → 302 `/auth/confirm-email` (user created in Supabase)
+- [x] **Auth sign-in** — `/api/auth/signin` → 302 `/` (sesja ustawiona)
+- [x] **Protected route** — `/dashboard` redirects to sign-in when logged out (302); HTTP 200 when logged in
+- [x] **Sign-out** — 302 `/`, potem `/dashboard` → 302 `/auth/signin`
 
 ### Observability (initial)
 
-- [ ] Tail logs during smoke test:
+- [x] Tail logs during smoke test:
   ```powershell
   npx wrangler tail energy-monitor
   ```
-- [ ] Confirm no repeated Supabase connection errors in output
+- [x] Confirm no repeated Supabase connection errors in output (GET `/`, `/auth/signin`, `/dashboard` — Ok, brak błędów)
 
 **Exit criteria:** Production Worker URL serves the app; auth end-to-end works against Supabase cloud.
 
@@ -386,3 +387,9 @@ Record significant events here as stages complete.
 | 2026-05-22 | 0 | Auto-check: Cloudflare + Wrangler OK, Node v22.22.0, brak `.env`/`.dev.vars`, brak migracji Supabase | agent |
 | 2026-05-22 | 0 | Etap 0 zamknięty — Supabase Auth URLs skonfigurowane | user |
 | 2026-05-22 | 1 | Worker `energy-monitor`, lint + build OK | agent |
+| 2026-05-23 | 2 | Wznowiono plan — Etap 2 rozpoczęty; brak sekretów GitHub; Worker CF jeszcze nie wdrożony | agent |
+| 2026-05-23 | 2 | Ustawiono 4 sekrety GitHub z `.env` (SUPABASE_*, CLOUDFLARE_*) | agent |
+| 2026-05-23 | 2 | Ustawiono sekrety CF runtime (`SUPABASE_URL`, `SUPABASE_KEY`) po deployu | agent |
+| 2026-05-23 | 3 | Pierwszy deploy OK — `https://energy-monitor.kregielm.workers.dev`; smoke testy HTTP + signup OK | agent |
+| 2026-05-23 | 3 | **Blokada:** sign-in zwraca „Email not confirmed” — wymaga korekty w Supabase Auth | agent |
+| 2026-05-23 | 3 | Etap 3 zamknięty — auth E2E OK po wyłączeniu Confirm email w Supabase | agent |
