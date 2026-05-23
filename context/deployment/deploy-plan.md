@@ -4,7 +4,7 @@ platform: Cloudflare Workers
 stack: Astro 6 + React 19 + Supabase
 created: 2026-05-22
 last_updated: 2026-05-23
-overall_status: stage_6_hardening
+overall_status: completed
 ---
 
 # First Deployment Plan — energy-monitor on Cloudflare Workers
@@ -42,7 +42,7 @@ flowchart LR
 | 3 | First manual deploy | `[x]` Done |
 | 4 | CI/CD pipeline | `[x]` Done |
 | 5 | Verification & rollback | `[x]` Done |
-| 6 | Post-deploy hardening | `[ ]` Not started |
+| 6 | Post-deploy hardening | `[x]` Done (MVP — opcjonalne odłożone) |
 
 **Target URL (after deploy):** `https://energy-monitor.kregielm.workers.dev`
 
@@ -293,33 +293,55 @@ Confirm operational controls documented in [infrastructure.md](../foundation/inf
 
 ## Stage 6 — Post-deploy hardening
 
-**Stage status:** `[ ]` Not started
+**Stage status:** `[x]` Done (MVP)
 
 Optional but recommended before inviting real users or connecting Tuya (FR-005).
 
 ### Custom domain (optional)
 
-- [ ] Register or transfer domain to Cloudflare DNS
-- [ ] Workers → energy-monitor → Settings → Domains & Routes → add custom domain
-- [ ] Update Supabase **Site URL** and **Redirect URLs** to custom domain
-- [ ] Re-run auth smoke tests on custom domain
+**Decyzja MVP (2026-05-23):** Odłożone — produkcja na `https://energy-monitor.kregielm.workers.dev`.
+
+- [~] Register or transfer domain to Cloudflare DNS — **pominięte na MVP**
+- [~] Workers → energy-monitor → Settings → Domains & Routes → add custom domain
+- [~] Update Supabase **Site URL** and **Redirect URLs** to custom domain
+- [~] Re-run auth smoke tests on custom domain
+
+> Gdy dodasz domenę: zaktualizuj Supabase Auth URLs, wdróż ponownie i powtórz smoke testy z Etapu 3.
 
 ### Preview deployments (optional)
 
-- [ ] Connect GitHub repo in Cloudflare dashboard (if not already)
-- [ ] Enable preview deployments per PR / branch alias
-- [ ] Protect preview URLs if they use production Supabase credentials (separate Supabase project or Cloudflare Access)
+**Decyzja MVP (2026-05-23):** Odłożone — PR-y uruchamiają tylko `ci` (lint + build), bez preview URL.
+
+- [~] Connect GitHub repo in Cloudflare dashboard (if not already) — repo połączone przez CI deploy token
+- [~] Enable preview deployments per PR / branch alias — **pominięte** (prod Supabase na preview = ryzyko)
+- [~] Protect preview URLs if they use production Supabase credentials (separate Supabase project or Cloudflare Access)
+
+> Jeśli włączysz preview: użyj osobnego projektu Supabase lub Cloudflare Access; nigdy prod credentials na publicznych preview URL.
 
 ### Workers Paid plan
 
-- [ ] Monitor CPU ms in dashboard after first real usage
-- [ ] Enable Workers Paid (~$5/mo) if SSR + Supabase round-trips exceed free CPU limits
+**Decyzja MVP (2026-05-23):** Free tier na start; monitoruj CPU ms w dashboardzie po pierwszym realnym ruchu.
+
+- [x] Monitor CPU ms in dashboard after first real usage — [Workers → energy-monitor → Metrics](https://dash.cloudflare.com/)
+- [~] Enable Workers Paid (~$5/mo) if SSR + Supabase round-trips exceed free CPU limits — **włącz gdy CPU/request > 10 ms lub billing alert**
 
 ### Operational runbook (document decisions)
 
-- [ ] **Secret rotation:** update Cloudflare secrets → redeploy; update GitHub secrets for CI
-- [ ] **Emergency rollback:** `npx wrangler rollback` (minutes to revert)
-- [ ] **Human approval gate:** require manual approval for deploys that change secrets, Tuya production credentials, or Supabase RLS/migrations
+- [x] **Secret rotation:**
+  1. `npx wrangler secret put SUPABASE_URL` / `SUPABASE_KEY` (runtime)
+  2. `gh secret set SUPABASE_URL` / `SUPABASE_KEY` (CI build)
+  3. Push do `master` → auto-deploy, lub `npx wrangler deploy` ręcznie
+  4. Smoke test auth na prod URL
+- [x] **Emergency rollback:**
+  1. `npx wrangler versions list` — znajdź stabilną wersję
+  2. `npx wrangler rollback` — natychmiastowy revert (minuty)
+  3. Smoke test stron + assety (`/_astro/*.css` → 200)
+  4. Migracje Supabase **nie** cofają się z rollbackiem Workera
+- [x] **Human approval gate:** Wymagaj ręcznej akceptacji przed:
+  - rotacją sekretów produkcyjnych (Supabase, Cloudflare, Tuya)
+  - zmianami RLS / migracjami Supabase
+  - pierwszym podłączeniem credentiali Tuya (FR-005)
+  - Auto-deploy z `master` jest OK dla zmian kodu aplikacji (bez sekretów/DB)
 
 ### Future: FR-005 cron (out of scope for first deploy)
 
@@ -343,10 +365,10 @@ Mapped from [infrastructure.md](../foundation/infrastructure.md). Track mitigati
 
 | Risk | Likelihood | Impact | Mitigation | Status |
 |---|---|---|---|---|
-| Free-tier CPU exceeded by SSR + Supabase | High | Medium | Enable Workers Paid early; monitor CPU ms; cache read-heavy data where safe | `[ ]` |
+| Free-tier CPU exceeded by SSR + Supabase | High | Medium | Enable Workers Paid early; monitor CPU ms; cache read-heavy data where safe | `[~]` monitor |
 | Rollback causes 404 on static assets | Low | Medium | Test rollback in Stage 5; prefer instant rollback for logic-only changes | `[x]` |
-| Pages vs Workers naming confusion | Medium | Low | Use `wrangler deploy` (Workers), not legacy Pages-only guides | `[ ]` |
-| Supabase redirect URL mismatch | Medium | High | Set Site URL + Redirect URLs in Stage 0; retest after custom domain | `[ ]` |
+| Pages vs Workers naming confusion | Medium | Low | Use `wrangler deploy` (Workers), not legacy Pages-only guides | `[x]` |
+| Supabase redirect URL mismatch | Medium | High | Set Site URL + Redirect URLs in Stage 0; retest after custom domain | `[x]` workers.dev |
 | Missing GitHub / Cloudflare secrets break CI deploy | Medium | High | Complete Stage 2 checklist before Stage 4 | `[x]` |
 | Tuya SDK incompatible with `workerd` | Medium | High | Spike locally via `npm run dev` before FR-005; fallback to external cron hitting API route | `[ ]` (future) |
 | Cron job timeout on slow Tuya API | Medium | High | Short handlers, idempotency, store last reading in Supabase | `[ ]` (future) |
@@ -397,3 +419,4 @@ Record significant events here as stages complete.
 | 2026-05-23 | 4 | CI run #26334339802 — `ci` + `deploy` success; smoke test prod OK | agent |
 | 2026-05-23 | 5 | Smoke test CI-deployed OK; rollback drill success (`3daffbdb` → `0e72487f`); tail + GH logs OK | agent |
 | 2026-05-23 | 4 | PR #1 — `pull_request` event: `ci` success, `deploy` skipped (run #26334615471) | agent |
+| 2026-05-23 | 6 | Etap 6 — runbook uzupełniony; custom domain / preview / Paid odłożone na MVP | agent |
