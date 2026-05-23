@@ -247,7 +247,7 @@ deploy:
 
 ### Validate pipeline
 
-- [~] Open a PR — CI runs lint + build only; **no deploy** (nie testowano; push do `master` potwierdza deploy path)
+- [x] Open a PR — CI runs lint + build only; **no deploy** ([PR #1](https://github.com/mkregiel/energy-consumption-guard/pull/1), [run #26334615471](https://github.com/mkregiel/energy-consumption-guard/actions/runs/26334615471) — `ci` success, `deploy` **skipped**)
 - [x] Merge/push to `master` — deploy job succeeds ([run #26334339802](https://github.com/mkregiel/energy-consumption-guard/actions/runs/26334339802))
 - [x] Post-merge smoke test on production URL (repeat Stage 3 checks)
 
@@ -396,3 +396,4 @@ Record significant events here as stages complete.
 | 2026-05-23 | 4 | Wznowiono Etap 4 — dodano job `deploy` (trigger `master`); oczekuje push | agent |
 | 2026-05-23 | 4 | CI run #26334339802 — `ci` + `deploy` success; smoke test prod OK | agent |
 | 2026-05-23 | 5 | Smoke test CI-deployed OK; rollback drill success (`3daffbdb` → `0e72487f`); tail + GH logs OK | agent |
+| 2026-05-23 | 4 | PR #1 — `pull_request` event: `ci` success, `deploy` skipped (run #26334615471) | agent |
