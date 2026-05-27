@@ -304,16 +304,16 @@ npx supabase db reset
 
 #### Automated
 
-- [x] 1.1 Migration file exists matching pattern `supabase/migrations/*_energy_domain_schema.sql`
-- [x] 1.2 `npx supabase db reset` completes without error
-- [x] 1.3 `npm run lint` passes
-- [x] 1.4 `npm run build` passes
+- [x] 1.1 Migration file exists matching pattern `supabase/migrations/*_energy_domain_schema.sql` — 372186d
+- [x] 1.2 `npx supabase db reset` completes without error — 372186d
+- [x] 1.3 `npm run lint` passes — 372186d
+- [x] 1.4 `npm run build` passes — 372186d
 
 #### Manual
 
-- [ ] 1.5 Supabase Studio shows all five tables under `public` schema
-- [ ] 1.6 RLS enabled on each table with expected policies
-- [ ] 1.7 Cross-user isolation verified (User B cannot read User A rows)
+- [x] 1.5 Supabase Studio shows all five tables under `public` schema
+- [x] 1.6 RLS enabled on each table with expected policies
+- [x] 1.7 Cross-user isolation verified (User B cannot read User A rows)
 
 ### Phase 2: TypeScript Types and Documentation
 
