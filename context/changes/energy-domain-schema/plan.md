@@ -311,9 +311,9 @@ npx supabase db reset
 
 #### Manual
 
-- [x] 1.5 Supabase Studio shows all five tables under `public` schema
-- [x] 1.6 RLS enabled on each table with expected policies
-- [x] 1.7 Cross-user isolation verified (User B cannot read User A rows)
+- [x] 1.5 Supabase Studio shows all five tables under `public` schema — f7c4607
+- [x] 1.6 RLS enabled on each table with expected policies — f7c4607
+- [x] 1.7 Cross-user isolation verified (User B cannot read User A rows) — f7c4607
 
 ### Phase 2: TypeScript Types and Documentation
 
