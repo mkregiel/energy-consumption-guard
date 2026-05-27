@@ -332,11 +332,11 @@ npx supabase db reset
 
 #### Automated
 
-- [ ] 3.1 `npx supabase db reset` completes without error
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` passes
+- [x] 3.1 `npx supabase db reset` completes without error
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` passes
 
 #### Manual
 
-- [ ] 3.4 RLS smoke test checklist passes for two-user scenario
-- [ ] 3.5 Production migration steps understood (human approval before cloud push)
+- [x] 3.4 RLS smoke test checklist passes for two-user scenario
+- [x] 3.5 Production migration steps understood (human approval before cloud push)
