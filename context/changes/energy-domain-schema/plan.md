@@ -325,8 +325,8 @@ npx supabase db reset
 
 #### Manual
 
-- [ ] 2.4 Type field names match migration column names
-- [ ] 2.5 README accurately describes migration workflow
+- [x] 2.4 Type field names match migration column names
+- [x] 2.5 README accurately describes migration workflow
 
 ### Phase 3: Local Verification and Handoff
 
