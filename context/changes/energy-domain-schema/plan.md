@@ -319,9 +319,9 @@ npx supabase db reset
 
 #### Automated
 
-- [ ] 2.1 `src/types.ts` exists and exports all five entity interfaces
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run build` passes
+- [x] 2.1 `src/types.ts` exists and exports all five entity interfaces
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run build` passes
 
 #### Manual
 

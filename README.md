@@ -69,6 +69,7 @@ src/
 │   ├── auth/          # sign-in/up forms and shared auth UI
 │   └── ui/            # shadcn/ui primitives
 ├── lib/               # Supabase client, helpers, config
+├── types.ts           # Shared domain entity/DTO types
 ├── styles/            # Global CSS (Tailwind)
 ├── middleware.ts      # Session resolution; protected routes
 └── env.d.ts           # Astro/env type declarations
@@ -115,7 +116,24 @@ npx supabase stop
 
 The local Studio UI is available at `http://localhost:54323`.
 
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
+### Database migrations
+
+The energy monitoring domain lives in five `public` tables: `meters`, `consumption_limits`, `consumption_readings`, `notification_settings`, and `limit_breach_events`. SQL migrations are in `supabase/migrations/`; shared TypeScript types are in `src/types.ts`.
+
+**Local development** (with Docker running):
+
+```bash
+npx supabase start
+npx supabase db reset
+```
+
+`db reset` reapplies all migrations on a fresh local database. Auth still uses the built-in `auth.users` table.
+
+**Production** — requires explicit human approval before changing RLS or schema (see `context/deployment/deploy-plan.md`):
+
+1. Review migration SQL in the PR.
+2. After approval: `npx supabase link --project-ref <ref>` then `npx supabase db push`.
+3. Verify tables in the Supabase dashboard.
 
 ### Using a cloud Supabase project instead
 
