@@ -319,14 +319,14 @@ npx supabase db reset
 
 #### Automated
 
-- [x] 2.1 `src/types.ts` exists and exports all five entity interfaces
-- [x] 2.2 `npm run lint` passes
-- [x] 2.3 `npm run build` passes
+- [x] 2.1 `src/types.ts` exists and exports all five entity interfaces — 1590aa6
+- [x] 2.2 `npm run lint` passes — 1590aa6
+- [x] 2.3 `npm run build` passes — 1590aa6
 
 #### Manual
 
-- [x] 2.4 Type field names match migration column names
-- [x] 2.5 README accurately describes migration workflow
+- [x] 2.4 Type field names match migration column names — 8abe434
+- [x] 2.5 README accurately describes migration workflow — 8abe434
 
 ### Phase 3: Local Verification and Handoff
 
