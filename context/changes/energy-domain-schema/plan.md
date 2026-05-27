@@ -304,10 +304,10 @@ npx supabase db reset
 
 #### Automated
 
-- [ ] 1.1 Migration file exists matching pattern `supabase/migrations/*_energy_domain_schema.sql`
-- [ ] 1.2 `npx supabase db reset` completes without error
-- [ ] 1.3 `npm run lint` passes
-- [ ] 1.4 `npm run build` passes
+- [x] 1.1 Migration file exists matching pattern `supabase/migrations/*_energy_domain_schema.sql`
+- [x] 1.2 `npx supabase db reset` completes without error
+- [x] 1.3 `npm run lint` passes
+- [x] 1.4 `npm run build` passes
 
 #### Manual
 
