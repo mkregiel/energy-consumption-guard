@@ -1,7 +1,7 @@
 ---
 change-id: tuya-read-integration
 title: Tuya read integration
-status: planned
+status: implementing
 created: 2026-05-28
 updated: 2026-05-28
 ---
