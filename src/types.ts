@@ -59,3 +59,73 @@ export interface LimitBreachEvent {
 }
 
 export type LimitBreachEventInsert = Omit<LimitBreachEvent, "id" | "created_at">;
+
+/** Per-user Tuya OAuth credentials (matches `tuya_oauth_tokens`). */
+export interface TuyaOAuthToken {
+  user_id: string;
+  access_token: string;
+  refresh_token: string;
+  access_token_expires_at: string;
+  refresh_token_expires_at: string | null;
+  tuya_uid: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type TuyaOAuthTokenInsert = Omit<TuyaOAuthToken, "created_at" | "updated_at">;
+
+export type TuyaOAuthTokenUpdate = Pick<
+  TuyaOAuthToken,
+  "access_token" | "refresh_token" | "access_token_expires_at" | "refresh_token_expires_at" | "tuya_uid"
+>;
+
+/** Token metadata safe to expose in API responses (no secrets). */
+export interface TuyaConnectionStatus {
+  linked: boolean;
+  accessTokenExpiresAt: string | null;
+  tuyaUid: string | null;
+}
+
+/** POST /api/tuya/oauth/callback request body. */
+export interface TuyaOAuthCallbackPayload {
+  code: string;
+  state: string;
+}
+
+/** POST /api/tuya/oauth/callback success payload. */
+export interface TuyaOAuthCallbackResult {
+  linked: boolean;
+  status: "accepted" | "linked";
+  message?: string;
+}
+
+/** POST /api/tuya/sync request body. */
+export interface TuyaSyncPayload {
+  meterId?: string;
+  forceRefresh?: boolean;
+}
+
+/** POST /api/tuya/sync success payload. */
+export interface TuyaSyncResult {
+  status: "accepted" | "synced";
+  synced: boolean;
+  meterId: string | null;
+  forceRefresh?: boolean;
+  reading?: ConsumptionReading;
+  message?: string;
+}
+
+/** Standard JSON envelope for F-02 Tuya API routes. */
+export interface TuyaApiSuccess<T> {
+  ok: true;
+  data: T;
+}
+
+export interface TuyaApiErrorBody {
+  ok: false;
+  error: {
+    code: string;
+    message: string;
+    details?: unknown;
+  };
+}

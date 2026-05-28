@@ -323,14 +323,14 @@ Validate F-02 end-to-end proof and prepare clean handoff to S-02 and F-03.
 
 #### Automated
 
-- [ ] 2.1 Migration applies cleanly on local DB (`npx supabase db reset`)
-- [ ] 2.2 Linting passes (`npm run lint`)
-- [ ] 2.3 Type checking passes (`npm run build`)
+- [x] 2.1 Migration applies cleanly on local DB (`npx supabase db reset`)
+- [x] 2.2 Linting passes (`npm run lint`)
+- [x] 2.3 Type checking passes (`npm run build`)
 
 #### Manual
 
-- [ ] 2.4 RLS enforces token ownership per user
-- [ ] 2.5 Duplicate reading inserts are deduplicated by contract
+- [x] 2.4 RLS enforces token ownership per user
+- [x] 2.5 Duplicate reading inserts are deduplicated by contract
 
 ### Phase 3: Tuya Service and API Endpoints
 
