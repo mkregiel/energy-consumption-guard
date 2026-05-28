@@ -310,14 +310,14 @@ Validate F-02 end-to-end proof and prepare clean handoff to S-02 and F-03.
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npm run build`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 New Tuya route files compile with `prerender = false` and zod contracts
+- [x] 1.1 Type checking passes (`npm run build`) — 7b6cf97
+- [x] 1.2 Linting passes (`npm run lint`) — 7b6cf97
+- [x] 1.3 New Tuya route files compile with `prerender = false` and zod contracts — 7b6cf97
 
 #### Manual
 
-- [x] 1.4 Missing Tuya env values produce explicit configuration errors
-- [x] 1.5 Invalid payloads return predictable JSON error shape and HTTP status
+- [x] 1.4 Missing Tuya env values produce explicit configuration errors — 7b6cf97
+- [x] 1.5 Invalid payloads return predictable JSON error shape and HTTP status — 7b6cf97
 
 ### Phase 2: OAuth Token Persistence and Idempotency Model
 
