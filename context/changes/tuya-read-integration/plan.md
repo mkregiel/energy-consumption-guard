@@ -323,29 +323,29 @@ Validate F-02 end-to-end proof and prepare clean handoff to S-02 and F-03.
 
 #### Automated
 
-- [x] 2.1 Migration applies cleanly on local DB (`npx supabase db reset`)
-- [x] 2.2 Linting passes (`npm run lint`)
-- [x] 2.3 Type checking passes (`npm run build`)
+- [x] 2.1 Migration applies cleanly on local DB (`npx supabase db reset`) — 4838d81
+- [x] 2.2 Linting passes (`npm run lint`) — 4838d81
+- [x] 2.3 Type checking passes (`npm run build`) — 4838d81
 
 #### Manual
 
-- [x] 2.4 RLS enforces token ownership per user
-- [x] 2.5 Duplicate reading inserts are deduplicated by contract
+- [x] 2.4 RLS enforces token ownership per user — 4838d81
+- [x] 2.5 Duplicate reading inserts are deduplicated by contract — 4838d81
 
 ### Phase 3: Tuya Service and API Endpoints
 
 #### Automated
 
-- [ ] 3.1 Linting passes (`npm run lint`)
-- [ ] 3.2 Type checking passes (`npm run build`)
-- [ ] 3.3 Routes and services compile in local Cloudflare runtime
+- [x] 3.1 Linting passes (`npm run lint`)
+- [x] 3.2 Type checking passes (`npm run build`)
+- [x] 3.3 Routes and services compile in local Cloudflare runtime
 
 #### Manual
 
-- [ ] 3.4 User completes link flow and credentials persist per user
-- [ ] 3.5 Sync writes reading row in `consumption_readings`
-- [ ] 3.6 Repeated sync for same timestamp does not create duplicates
-- [ ] 3.7 Provider/runtime failures return mapped API errors
+- [x] 3.4 User completes link flow and credentials persist per user
+- [x] 3.5 Sync writes reading row in `consumption_readings`
+- [x] 3.6 Repeated sync for same timestamp does not create duplicates
+- [x] 3.7 Provider/runtime failures return mapped API errors
 
 ### Phase 4: Verification and Handoff
 

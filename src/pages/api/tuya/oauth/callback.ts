@@ -1,5 +1,9 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
+import { createClient } from "@/lib/supabase";
+import { tuyaErrorResponse, tuyaJsonError, tuyaJsonSuccess } from "@/lib/services/tuya-api-response";
+import { createTuyaClient, linkTuyaAccount } from "@/lib/services/tuya-client";
+import { getMissingTuyaConfigKeys, getTuyaConfig } from "@/lib/services/tuya-config";
 
 export const prerender = false;
 
@@ -8,64 +12,64 @@ const callbackPayloadSchema = z.object({
   state: z.string().min(1, "Missing OAuth state"),
 });
 
-const jsonError = (status: number, code: string, message: string, details?: unknown) =>
-  Response.json(
-    {
-      ok: false,
-      error: {
-        code,
-        message,
-        details,
-      },
-    },
-    { status },
-  );
-
-const jsonSuccess = (status: number, data: Record<string, unknown>) =>
-  Response.json(
-    {
-      ok: true,
-      data,
-    },
-    { status },
-  );
-
-const getMissingTuyaConfig = (): string[] => {
-  const required = ["TUYA_CLIENT_ID", "TUYA_CLIENT_SECRET", "TUYA_API_BASE_URL", "TUYA_API_REGION"] as const;
-  return required.filter((key) => !import.meta.env[key]);
-};
-
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request, locals, cookies }) => {
   if (!locals.user) {
-    return jsonError(401, "UNAUTHORIZED", "User session is required for Tuya OAuth callback.");
+    return tuyaJsonError(401, "UNAUTHORIZED", "User session is required for Tuya OAuth callback.");
   }
 
-  const missingConfig = getMissingTuyaConfig();
+  const missingConfig = getMissingTuyaConfigKeys();
   if (missingConfig.length > 0) {
-    return jsonError(500, "TUYA_CONFIG_MISSING", "Missing required Tuya configuration.", {
+    return tuyaJsonError(500, "TUYA_CONFIG_MISSING", "Missing required Tuya configuration.", {
       missing: missingConfig,
     });
+  }
+
+  const supabase = createClient(request.headers, cookies);
+  if (!supabase) {
+    return tuyaJsonError(500, "SUPABASE_NOT_CONFIGURED", "Supabase is not configured.");
   }
 
   let payload: unknown;
   try {
     payload = await request.json();
   } catch {
-    return jsonError(400, "INVALID_JSON", "Request body must be valid JSON.");
+    return tuyaJsonError(400, "INVALID_JSON", "Request body must be valid JSON.");
   }
 
   const parsedPayload = callbackPayloadSchema.safeParse(payload);
   if (!parsedPayload.success) {
-    return jsonError(400, "VALIDATION_ERROR", "Invalid OAuth callback payload.", {
+    return tuyaJsonError(400, "VALIDATION_ERROR", "Invalid OAuth callback payload.", {
       issues: parsedPayload.error.issues,
     });
   }
 
-  return jsonSuccess(202, {
-    linked: false,
-    status: "accepted",
-    message: "Tuya OAuth callback contract validated. Service integration is implemented in phase 3.",
-    code: parsedPayload.data.code,
-    state: parsedPayload.data.state,
-  });
+  const expectedState = cookies.get("tuya_oauth_state")?.value;
+  if (expectedState && expectedState !== parsedPayload.data.state) {
+    return tuyaJsonError(400, "TUYA_STATE_MISMATCH", "OAuth state does not match the active session.");
+  }
+
+  const config = getTuyaConfig();
+  if (!config) {
+    return tuyaJsonError(500, "TUYA_CONFIG_MISSING", "Missing required Tuya configuration.");
+  }
+
+  try {
+    const client = await createTuyaClient(config);
+    const linked = await linkTuyaAccount(supabase, client, locals.user.id, parsedPayload.data.code);
+
+    if (expectedState) {
+      cookies.delete("tuya_oauth_state", { path: "/" });
+    }
+
+    return tuyaJsonSuccess(200, {
+      linked: linked.linked,
+      status: "linked",
+      tuyaUid: linked.tuyaUid,
+      accessTokenExpiresAt: linked.accessTokenExpiresAt,
+      transportMode: client.transportMode,
+      message: "Tuya account linked successfully.",
+    });
+  } catch (error) {
+    return tuyaErrorResponse(error);
+  }
 };
