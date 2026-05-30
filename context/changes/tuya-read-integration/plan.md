@@ -336,16 +336,16 @@ Validate F-02 end-to-end proof and prepare clean handoff to S-02 and F-03.
 
 #### Automated
 
-- [x] 3.1 Linting passes (`npm run lint`)
-- [x] 3.2 Type checking passes (`npm run build`)
-- [x] 3.3 Routes and services compile in local Cloudflare runtime
+- [x] 3.1 Linting passes (`npm run lint`) — 905e910
+- [x] 3.2 Type checking passes (`npm run build`) — 905e910
+- [x] 3.3 Routes and services compile in local Cloudflare runtime — 905e910
 
 #### Manual
 
-- [x] 3.4 User completes link flow and credentials persist per user
-- [x] 3.5 Sync writes reading row in `consumption_readings`
-- [x] 3.6 Repeated sync for same timestamp does not create duplicates
-- [x] 3.7 Provider/runtime failures return mapped API errors
+- [x] 3.4 User completes link flow and credentials persist per user — 905e910
+- [x] 3.5 Sync writes reading row in `consumption_readings` — 905e910
+- [x] 3.6 Repeated sync for same timestamp does not create duplicates — 905e910
+- [x] 3.7 Provider/runtime failures return mapped API errors — 905e910
 
 ### Phase 4: Verification and Handoff
 
