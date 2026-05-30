@@ -86,6 +86,26 @@ export interface TuyaConnectionStatus {
   tuyaUid: string | null;
 }
 
+/** Device row returned by GET /api/tuya/devices. */
+export interface TuyaDeviceSummary {
+  deviceId: string;
+  name: string;
+  productId?: string;
+  online?: boolean;
+}
+
+/** GET /api/tuya/devices success payload. */
+export interface TuyaDevicesResult {
+  devices: TuyaDeviceSummary[];
+}
+
+/** POST /api/meters request body. */
+export interface MeterUpsertPayload {
+  label: string;
+  tuya_device_id: string;
+  tuya_product_id?: string;
+}
+
 /** POST /api/tuya/oauth/callback request body. */
 export interface TuyaOAuthCallbackPayload {
   code: string;

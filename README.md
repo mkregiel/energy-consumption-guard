@@ -86,6 +86,7 @@ Tuya Developer Console rejects callback URLs that do not use `https://`. Default
 3. Start HTTPS dev server: `npm run dev:https`
 4. Open `https://127.0.0.1:3000` (no browser cert warning when mkcert CA is trusted)
 5. Register callback URL in Tuya Developer Console: `https://127.0.0.1:3000/dashboard/tuya/callback`
+6. Set `TUYA_API_BASE_URL` to the same regional OpenAPI host as the H5 page (e.g. `https://openapi.tuyaeu.com` for Central Europe)
 
 Use `dev:https` for all Tuya OAuth manual tests — not default `npm run dev`. See `certs/README.md` for regeneration steps.
 

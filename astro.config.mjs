@@ -37,6 +37,11 @@ function optimizeServerDeps() {
 const devHttps = process.env.ASTRO_DEV_HTTPS === "1";
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
+const devHttpsAllowedDomains = [
+  { hostname: "127.0.0.1", protocol: "https", port: "3000" },
+  { hostname: "localhost", protocol: "https", port: "3000" },
+];
+
 /** @returns {{ cert: Buffer; key: Buffer } | undefined} */
 function getDevHttpsConfig() {
   if (!devHttps) {
@@ -62,6 +67,15 @@ function getDevHttpsConfig() {
 export default defineConfig({
   output: "server",
   integrations: [react(), sitemap()],
+  ...(devHttps
+    ? {
+        security: {
+          allowedDomains: devHttpsAllowedDomains,
+          // Vite HTTPS dev still constructs request URLs as http:// internally; browser Origin is https://.
+          checkOrigin: false,
+        },
+      }
+    : {}),
   ...(devHttps
     ? {
         server: {
@@ -101,6 +115,8 @@ export default defineConfig({
       TUYA_APP_IDENTIFIER: envField.string({ context: "server", access: "secret", optional: true }),
       TUYA_CLOUD_CLIENT_ID: envField.string({ context: "server", access: "secret", optional: true }),
       TUYA_CLOUD_CLIENT_SECRET: envField.string({ context: "server", access: "secret", optional: true }),
+      TUYA_OAUTH_REDIRECT_URI: envField.string({ context: "server", access: "secret", optional: true }),
+      TUYA_OAUTH_SCOPE: envField.string({ context: "server", access: "secret", optional: true }),
     },
   },
 });

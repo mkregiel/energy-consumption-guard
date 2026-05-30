@@ -16,6 +16,13 @@ export interface TuyaConsumptionSnapshot {
   sourceCode: string;
 }
 
+export interface TuyaDeviceRecord {
+  id: string;
+  name: string;
+  productId?: string;
+  online?: boolean;
+}
+
 interface TuyaApiEnvelope<T> {
   success: boolean;
   result?: T;
@@ -62,6 +69,15 @@ interface TuyaReportLogsResult {
   hasMore?: boolean;
   last_row_key?: string;
   lastRowKey?: string;
+}
+
+interface TuyaDeviceApiItem {
+  id: string;
+  name?: string;
+  product_id?: string;
+  productId?: string;
+  online?: boolean;
+  is_online?: boolean;
 }
 
 const CUMULATIVE_ENERGY_CODES = [
@@ -511,6 +527,25 @@ export class HttpTuyaTransport {
     } catch {
       return null;
     }
+  }
+
+  async listUserDevices(uid: string, accessToken: string): Promise<TuyaDeviceRecord[]> {
+    const result = await this.signedRequest<TuyaDeviceApiItem[]>({
+      method: "GET",
+      path: `/v1.0/users/${encodeURIComponent(uid)}/devices`,
+      accessToken,
+    });
+
+    if (!Array.isArray(result)) {
+      return [];
+    }
+
+    return result.map((device) => ({
+      id: device.id,
+      name: typeof device.name === "string" && device.name.trim().length > 0 ? device.name : device.id,
+      productId: device.product_id ?? device.productId,
+      online: device.online ?? device.is_online,
+    }));
   }
 
   async getDeviceConsumption(deviceId: string, accessToken: string): Promise<TuyaConsumptionSnapshot> {

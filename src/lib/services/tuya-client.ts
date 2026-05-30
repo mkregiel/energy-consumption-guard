@@ -1,10 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { ConsumptionReading, Meter, TuyaOAuthToken, TuyaOAuthTokenInsert } from "@/types";
+import type { ConsumptionReading, Meter, TuyaDeviceSummary, TuyaOAuthToken, TuyaOAuthTokenInsert } from "@/types";
 import { getCloudDeviceReadConfig, type TuyaConfig } from "@/lib/services/tuya-config";
 import {
   HttpTuyaTransport,
   probeSdkTransportAvailability,
   type TuyaConsumptionSnapshot,
+  type TuyaDeviceRecord,
   type TuyaTokenResult,
 } from "@/lib/services/tuya-http";
 import { TuyaServiceError } from "@/lib/services/tuya-errors";
@@ -16,6 +17,7 @@ export interface TuyaTransportAdapter {
   refreshAccessToken(refreshToken: string): Promise<TuyaTokenResult>;
   getProjectAccessToken(): Promise<TuyaTokenResult>;
   getDeviceConsumption(deviceId: string, accessToken: string): Promise<TuyaConsumptionSnapshot>;
+  listUserDevices(uid: string, accessToken: string): Promise<TuyaDeviceRecord[]>;
 }
 
 const TOKEN_REFRESH_SKEW_MS = 60_000;
@@ -55,6 +57,10 @@ export class TuyaClient {
 
   getDeviceConsumption(deviceId: string, accessToken: string): Promise<TuyaConsumptionSnapshot> {
     return this.transport.getDeviceConsumption(deviceId, accessToken);
+  }
+
+  listUserDevices(uid: string, accessToken: string): Promise<TuyaDeviceRecord[]> {
+    return this.transport.listUserDevices(uid, accessToken);
   }
 }
 
@@ -211,6 +217,43 @@ export const assertTuyaAccountLinked = async (supabase: SupabaseClient, userId: 
   }
 
   return stored;
+};
+
+export const getTuyaConnectionStatus = async (
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<{ linked: boolean; accessTokenExpiresAt: string | null; tuyaUid: string | null }> => {
+  const stored = await loadUserOAuthToken(supabase, userId);
+  if (!stored) {
+    return { linked: false, accessTokenExpiresAt: null, tuyaUid: null };
+  }
+
+  return {
+    linked: true,
+    accessTokenExpiresAt: stored.access_token_expires_at,
+    tuyaUid: stored.tuya_uid,
+  };
+};
+
+const toDeviceSummary = (device: TuyaDeviceRecord): TuyaDeviceSummary => ({
+  deviceId: device.id,
+  name: device.name,
+  productId: device.productId,
+  online: device.online,
+});
+
+export const listLinkedUserDevices = async (
+  supabase: SupabaseClient,
+  client: TuyaClient,
+  userId: string,
+): Promise<TuyaDeviceSummary[]> => {
+  const { accessToken, tuyaUid } = await resolveAccessToken(supabase, client, userId, false);
+  if (!tuyaUid) {
+    throw new TuyaServiceError("TUYA_NOT_LINKED", "Tuya account is not linked for this user.", 409);
+  }
+
+  const devices = await client.listUserDevices(tuyaUid, accessToken);
+  return devices.map(toDeviceSummary);
 };
 
 const createCloudTuyaClient = (): TuyaClient => {

@@ -7,7 +7,14 @@ import {
   TUYA_CLIENT_SECRET,
   TUYA_CLOUD_CLIENT_ID,
   TUYA_CLOUD_CLIENT_SECRET,
+  TUYA_OAUTH_REDIRECT_URI,
+  TUYA_OAUTH_SCOPE,
 } from "astro:env/server";
+
+const DEFAULT_LOCAL_OAUTH_REDIRECT_URI = "https://127.0.0.1:3000/dashboard/tuya/callback";
+/** App Device Data Sharing H5 login page (see Tuya console OAuth config). */
+const TUYA_OAUTH_H5_LOGIN_PATH = "/login/open/tuya/login/v1/index.html";
+const DEFAULT_TUYA_OAUTH_SCOPE = "devicemessage";
 
 export type TuyaAuthMode = "cloud" | "app";
 
@@ -42,6 +49,34 @@ export const getTuyaConfig = (): TuyaConfig | null => {
     authMode: TUYA_AUTH_MODE === "cloud" ? "cloud" : "app",
     appIdentifier: typeof TUYA_APP_IDENTIFIER === "string" ? TUYA_APP_IDENTIFIER : "",
   };
+};
+
+/** Cloud Authorization credentials for project-scoped device reads (grant_type=1). */
+export const getTuyaOAuthRedirectUri = (): string => {
+  if (typeof TUYA_OAUTH_REDIRECT_URI === "string" && TUYA_OAUTH_REDIRECT_URI.trim().length > 0) {
+    return TUYA_OAUTH_REDIRECT_URI.trim();
+  }
+
+  return DEFAULT_LOCAL_OAUTH_REDIRECT_URI;
+};
+
+export const getTuyaOAuthScope = (): string => {
+  if (typeof TUYA_OAUTH_SCOPE === "string" && TUYA_OAUTH_SCOPE.trim().length > 0) {
+    return TUYA_OAUTH_SCOPE.trim();
+  }
+
+  return DEFAULT_TUYA_OAUTH_SCOPE;
+};
+
+export const buildTuyaOAuthAuthorizeUrl = (config: TuyaConfig, redirectUri: string, state: string): string => {
+  const params = new URLSearchParams({
+    client_id: config.clientId,
+    redirect_uri: redirectUri,
+    scope: getTuyaOAuthScope(),
+    state,
+  });
+
+  return `${config.baseUrl}${TUYA_OAUTH_H5_LOGIN_PATH}?${params.toString()}`;
 };
 
 /** Cloud Authorization credentials for project-scoped device reads (grant_type=1). */
