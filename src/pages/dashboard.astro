@@ -1,25 +1,52 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import TuyaConnectCard from "@/components/tuya/TuyaConnectCard";
+import { createClient } from "@/lib/supabase";
+import { getTuyaConnectionStatus } from "@/lib/services/tuya-client";
 
 const { user } = Astro.locals;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const tuyaStatus =
+  supabase && user
+    ? await getTuyaConnectionStatus(supabase, user.id)
+    : { linked: false, accessTokenExpiresAt: null, tuyaUid: null };
 ---
 
-<Layout title="Dashboard">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
-      <h1 class="mb-4 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-        Dashboard
-      </h1>
-      <p class="text-blue-100/80">
-        Welcome, <span class="font-semibold text-white">{user?.email}</span>
-      </p>
-      <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
-      <form method="POST" action="/api/auth/signout" class="mt-6">
+<Layout title="Pulpit">
+  <div class="bg-cosmic min-h-screen p-4 py-8">
+    <div class="mx-auto w-full max-w-lg space-y-6">
+      <header class="text-center text-white">
+        <h1 class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          Pulpit
+        </h1>
+        <p class="text-blue-100/80">
+          Witaj, <span class="font-semibold text-white">{user?.email}</span>
+        </p>
+      </header>
+
+      <TuyaConnectCard status={tuyaStatus} />
+
+      <section
+        class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm text-blue-100/50"
+      >
+        <p class="font-medium text-blue-100/70">Licznik energii</p>
+        <p class="mt-1">Rejestracja urządzenia — w kolejnej fazie planu.</p>
+      </section>
+
+      <section
+        class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm text-blue-100/50"
+      >
+        <p class="font-medium text-blue-100/70">Zużycie energii</p>
+        <p class="mt-1">Odczyty i synchronizacja — w kolejnej fazie planu.</p>
+      </section>
+
+      <form method="POST" action="/api/auth/signout" class="text-center">
         <button
           type="submit"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20"
         >
-          Sign out
+          Wyloguj
         </button>
       </form>
     </div>

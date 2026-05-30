@@ -1,0 +1,39 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import TuyaOAuthCallbackPanel from "@/components/tuya/TuyaOAuthCallbackPanel";
+
+const code = Astro.url.searchParams.get("code");
+const state = Astro.url.searchParams.get("state");
+const tuyaError = Astro.url.searchParams.get("error");
+const tuyaErrorDescription = Astro.url.searchParams.get("error_description");
+---
+
+<Layout title="Połączenie Tuya">
+  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <h1
+        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
+      >
+        Połączenie Tuya
+      </h1>
+
+      {
+        tuyaError ? (
+          <div class="space-y-4 text-center">
+            <p class="text-sm text-red-300">
+              Tuya zwróciło błąd: {tuyaError}
+              {tuyaErrorDescription ? ` — ${tuyaErrorDescription}` : ""}
+            </p>
+            <p class="text-sm text-blue-100/70">
+              <a href="/api/tuya/oauth/start" class="text-purple-300 hover:underline">
+                Spróbuj połączyć ponownie
+              </a>
+            </p>
+          </div>
+        ) : (
+          <TuyaOAuthCallbackPanel code={code} state={state} client:load />
+        )
+      }
+    </div>
+  </div>
+</Layout>

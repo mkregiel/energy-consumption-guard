@@ -582,13 +582,13 @@ Document proof, update change metadata, prepare downstream slices.
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 3.3 Full OAuth connect flow on real Tuya/Smart Life account
-- [ ] 3.4 Callback page handles success and state mismatch errors
+- [x] 3.3 Full OAuth connect flow on real Tuya/Smart Life account
+- [x] 3.4 Callback page handles success and state mismatch errors
 
 ### Phase 4: Meter Registration UI
 
