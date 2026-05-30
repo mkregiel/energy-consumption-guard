@@ -534,6 +534,11 @@ export class HttpTuyaTransport {
       method: "GET",
       path: `/v1.0/users/${encodeURIComponent(uid)}/devices`,
       accessToken,
+      query: {
+        from: "home",
+        page_no: "1",
+        page_size: "50",
+      },
     });
 
     if (!Array.isArray(result)) {

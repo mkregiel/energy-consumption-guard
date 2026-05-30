@@ -582,26 +582,26 @@ Document proof, update change metadata, prepare downstream slices.
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes — a817ebc
+- [x] 3.2 `npm run build` passes — a817ebc
 
 #### Manual
 
-- [x] 3.3 Full OAuth connect flow on real Tuya/Smart Life account
-- [x] 3.4 Callback page handles success and state mismatch errors
+- [x] 3.3 Full OAuth connect flow on real Tuya/Smart Life account — a817ebc
+- [x] 3.4 Callback page handles success and state mismatch errors — a817ebc
 
 ### Phase 4: Meter Registration UI
 
 #### Automated
 
-- [ ] 4.1 `npm run lint` passes
-- [ ] 4.2 `npm run build` passes
+- [x] 4.1 `npm run lint` passes
+- [x] 4.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 4.3 Device list selection persists correct `tuya_device_id`
-- [ ] 4.4 Manual Device ID fallback works when list empty
-- [ ] 4.5 Sync succeeds after meter registration
+- [x] 4.3 Device list selection persists correct `tuya_device_id`
+- [x] 4.4 Manual Device ID fallback works when list empty
+- [x] 4.5 Sync succeeds after meter registration
 
 ### Phase 5: Consumption Dashboard
 

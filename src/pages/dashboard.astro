@@ -1,7 +1,9 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import MeterRegistrationForm from "@/components/tuya/MeterRegistrationForm";
 import TuyaConnectCard from "@/components/tuya/TuyaConnectCard";
 import { createClient } from "@/lib/supabase";
+import { getUserMeter } from "@/lib/services/meter-service";
 import { getTuyaConnectionStatus } from "@/lib/services/tuya-client";
 
 const { user } = Astro.locals;
@@ -11,6 +13,7 @@ const tuyaStatus =
   supabase && user
     ? await getTuyaConnectionStatus(supabase, user.id)
     : { linked: false, accessTokenExpiresAt: null, tuyaUid: null };
+const meter = supabase && user ? await getUserMeter(supabase, user.id) : null;
 ---
 
 <Layout title="Pulpit">
@@ -27,12 +30,7 @@ const tuyaStatus =
 
       <TuyaConnectCard status={tuyaStatus} />
 
-      <section
-        class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm text-blue-100/50"
-      >
-        <p class="font-medium text-blue-100/70">Licznik energii</p>
-        <p class="mt-1">Rejestracja urządzenia — w kolejnej fazie planu.</p>
-      </section>
+      <MeterRegistrationForm client:load linked={tuyaStatus.linked} meter={meter} />
 
       <section
         class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm text-blue-100/50"

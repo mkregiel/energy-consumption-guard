@@ -252,8 +252,24 @@ export const listLinkedUserDevices = async (
     throw new TuyaServiceError("TUYA_NOT_LINKED", "Tuya account is not linked for this user.", 409);
   }
 
-  const devices = await client.listUserDevices(tuyaUid, accessToken);
-  return devices.map(toDeviceSummary);
+  const cloudConfig = getCloudDeviceReadConfig();
+  if (cloudConfig) {
+    const cloudClient = createCloudTuyaClient();
+    const projectTokens = await cloudClient.getProjectAccessToken();
+    const devices = await cloudClient.listUserDevices(tuyaUid, projectTokens.accessToken);
+    return devices.map(toDeviceSummary);
+  }
+
+  try {
+    const devices = await client.listUserDevices(tuyaUid, accessToken);
+    return devices.map(toDeviceSummary);
+  } catch (error) {
+    if (error instanceof TuyaServiceError && error.httpStatus === 403) {
+      return [];
+    }
+
+    throw error;
+  }
 };
 
 const createCloudTuyaClient = (): TuyaClient => {
