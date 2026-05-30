@@ -1,4 +1,8 @@
 // @ts-check
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import { fileURLToPath } from "node:url";
 import { defineConfig, envField } from "astro/config";
 
 import react from "@astrojs/react";
@@ -30,10 +34,42 @@ function optimizeServerDeps() {
   };
 }
 
+const devHttps = process.env.ASTRO_DEV_HTTPS === "1";
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
+
+/** @returns {{ cert: Buffer; key: Buffer } | undefined} */
+function getDevHttpsConfig() {
+  if (!devHttps) {
+    return undefined;
+  }
+
+  const certPath = path.join(projectRoot, "certs", "127.0.0.1+2.pem");
+  const keyPath = path.join(projectRoot, "certs", "127.0.0.1+2-key.pem");
+
+  if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
+    throw new Error(
+      `HTTPS dev requires cert files at certs/127.0.0.1+2.pem and certs/127.0.0.1+2-key.pem. Run: npm run certs:generate`,
+    );
+  }
+
+  return {
+    cert: fs.readFileSync(certPath),
+    key: fs.readFileSync(keyPath),
+  };
+}
+
 // https://astro.build/config
 export default defineConfig({
   output: "server",
   integrations: [react(), sitemap()],
+  ...(devHttps
+    ? {
+        server: {
+          host: "127.0.0.1",
+          port: 3000,
+        },
+      }
+    : {}),
   vite: {
     plugins: [tailwindcss(), optimizeServerDeps()],
     resolve: {
@@ -42,6 +78,15 @@ export default defineConfig({
         "react-dom/server": "react-dom/server.edge",
       },
     },
+    ...(devHttps
+      ? {
+          server: {
+            host: "127.0.0.1",
+            port: 3000,
+            https: getDevHttpsConfig(),
+          },
+        }
+      : {}),
   },
   adapter: cloudflare(),
   env: {

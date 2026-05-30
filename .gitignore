@@ -35,3 +35,7 @@ tuya-body.json
 
 # jetbrains setting folder
 .idea/
+
+# local HTTPS dev certs (see certs/README.md)
+certs/*.pem
+certs/*.key

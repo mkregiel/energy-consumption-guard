@@ -50,6 +50,8 @@ npm run dev
 ## Available Scripts
 
 - `npm run dev` - Start development server (Cloudflare workerd runtime)
+- `npm run dev:https` - Start dev server over HTTPS on `https://127.0.0.1:3000` (required for Tuya OAuth)
+- `npm run certs:generate` - Generate local mkcert certificates for HTTPS dev
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint with type-checked rules
@@ -75,9 +77,23 @@ src/
 └── env.d.ts           # Astro/env type declarations
 ```
 
+## Local HTTPS for Tuya OAuth
+
+Tuya Developer Console rejects callback URLs that do not use `https://`. Default `npm run dev` serves HTTP on port 4321, which cannot be registered as an OAuth redirect.
+
+1. Install [mkcert](https://github.com/FiloSottile/mkcert) (`winget install FiloSottile.mkcert`)
+2. Generate certificates: `npm run certs:generate`
+3. Start HTTPS dev server: `npm run dev:https`
+4. Open `https://127.0.0.1:3000` (no browser cert warning when mkcert CA is trusted)
+5. Register callback URL in Tuya Developer Console: `https://127.0.0.1:3000/dashboard/tuya/callback`
+
+Use `dev:https` for all Tuya OAuth manual tests — not default `npm run dev`. See `certs/README.md` for regeneration steps.
+
 ## Supabase Configuration
 
 This project uses [Supabase](https://supabase.com/) for authentication. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
+
+Local Supabase `site_url` is set to `https://127.0.0.1:3000` to align with HTTPS dev. Sign in via `npm run dev:https` when testing Tuya flows.
 
 ### First-time setup (local, no cloud project needed)
 

@@ -4,6 +4,8 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev:https": "cross-env ASTRO_DEV_HTTPS=1 astro dev --host 127.0.0.1 --port 3000",
+    "certs:generate": "powershell -ExecutionPolicy Bypass -File scripts/generate-dev-certs.ps1",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
@@ -35,6 +37,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^9.29.0",
     "eslint": "^9.29.0",
