@@ -351,12 +351,12 @@ Validate F-02 end-to-end proof and prepare clean handoff to S-02 and F-03.
 
 #### Automated
 
-- [x] 4.1 Local build passes (`npm run build`)
-- [x] 4.2 Linting passes (`npm run lint`)
-- [x] 4.3 Local migration reset passes (`npx supabase db reset`)
+- [x] 4.1 Local build passes (`npm run build`) — 58f1130
+- [x] 4.2 Linting passes (`npm run lint`) — 58f1130
+- [x] 4.3 Local migration reset passes (`npx supabase db reset`) — 58f1130
 
 #### Manual
 
-- [x] 4.4 End-to-end acceptance proof completed with real Tuya account
-- [x] 4.5 Existing auth flow has no regressions
-- [x] 4.6 F-02 is confirmed ready to unblock S-02 and F-03
+- [x] 4.4 End-to-end acceptance proof completed with real Tuya account — 58f1130
+- [x] 4.5 Existing auth flow has no regressions — 58f1130
+- [x] 4.6 F-02 is confirmed ready to unblock S-02 and F-03 — 58f1130
