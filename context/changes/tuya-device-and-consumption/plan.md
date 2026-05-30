@@ -568,15 +568,15 @@ Document proof, update change metadata, prepare downstream slices.
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes
-- [x] 2.3 New Tuya/meter API routes export `prerender = false` and zod validation
+- [x] 2.1 `npm run lint` passes — b616dbe
+- [x] 2.2 `npm run build` passes — b616dbe
+- [x] 2.3 New Tuya/meter API routes export `prerender = false` and zod validation — b616dbe
 
 #### Manual
 
-- [x] 2.4 OAuth start sets `tuya_oauth_state` and redirects to Tuya (via `dev:https`)
-- [x] 2.5 `GET /api/tuya/status` reflects linked state after OAuth
-- [x] 2.6 `POST /api/meters` upserts single meter per user
+- [x] 2.4 OAuth start sets `tuya_oauth_state` and redirects to Tuya (via `dev:https`) — b616dbe
+- [x] 2.5 `GET /api/tuya/status` reflects linked state after OAuth — b616dbe
+- [x] 2.6 `POST /api/meters` upserts single meter per user — b616dbe
 
 ### Phase 3: OAuth Linking UI
 
