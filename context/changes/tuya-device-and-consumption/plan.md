@@ -554,15 +554,15 @@ Document proof, update change metadata, prepare downstream slices.
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes
-- [x] 1.2 `npm run build` passes
+- [x] 1.1 `npm run lint` passes — 8817dc6
+- [x] 1.2 `npm run build` passes — 8817dc6
 
 #### Manual
 
-- [x] 1.3 `npm run certs:generate` produces PEM files in `certs/`
-- [x] 1.4 `npm run dev:https` serves `https://127.0.0.1:3000` without cert warning
-- [x] 1.5 Supabase auth sign-in works on HTTPS origin
-- [x] 1.6 Tuya console accepts callback URL `https://127.0.0.1:3000/dashboard/tuya/callback`
+- [x] 1.3 `npm run certs:generate` produces PEM files in `certs/` — 8817dc6
+- [x] 1.4 `npm run dev:https` serves `https://127.0.0.1:3000` without cert warning — 8817dc6
+- [x] 1.5 Supabase auth sign-in works on HTTPS origin — 8817dc6
+- [x] 1.6 Tuya console accepts callback URL `https://127.0.0.1:3000/dashboard/tuya/callback` — 8817dc6
 
 ### Phase 2: API and Routing Foundation
 
