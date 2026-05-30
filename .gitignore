@@ -21,6 +21,10 @@ pnpm-debug.log*
 .env
 .env.production
 
+cookies.txt
+sync-body.json
+tuya-body.json
+
 # cloudflare
 .dev.vars
 .local.vars
