@@ -594,27 +594,27 @@ Document proof, update change metadata, prepare downstream slices.
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npm run build` passes
+- [x] 4.1 `npm run lint` passes — 872c849
+- [x] 4.2 `npm run build` passes — 872c849
 
 #### Manual
 
-- [x] 4.3 Device list selection persists correct `tuya_device_id`
-- [x] 4.4 Manual Device ID fallback works when list empty
-- [x] 4.5 Sync succeeds after meter registration
+- [x] 4.3 Device list selection persists correct `tuya_device_id` — 872c849
+- [x] 4.4 Manual Device ID fallback works when list empty — 872c849
+- [x] 4.5 Sync succeeds after meter registration — 872c849
 
 ### Phase 5: Consumption Dashboard
 
 #### Automated
 
-- [ ] 5.1 `npm run lint` passes
-- [ ] 5.2 `npm run build` passes
+- [x] 5.1 `npm run lint` passes
+- [x] 5.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 5.3 Hero and table show readings after sync
-- [ ] 5.4 Repeat sync does not duplicate same `recorded_at`
-- [ ] 5.5 Inline error banners show correct CTAs for Tuya error codes
+- [x] 5.3 Hero and table show readings after sync
+- [x] 5.4 Repeat sync does not duplicate same `recorded_at`
+- [x] 5.5 Inline error banners show correct CTAs for Tuya error codes
 
 ### Phase 6: E2E Verification and Handoff
 

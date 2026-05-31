@@ -1,10 +1,15 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import ConsumptionHero from "@/components/consumption/ConsumptionHero";
+import ConsumptionReadingsTable from "@/components/consumption/ConsumptionReadingsTable";
+import SyncConsumptionButton from "@/components/consumption/SyncConsumptionButton";
 import MeterRegistrationForm from "@/components/tuya/MeterRegistrationForm";
 import TuyaConnectCard from "@/components/tuya/TuyaConnectCard";
 import { createClient } from "@/lib/supabase";
+import { getMeterConsumptionReadings } from "@/lib/services/consumption-query";
 import { getUserMeter } from "@/lib/services/meter-service";
 import { getTuyaConnectionStatus } from "@/lib/services/tuya-client";
+import type { ConsumptionReading } from "@/types";
 
 const { user } = Astro.locals;
 
@@ -14,6 +19,20 @@ const tuyaStatus =
     ? await getTuyaConnectionStatus(supabase, user.id)
     : { linked: false, accessTokenExpiresAt: null, tuyaUid: null };
 const meter = supabase && user ? await getUserMeter(supabase, user.id) : null;
+
+let latestReading: ConsumptionReading | null = null;
+let readings: ConsumptionReading[] = [];
+
+if (supabase && meter) {
+  try {
+    const consumption = await getMeterConsumptionReadings(supabase, meter.id);
+    latestReading = consumption.latestReading;
+    readings = consumption.readings;
+  } catch {
+    latestReading = null;
+    readings = [];
+  }
+}
 ---
 
 <Layout title="Pulpit">
@@ -30,14 +49,24 @@ const meter = supabase && user ? await getUserMeter(supabase, user.id) : null;
 
       <TuyaConnectCard status={tuyaStatus} />
 
-      <MeterRegistrationForm client:load linked={tuyaStatus.linked} meter={meter} />
+      <div id="meter-registration">
+        <MeterRegistrationForm client:load linked={tuyaStatus.linked} meter={meter} />
+      </div>
 
-      <section
-        class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm text-blue-100/50"
-      >
-        <p class="font-medium text-blue-100/70">Zużycie energii</p>
-        <p class="mt-1">Odczyty i synchronizacja — w kolejnej fazie planu.</p>
-      </section>
+      {
+        meter ? (
+          <>
+            <ConsumptionHero client:load latestReading={latestReading} meterLabel={meter.label} />
+            <ConsumptionReadingsTable client:load readings={readings} />
+            <SyncConsumptionButton client:load meterId={meter.id} />
+          </>
+        ) : (
+          <section class="rounded-2xl border border-dashed border-white/15 bg-white/5 p-6 text-center text-sm text-blue-100/50">
+            <p class="font-medium text-blue-100/70">Zużycie energii</p>
+            <p class="mt-1">Zarejestruj licznik, aby zobaczyć odczyty i uruchomić synchronizację.</p>
+          </section>
+        )
+      }
 
       <form method="POST" action="/api/auth/signout" class="text-center">
         <button
