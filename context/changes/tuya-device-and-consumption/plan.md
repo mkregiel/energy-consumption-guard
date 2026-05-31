@@ -620,10 +620,10 @@ Document proof, update change metadata, prepare downstream slices.
 
 #### Automated
 
-- [x] 6.1 `npm run lint` passes
-- [x] 6.2 `npm run build` passes
+- [x] 6.1 `npm run lint` passes — 0c97a76
+- [x] 6.2 `npm run build` passes — 0c97a76
 
 #### Manual
 
-- [x] 6.3 Full E2E checklist (link → meter → sync → view) documented in `change.md`
-- [x] 6.4 Human accepts S-02 and status set to `implemented`
+- [x] 6.3 Full E2E checklist (link → meter → sync → view) documented in `change.md` — 0c97a76
+- [x] 6.4 Human accepts S-02 and status set to `implemented` — 0c97a76
