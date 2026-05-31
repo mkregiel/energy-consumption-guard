@@ -607,23 +607,23 @@ Document proof, update change metadata, prepare downstream slices.
 
 #### Automated
 
-- [x] 5.1 `npm run lint` passes
-- [x] 5.2 `npm run build` passes
+- [x] 5.1 `npm run lint` passes — b5eeccb
+- [x] 5.2 `npm run build` passes — b5eeccb
 
 #### Manual
 
-- [x] 5.3 Hero and table show readings after sync
-- [x] 5.4 Repeat sync does not duplicate same `recorded_at`
-- [x] 5.5 Inline error banners show correct CTAs for Tuya error codes
+- [x] 5.3 Hero and table show readings after sync — b5eeccb
+- [x] 5.4 Repeat sync does not duplicate same `recorded_at` — b5eeccb
+- [x] 5.5 Inline error banners show correct CTAs for Tuya error codes — b5eeccb
 
 ### Phase 6: E2E Verification and Handoff
 
 #### Automated
 
-- [ ] 6.1 `npm run lint` passes
-- [ ] 6.2 `npm run build` passes
+- [x] 6.1 `npm run lint` passes
+- [x] 6.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 6.3 Full E2E checklist (link → meter → sync → view) documented in `change.md`
-- [ ] 6.4 Human accepts S-02 and status set to `implemented`
+- [x] 6.3 Full E2E checklist (link → meter → sync → view) documented in `change.md`
+- [x] 6.4 Human accepts S-02 and status set to `implemented`

@@ -90,6 +90,8 @@ Tuya Developer Console rejects callback URLs that do not use `https://`. Default
 
 Use `dev:https` for all Tuya OAuth manual tests — not default `npm run dev`. See `certs/README.md` for regeneration steps.
 
+After linking Tuya, open **`/dashboard`** to register a meter and view consumption. Set `TUYA_OAUTH_REDIRECT_URI` in `.env` to match the callback URL registered in Tuya console (see `.env.example`).
+
 ## Supabase Configuration
 
 This project uses [Supabase](https://supabase.com/) for authentication. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
