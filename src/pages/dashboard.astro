@@ -22,6 +22,7 @@ const meter = supabase && user ? await getUserMeter(supabase, user.id) : null;
 
 let latestReading: ConsumptionReading | null = null;
 let readings: ConsumptionReading[] = [];
+let consumptionLoadError: string | null = null;
 
 if (supabase && meter) {
   try {
@@ -29,8 +30,7 @@ if (supabase && meter) {
     latestReading = consumption.latestReading;
     readings = consumption.readings;
   } catch {
-    latestReading = null;
-    readings = [];
+    consumptionLoadError = "Nie udało się wczytać odczytów. Odśwież stronę lub spróbuj ponownie.";
   }
 }
 ---
@@ -56,8 +56,13 @@ if (supabase && meter) {
       {
         meter ? (
           <>
-            <ConsumptionHero client:load latestReading={latestReading} meterLabel={meter.label} />
-            <ConsumptionReadingsTable client:load readings={readings} />
+            {consumptionLoadError ? (
+              <section class="rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100" role="alert">
+                <p>{consumptionLoadError}</p>
+              </section>
+            ) : null}
+            <ConsumptionHero latestReading={latestReading} meterLabel={meter.label} />
+            <ConsumptionReadingsTable readings={readings} />
             <SyncConsumptionButton client:load meterId={meter.id} />
           </>
         ) : (

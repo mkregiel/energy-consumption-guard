@@ -45,7 +45,7 @@ export const getTuyaErrorDisplay = (code: string, fallback?: string): TuyaErrorD
       return {
         message: "Sesja wygasła. Zaloguj się ponownie.",
         actionLabel: "Zaloguj się",
-        actionHref: "/sign-in",
+        actionHref: "/auth/signin",
       };
     default:
       return {

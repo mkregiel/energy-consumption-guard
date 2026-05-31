@@ -3,6 +3,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase";
 import { getUserMeter, upsertUserMeter } from "@/lib/services/meter-service";
 import { tuyaErrorResponse, tuyaJsonError, tuyaJsonSuccess } from "@/lib/services/tuya-api-response";
+import { assertMeterDeviceAllowed, createTuyaClient } from "@/lib/services/tuya-client";
+import { getMissingTuyaConfigKeys, getTuyaConfig } from "@/lib/services/tuya-config";
 
 export const prerender = false;
 
@@ -57,6 +59,15 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
   }
 
   try {
+    const missingConfig = getMissingTuyaConfigKeys();
+    if (missingConfig.length === 0) {
+      const config = getTuyaConfig();
+      if (config) {
+        const client = await createTuyaClient(config);
+        await assertMeterDeviceAllowed(supabase, client, locals.user.id, parsedPayload.data.tuya_device_id);
+      }
+    }
+
     const meter = await upsertUserMeter(supabase, locals.user.id, parsedPayload.data);
     return tuyaJsonSuccess(200, { meter });
   } catch (error) {

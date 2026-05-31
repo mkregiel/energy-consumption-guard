@@ -44,7 +44,14 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
   }
 
   const expectedState = cookies.get("tuya_oauth_state")?.value;
-  if (expectedState && expectedState !== parsedPayload.data.state) {
+  if (!expectedState) {
+    return tuyaJsonError(
+      400,
+      "TUYA_STATE_MISMATCH",
+      "OAuth state cookie is missing or expired. Restart the linking flow.",
+    );
+  }
+  if (expectedState !== parsedPayload.data.state) {
     return tuyaJsonError(400, "TUYA_STATE_MISMATCH", "OAuth state does not match the active session.");
   }
 
@@ -57,9 +64,7 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
     const client = await createTuyaClient(config);
     const linked = await linkTuyaAccount(supabase, client, locals.user.id, parsedPayload.data.code);
 
-    if (expectedState) {
-      cookies.delete("tuya_oauth_state", { path: "/" });
-    }
+    cookies.delete("tuya_oauth_state", { path: "/" });
 
     return tuyaJsonSuccess(200, {
       linked: linked.linked,

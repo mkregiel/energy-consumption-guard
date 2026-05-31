@@ -14,6 +14,7 @@ export interface TuyaConsumptionSnapshot {
   kwhCumulative: number;
   recordedAt: string;
   sourceCode: string;
+  valueKind: "cumulative" | "period";
 }
 
 export interface TuyaDeviceRecord {
@@ -209,6 +210,7 @@ const snapshotFromStatusItems = (statusItems: TuyaStatusItem[], recordedAt: Date
       kwhCumulative,
       recordedAt: floorToMinuteIso(recordedAt),
       sourceCode: code,
+      valueKind: "cumulative",
     };
   }
 
@@ -474,6 +476,7 @@ export class HttpTuyaTransport {
         kwhCumulative: monthTotal,
         recordedAt: floorToUtcMonthStartIso(recordedAt),
         sourceCode: "ele_usage",
+        valueKind: "period",
       };
     }
 
@@ -484,6 +487,7 @@ export class HttpTuyaTransport {
         kwhCumulative: dayTotal,
         recordedAt: floorToUtcDayStartIso(recordedAt),
         sourceCode: "ele_usage",
+        valueKind: "period",
       };
     }
 
@@ -493,6 +497,7 @@ export class HttpTuyaTransport {
         kwhCumulative: iot03MonthTotal,
         recordedAt: floorToUtcMonthStartIso(recordedAt),
         sourceCode: "iot03_energy_month",
+        valueKind: "period",
       };
     }
 
@@ -502,6 +507,7 @@ export class HttpTuyaTransport {
         kwhCumulative: iot03DayTotal,
         recordedAt: floorToUtcDayStartIso(recordedAt),
         sourceCode: "iot03_energy_day",
+        valueKind: "period",
       };
     }
 
@@ -511,6 +517,7 @@ export class HttpTuyaTransport {
         kwhCumulative: reportLogsAggregate.totalKwh,
         recordedAt: floorToMinuteIso(reportLogsAggregate.latestEventAt),
         sourceCode: "add_ele_report_logs",
+        valueKind: "period",
       };
     }
 

@@ -1,7 +1,7 @@
 ---
 change-id: tuya-device-and-consumption
 title: Tuya device and consumption visibility
-status: implemented
+status: impl_reviewed
 created: 2026-05-30
 updated: 2026-05-31
 ---

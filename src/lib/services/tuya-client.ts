@@ -164,7 +164,17 @@ export const upsertConsumptionReading = async (
 
   const previousKwh =
     previousReading && typeof previousReading.kwh_cumulative === "number" ? previousReading.kwh_cumulative : null;
-  const kwhDelta = previousKwh === null ? null : Math.max(0, snapshot.kwhCumulative - previousKwh);
+
+  let kwhCumulative: number;
+  let kwhDelta: number | null;
+
+  if (snapshot.valueKind === "period") {
+    kwhDelta = snapshot.kwhCumulative;
+    kwhCumulative = previousKwh === null ? snapshot.kwhCumulative : previousKwh + snapshot.kwhCumulative;
+  } else {
+    kwhCumulative = snapshot.kwhCumulative;
+    kwhDelta = previousKwh === null ? null : Math.max(0, snapshot.kwhCumulative - previousKwh);
+  }
 
   const readingResponse = await supabase
     .from("consumption_readings")
@@ -172,7 +182,7 @@ export const upsertConsumptionReading = async (
       {
         meter_id: meterId,
         recorded_at: snapshot.recordedAt,
-        kwh_cumulative: snapshot.kwhCumulative,
+        kwh_cumulative: kwhCumulative,
         kwh_delta: kwhDelta,
         source: "tuya",
       },
@@ -260,15 +270,35 @@ export const listLinkedUserDevices = async (
     return devices.map(toDeviceSummary);
   }
 
+  const devices = await client.listUserDevices(tuyaUid, accessToken);
+  return devices.map(toDeviceSummary);
+};
+
+export const assertMeterDeviceAllowed = async (
+  supabase: SupabaseClient,
+  client: TuyaClient,
+  userId: string,
+  tuyaDeviceId: string,
+): Promise<void> => {
+  let devices: TuyaDeviceSummary[];
+
   try {
-    const devices = await client.listUserDevices(tuyaUid, accessToken);
-    return devices.map(toDeviceSummary);
+    devices = await listLinkedUserDevices(supabase, client, userId);
   } catch (error) {
-    if (error instanceof TuyaServiceError && error.httpStatus === 403) {
-      return [];
+    if (error instanceof TuyaServiceError && error.code === "TUYA_NOT_LINKED") {
+      throw error;
     }
 
-    throw error;
+    return;
+  }
+
+  if (devices.length === 0) {
+    return;
+  }
+
+  const owned = devices.some((device) => device.deviceId === tuyaDeviceId);
+  if (!owned) {
+    throw new TuyaServiceError("TUYA_PROVIDER_ERROR", "Device ID is not linked to your Tuya account.", 400);
   }
 };
 
