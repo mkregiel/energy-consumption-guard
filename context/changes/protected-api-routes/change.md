@@ -1,7 +1,7 @@
 ---
 change-id: protected-api-routes
 title: Protected API routes
-status: implementing
+status: implemented
 created: 2026-05-31
 updated: 2026-05-31
 ---
