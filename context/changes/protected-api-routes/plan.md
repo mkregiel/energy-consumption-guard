@@ -272,25 +272,25 @@ No data migration. Deploy is code-only. Rollback: revert middleware guard and he
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes — d17dd10
+- [x] 2.2 `npm run build` passes — d17dd10
 
 #### Manual
 
-- [x] 2.3 Unauthenticated protected API returns 401 JSON
-- [x] 2.4 Auth routes remain public (signin/signup/signout)
-- [x] 2.5 Authenticated meter/Tuya routes still reachable
+- [x] 2.3 Unauthenticated protected API returns 401 JSON — d17dd10
+- [x] 2.4 Auth routes remain public (signin/signup/signout) — d17dd10
+- [x] 2.5 Authenticated meter/Tuya routes still reachable — d17dd10
 
 ### Phase 3: Route refactor & documentation
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
-- [ ] 3.3 No inline `if (!locals.user)` in meter/tuya route handlers
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
+- [x] 3.3 No inline `if (!locals.user)` in meter/tuya route handlers
 
 #### Manual
 
-- [ ] 3.4 Full auth + API smoke test passes
-- [ ] 3.5 Tuya OAuth connect flow from dashboard works
-- [ ] 3.6 AGENTS.md and README updated
+- [x] 3.4 Full auth + API smoke test passes
+- [x] 3.5 Tuya OAuth connect flow from dashboard works
+- [x] 3.6 AGENTS.md and README updated
