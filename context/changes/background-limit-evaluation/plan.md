@@ -525,25 +525,25 @@ Rollback: revert Worker deploy via `wrangler rollback`; breach events already in
 
 #### Automated
 
-- [x] 4.1 `wrangler.jsonc` contains `triggers.crons` with two expressions
-- [x] 4.2 `src/scheduled.ts` exists and exports handler
-- [x] 4.3 `npm run lint` passes
-- [x] 4.4 `npm run build` passes
+- [x] 4.1 `wrangler.jsonc` contains `triggers.crons` with two expressions — ead01d0
+- [x] 4.2 `src/scheduled.ts` exists and exports handler — ead01d0
+- [x] 4.3 `npm run lint` passes — ead01d0
+- [x] 4.4 `npm run build` passes — ead01d0
 
 #### Manual
 
-- [x] 4.5 Scheduled invocations visible in `wrangler tail` with expected job names
-- [x] 4.6 Worker deploy succeeds; crons visible in Cloudflare dashboard
+- [x] 4.5 Scheduled invocations visible in `wrangler tail` with expected job names — ead01d0
+- [x] 4.6 Worker deploy succeeds; crons visible in Cloudflare dashboard — ead01d0
 
 ### Phase 5: Verification and F-04 Handoff
 
 #### Automated
 
-- [ ] 5.1 `npm run lint` passes
-- [ ] 5.2 `npm run build` passes
+- [x] 5.1 `npm run lint` passes
+- [x] 5.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 5.3 Full sync → evaluate scenario produces breach with `notified_at IS NULL`
-- [ ] 5.4 README cron section accurate
-- [ ] 5.5 Handoff notes in `change.md` complete for F-04
+- [x] 5.3 Full sync → evaluate scenario produces breach with `notified_at IS NULL`
+- [x] 5.4 README cron section accurate
+- [x] 5.5 Handoff notes in `change.md` complete for F-04
