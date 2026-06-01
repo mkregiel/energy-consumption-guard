@@ -539,11 +539,11 @@ Rollback: revert Worker deploy via `wrangler rollback`; breach events already in
 
 #### Automated
 
-- [x] 5.1 `npm run lint` passes
-- [x] 5.2 `npm run build` passes
+- [x] 5.1 `npm run lint` passes — 38dc6a9
+- [x] 5.2 `npm run build` passes — 38dc6a9
 
 #### Manual
 
-- [x] 5.3 Full sync → evaluate scenario produces breach with `notified_at IS NULL`
-- [x] 5.4 README cron section accurate
-- [x] 5.5 Handoff notes in `change.md` complete for F-04
+- [x] 5.3 Full sync → evaluate scenario produces breach with `notified_at IS NULL` — 38dc6a9
+- [x] 5.4 README cron section accurate — 38dc6a9
+- [x] 5.5 Handoff notes in `change.md` complete for F-04 — 38dc6a9
