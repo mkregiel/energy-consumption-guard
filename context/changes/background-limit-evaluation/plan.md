@@ -497,29 +497,29 @@ Rollback: revert Worker deploy via `wrangler rollback`; breach events already in
 
 #### Automated
 
-- [x] 2.1 `src/lib/services/consumption-window.ts` and `src/lib/services/limit-evaluation.ts` exist
-- [x] 2.2 `src/pages/api/cron/evaluate-limits.ts` exports `POST` with `prerender = false`
-- [x] 2.3 `npm run lint` passes
-- [x] 2.4 `npm run build` passes
+- [x] 2.1 `src/lib/services/consumption-window.ts` and `src/lib/services/limit-evaluation.ts` exist — 184b071
+- [x] 2.2 `src/pages/api/cron/evaluate-limits.ts` exports `POST` with `prerender = false` — 184b071
+- [x] 2.3 `npm run lint` passes — 184b071
+- [x] 2.4 `npm run build` passes — 184b071
 
 #### Manual
 
-- [x] 2.5 Seeded data → evaluate cron creates one breach event
-- [x] 2.6 Repeat evaluate in same window → no duplicate breach
-- [x] 2.7 Limit with no readings → skipped, job returns 200
+- [x] 2.5 Seeded data → evaluate cron creates one breach event — 184b071
+- [x] 2.6 Repeat evaluate in same window → no duplicate breach — 184b071
+- [x] 2.7 Limit with no readings → skipped, job returns 200 — 184b071
 
 ### Phase 3: Batch Tuya Sync Service and Route
 
 #### Automated
 
-- [ ] 3.1 `src/lib/services/cron-sync.ts` and `src/pages/api/cron/sync-readings.ts` exist
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` passes
+- [x] 3.1 `src/lib/services/cron-sync.ts` and `src/pages/api/cron/sync-readings.ts` exist
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` passes
 
 #### Manual
 
-- [ ] 3.4 Linked user → sync cron updates `consumption_readings`
-- [ ] 3.5 Invalid `CRON_SECRET` → 401 on both cron routes
+- [x] 3.4 Linked user → sync cron updates `consumption_readings`
+- [x] 3.5 Invalid `CRON_SECRET` → 401 on both cron routes
 
 ### Phase 4: Wrangler Cron Triggers and Scheduled Dispatcher
 
