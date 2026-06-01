@@ -1,11 +1,12 @@
 import type { APIRoute } from "astro";
+import { requireUserRedirect } from "@/lib/auth-guard";
+import { apiJsonError } from "@/lib/services/api-response";
 import {
   buildTuyaOAuthAuthorizeUrl,
   getMissingTuyaConfigKeys,
   getTuyaConfig,
   getTuyaOAuthRedirectUri,
 } from "@/lib/services/tuya-config";
-import { tuyaJsonError } from "@/lib/services/tuya-api-response";
 
 export const prerender = false;
 
@@ -21,21 +22,21 @@ const isSecureRequest = (request: Request): boolean => {
 };
 
 export const GET: APIRoute = ({ request, locals, cookies, redirect }) => {
-  if (!locals.user) {
-    const returnTo = encodeURIComponent("/api/tuya/oauth/start");
-    return redirect(`/auth/signin?returnTo=${returnTo}`);
+  const userOrResponse = requireUserRedirect(locals, redirect, "/api/tuya/oauth/start");
+  if (userOrResponse instanceof Response) {
+    return userOrResponse;
   }
 
   const missingConfig = getMissingTuyaConfigKeys();
   if (missingConfig.length > 0) {
-    return tuyaJsonError(500, "TUYA_CONFIG_MISSING", "Missing required Tuya configuration.", {
+    return apiJsonError(500, "TUYA_CONFIG_MISSING", "Missing required Tuya configuration.", {
       missing: missingConfig,
     });
   }
 
   const config = getTuyaConfig();
   if (!config) {
-    return tuyaJsonError(500, "TUYA_CONFIG_MISSING", "Missing required Tuya configuration.");
+    return apiJsonError(500, "TUYA_CONFIG_MISSING", "Missing required Tuya configuration.");
   }
 
   const state = crypto.randomUUID();

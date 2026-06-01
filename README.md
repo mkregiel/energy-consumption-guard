@@ -187,7 +187,10 @@ Users can then sign in immediately after sign-up without clicking a confirmation
 | `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
 | `/dashboard`          | Example protected page (redirects to `/auth/signin` if unauthenticated) |
 
-Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_ROUTES` array there to require authentication.
+Route protection is handled in `src/middleware.ts`:
+
+- Page routes: add paths to `PROTECTED_ROUTES` (e.g. `/dashboard`) — unauthenticated users are redirected to `/auth/signin`.
+- API routes: all `/api/*` paths require a session **except** `/api/auth/*` (sign-in, sign-up, sign-out). Unauthenticated API requests receive JSON `401` with `error.code: "UNAUTHORIZED"`. Handlers should still call `requireUser()` from `src/lib/auth-guard.ts` for defense in depth.
 
 ## Deployment
 
