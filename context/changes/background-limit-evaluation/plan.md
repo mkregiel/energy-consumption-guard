@@ -483,30 +483,30 @@ Rollback: revert Worker deploy via `wrangler rollback`; breach events already in
 
 #### Automated
 
-- [x] 1.1 `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` appear in `astro.config.mjs` env schema
-- [x] 1.2 `src/lib/supabase-service-role.ts` and `src/lib/services/cron-auth.ts` exist
-- [x] 1.3 `npm run lint` passes
-- [x] 1.4 `npm run build` passes
+- [x] 1.1 `SUPABASE_SERVICE_ROLE_KEY` and `CRON_SECRET` appear in `astro.config.mjs` env schema — e641e2a
+- [x] 1.2 `src/lib/supabase-service-role.ts` and `src/lib/services/cron-auth.ts` exist — e641e2a
+- [x] 1.3 `npm run lint` passes — e641e2a
+- [x] 1.4 `npm run build` passes — e641e2a
 
 #### Manual
 
-- [x] 1.5 `.env.example` documents both new variables with brief usage notes
-- [x] 1.6 Local `.env` can instantiate service role client against local Supabase
+- [x] 1.5 `.env.example` documents both new variables with brief usage notes — e641e2a
+- [x] 1.6 Local `.env` can instantiate service role client against local Supabase — e641e2a
 
 ### Phase 2: Limit Evaluation Service and Route
 
 #### Automated
 
-- [ ] 2.1 `src/lib/services/consumption-window.ts` and `src/lib/services/limit-evaluation.ts` exist
-- [ ] 2.2 `src/pages/api/cron/evaluate-limits.ts` exports `POST` with `prerender = false`
-- [ ] 2.3 `npm run lint` passes
-- [ ] 2.4 `npm run build` passes
+- [x] 2.1 `src/lib/services/consumption-window.ts` and `src/lib/services/limit-evaluation.ts` exist
+- [x] 2.2 `src/pages/api/cron/evaluate-limits.ts` exports `POST` with `prerender = false`
+- [x] 2.3 `npm run lint` passes
+- [x] 2.4 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.5 Seeded data → evaluate cron creates one breach event
-- [ ] 2.6 Repeat evaluate in same window → no duplicate breach
-- [ ] 2.7 Limit with no readings → skipped, job returns 200
+- [x] 2.5 Seeded data → evaluate cron creates one breach event
+- [x] 2.6 Repeat evaluate in same window → no duplicate breach
+- [x] 2.7 Limit with no readings → skipped, job returns 200
 
 ### Phase 3: Batch Tuya Sync Service and Route
 
