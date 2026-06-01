@@ -1,7 +1,7 @@
 ---
 change-id: background-limit-evaluation
 title: Background limit evaluation
-status: implementing
+status: implemented
 created: 2026-05-31
 updated: 2026-05-31
 ---
