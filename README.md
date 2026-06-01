@@ -190,7 +190,7 @@ Users can then sign in immediately after sign-up without clicking a confirmation
 Route protection is handled in `src/middleware.ts`:
 
 - Page routes: add paths to `PROTECTED_ROUTES` (e.g. `/dashboard`) — unauthenticated users are redirected to `/auth/signin`.
-- API routes: all `/api/*` paths require a session **except** `/api/auth/*` (sign-in, sign-up, sign-out). Unauthenticated API requests receive JSON `401` with `error.code: "UNAUTHORIZED"`. Handlers should still call `requireUser()` from `src/lib/auth-guard.ts` for defense in depth.
+- API routes: all `/api/*` paths require a session **except** `/api/auth/*` (sign-in, sign-up, sign-out). Unauthenticated API requests receive JSON `401` with `error.code: "UNAUTHORIZED"`. Handlers should still call `requireUser()` from `src/lib/auth-guard.ts` for defense in depth. Browser navigation to a protected API URL without a session (e.g. a stale-tab click on `/api/tuya/oauth/start`) shows that JSON response instead of a sign-in redirect.
 
 ## Deployment
 

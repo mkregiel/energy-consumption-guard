@@ -22,6 +22,8 @@ const isSecureRequest = (request: Request): boolean => {
 };
 
 export const GET: APIRoute = ({ request, locals, cookies, redirect }) => {
+  // Middleware returns JSON 401 for unauthenticated requests before this handler runs.
+  // requireUserRedirect is defense-in-depth; stale-tab link clicks without session show JSON in the browser.
   const userOrResponse = requireUserRedirect(locals, redirect, "/api/tuya/oauth/start");
   if (userOrResponse instanceof Response) {
     return userOrResponse;
