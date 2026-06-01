@@ -1,7 +1,12 @@
 import { defineMiddleware } from "astro:middleware";
+import { unauthorizedResponse } from "@/lib/auth-guard";
 import { createClient } from "@/lib/supabase";
 
 const PROTECTED_ROUTES = ["/dashboard"];
+const PUBLIC_API_PREFIXES = ["/api/auth/"];
+
+const isPublicApiRoute = (pathname: string): boolean =>
+  PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createClient(context.request.headers, context.cookies);
@@ -15,10 +20,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.user = null;
   }
 
-  if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
+  const { pathname } = context.url;
+
+  if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
     if (!context.locals.user) {
       return context.redirect("/auth/signin");
     }
+  }
+
+  if (pathname.startsWith("/api/") && !isPublicApiRoute(pathname) && !context.locals.user) {
+    return unauthorizedResponse();
   }
 
   return next();
