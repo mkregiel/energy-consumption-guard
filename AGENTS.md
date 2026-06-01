@@ -6,7 +6,7 @@ Stack, setup, production deploy @README.md. Agents specific rules are below.
 
 - Full SSR only (`output: "server"` in @astro.config.mjs). New API routes must export `const prerender = false`.
 - API routes use uppercase `GET`/`POST` exports and validate input with zod.
-- Non-auth API routes (`/api/*` except `/api/auth/*`) are protected by middleware; handlers must still call `requireUser()` from @src/lib/auth-guard.ts (defense in depth). Use `apiJsonError` / `apiJsonSuccess` from @src/lib/services/api-response.ts for JSON responses.
+- Non-auth API routes (`/api/*` except `/api/auth/*`) are protected by middleware; handlers must still call `requireUser()` from @src/lib/auth-guard.ts (defense in depth). Use `apiJsonError` / `apiJsonSuccess` from @src/lib/services/api-response.ts for JSON responses. Only `/api/auth/signin`, `/api/auth/signup`, and `/api/auth/signout` may exist under `/api/auth/` — do not add sibling auth API routes without a security review and middleware allowlist update.
 - No Next.js directives (`"use client"`) in React; extract hooks to `src/components/hooks/`.
 - Merge Tailwind classes with `cn()` from @src/lib/utils.ts — never concatenate class strings.
 - New Supabase tables need migrations in `supabase/migrations/` named `YYYYMMDDHHmmss_description.sql` with RLS enabled.
