@@ -343,15 +343,9 @@ Optional but recommended before inviting real users or connecting Tuya (FR-005).
   - pierwszym podłączeniem credentiali Tuya (FR-005)
   - Auto-deploy z `master` jest OK dla zmian kodu aplikacji (bez sekretów/DB)
 
-### Future: FR-005 cron (out of scope for first deploy)
+### FR-005 cron (implemented)
 
-When the limit-check API route exists, add to [wrangler.jsonc](../../wrangler.jsonc):
-
-```jsonc
-"triggers": {
-  "crons": ["0 */1 * * *"]
-}
-```
+Cron triggers are configured in [wrangler.jsonc](../../wrangler.jsonc): sync at `:00` UTC, evaluate at `:05` UTC. HTTP fallbacks: `POST /api/cron/sync-readings` and `POST /api/cron/evaluate-limits` (Bearer `CRON_SECRET`). Production still requires human approval before first `SUPABASE_SERVICE_ROLE_KEY` / `CRON_SECRET` rotation.
 
 Design the handler as idempotent and short-lived (Cron Trigger timeouts). Validate schedule in UTC.
 

@@ -210,6 +210,50 @@ npx wrangler deploy
 
 Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
 
+## Background cron jobs
+
+Two hourly UTC cron triggers run batch jobs on Cloudflare Workers:
+
+| Schedule (UTC) | Job | Route |
+| --- | --- | --- |
+| `:00` every hour | Tuya reading sync | `POST /api/cron/sync-readings` |
+| `:05` every hour | Limit evaluation | `POST /api/cron/evaluate-limits` |
+
+Scheduled handlers call the same services as the HTTP routes (no self-fetch). Manual triggers use Bearer auth.
+
+### Required secrets
+
+In addition to `SUPABASE_URL`, `SUPABASE_KEY`, and Tuya credentials:
+
+| Variable | Description |
+| --- | --- |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase dashboard → Settings → API → `service_role` (bypasses RLS for batch jobs) |
+| `CRON_SECRET` | Random string for `Authorization: Bearer <CRON_SECRET>` on cron routes |
+
+Set in production:
+
+```bash
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+npx wrangler secret put CRON_SECRET
+```
+
+Copy both into `.env` and `.dev.vars` for local development (see `.env.example`).
+
+### Manual local trigger (PowerShell)
+
+```powershell
+Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/sync-readings" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
+Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/evaluate-limits" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
+```
+
+### Monitoring
+
+```bash
+npx wrangler tail energy-monitor
+```
+
+Job handlers log JSON summaries with `job`, `stats`, and per-user errors for correlation.
+
 ## CI
 
 GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
