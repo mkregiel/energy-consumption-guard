@@ -1,7 +1,7 @@
 ---
 change-id: background-limit-evaluation
 title: Background limit evaluation
-status: implemented
+status: impl_reviewed
 created: 2026-05-31
 updated: 2026-05-31
 ---
@@ -61,3 +61,8 @@ Auth failures: `{ "ok": false, "error": { "code": "CRON_UNAUTHORIZED", "message"
 - Existing: `SUPABASE_URL`, Tuya credentials
 
 See `README.md` (Background cron jobs) and `context/deployment/deploy-plan.md` for deploy runbook.
+
+### Known MVP limits (impl review)
+
+- **Batch Tuya sync** runs sequentially per user with no per-run cap. Acceptable for a handful of linked accounts; monitor CPU duration via `wrangler tail` before scaling. Add chunking/queue if user count grows.
+- **Breach idempotency** uses `(limit_id, window_start)` unique index — apply migration `20260531193000_limit_breach_events_window_start_unique.sql` before production deploy.

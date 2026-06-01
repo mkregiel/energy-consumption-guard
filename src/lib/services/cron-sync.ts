@@ -20,24 +20,16 @@ interface EligibleSyncTarget {
 const emptyStats = () => ({ processed: 0, skipped: 0, breached: 0, errors: 0 });
 
 const loadEligibleSyncTargets = async (supabase: SupabaseClient): Promise<EligibleSyncTarget[]> => {
-  const [metersResponse, tokensResponse] = await Promise.all([
-    supabase.from("meters").select("id, user_id"),
-    supabase.from("tuya_oauth_tokens").select("user_id"),
-  ]);
+  const response = await supabase.rpc("get_eligible_sync_targets");
 
-  if (metersResponse.error) {
-    throw new Error(`Failed to load meters: ${metersResponse.error.message}`);
+  if (response.error) {
+    throw new Error(`Failed to load eligible sync targets: ${response.error.message}`);
   }
 
-  if (tokensResponse.error) {
-    throw new Error(`Failed to load Tuya OAuth tokens: ${tokensResponse.error.message}`);
-  }
-
-  const linkedUserIds = new Set((tokensResponse.data as { user_id: string }[]).map((row) => row.user_id));
-
-  return (metersResponse.data as { id: string; user_id: string }[])
-    .filter((meter) => linkedUserIds.has(meter.user_id))
-    .map((meter) => ({ userId: meter.user_id, meterId: meter.id }));
+  return (response.data as { user_id: string; meter_id: string }[]).map((row) => ({
+    userId: row.user_id,
+    meterId: row.meter_id,
+  }));
 };
 
 export const runBatchTuyaSync = async (supabase: SupabaseClient): Promise<CronSyncJobResult> => {
