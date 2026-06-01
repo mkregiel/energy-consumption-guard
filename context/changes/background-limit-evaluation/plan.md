@@ -512,28 +512,28 @@ Rollback: revert Worker deploy via `wrangler rollback`; breach events already in
 
 #### Automated
 
-- [x] 3.1 `src/lib/services/cron-sync.ts` and `src/pages/api/cron/sync-readings.ts` exist
-- [x] 3.2 `npm run lint` passes
-- [x] 3.3 `npm run build` passes
+- [x] 3.1 `src/lib/services/cron-sync.ts` and `src/pages/api/cron/sync-readings.ts` exist — dbcf69e
+- [x] 3.2 `npm run lint` passes — dbcf69e
+- [x] 3.3 `npm run build` passes — dbcf69e
 
 #### Manual
 
-- [x] 3.4 Linked user → sync cron updates `consumption_readings`
-- [x] 3.5 Invalid `CRON_SECRET` → 401 on both cron routes
+- [x] 3.4 Linked user → sync cron updates `consumption_readings` — dbcf69e
+- [x] 3.5 Invalid `CRON_SECRET` → 401 on both cron routes — dbcf69e
 
 ### Phase 4: Wrangler Cron Triggers and Scheduled Dispatcher
 
 #### Automated
 
-- [ ] 4.1 `wrangler.jsonc` contains `triggers.crons` with two expressions
-- [ ] 4.2 `src/scheduled.ts` exists and exports handler
-- [ ] 4.3 `npm run lint` passes
-- [ ] 4.4 `npm run build` passes
+- [x] 4.1 `wrangler.jsonc` contains `triggers.crons` with two expressions
+- [x] 4.2 `src/scheduled.ts` exists and exports handler
+- [x] 4.3 `npm run lint` passes
+- [x] 4.4 `npm run build` passes
 
 #### Manual
 
-- [ ] 4.5 Scheduled invocations visible in `wrangler tail` with expected job names
-- [ ] 4.6 Worker deploy succeeds; crons visible in Cloudflare dashboard
+- [x] 4.5 Scheduled invocations visible in `wrangler tail` with expected job names
+- [x] 4.6 Worker deploy succeeds; crons visible in Cloudflare dashboard
 
 ### Phase 5: Verification and F-04 Handoff
 
