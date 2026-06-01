@@ -12,6 +12,7 @@ import tseslint from "typescript-eslint";
 const gitignorePath = path.resolve(import.meta.dirname, ".gitignore");
 
 const baseConfig = tseslint.config({
+  ignores: ["node_modules", "dist"],
   extends: [eslint.configs.recommended, tseslint.configs.strictTypeChecked, tseslint.configs.stylisticTypeChecked],
   languageOptions: {
     parserOptions: {
@@ -38,6 +39,7 @@ const baseConfig = tseslint.config({
 });
 
 const reactConfig = tseslint.config({
+  ignores: ["node_modules", "dist"],
   files: ["**/*.{js,jsx,ts,tsx}"],
   extends: [pluginReact.configs.flat.recommended],
   languageOptions: {
@@ -60,6 +62,7 @@ const reactConfig = tseslint.config({
 });
 
 const astroConfig = tseslint.config({
+  ignores: ["node_modules", "dist"],
   files: ["**/*.astro"],
   rules: {
     "astro/no-set-html-directive": "error",
