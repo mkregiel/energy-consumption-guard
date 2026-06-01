@@ -260,26 +260,26 @@ No data migration. Deploy is code-only. Rollback: revert middleware guard and he
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes
-- [x] 1.2 `npm run build` passes
-- [x] 1.3 `src/lib/services/api-response.ts` and `src/lib/auth-guard.ts` exist
+- [x] 1.1 `npm run lint` passes — e6db744
+- [x] 1.2 `npm run build` passes — e6db744
+- [x] 1.3 `src/lib/services/api-response.ts` and `src/lib/auth-guard.ts` exist — e6db744
 
 #### Manual
 
-- [x] 1.4 No runtime behavior change confirmed (utilities only)
+- [x] 1.4 No runtime behavior change confirmed (utilities only) — e6db744
 
 ### Phase 2: Middleware global API guard
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.3 Unauthenticated protected API returns 401 JSON
-- [ ] 2.4 Auth routes remain public (signin/signup/signout)
-- [ ] 2.5 Authenticated meter/Tuya routes still reachable
+- [x] 2.3 Unauthenticated protected API returns 401 JSON
+- [x] 2.4 Auth routes remain public (signin/signup/signout)
+- [x] 2.5 Authenticated meter/Tuya routes still reachable
 
 ### Phase 3: Route refactor & documentation
 
