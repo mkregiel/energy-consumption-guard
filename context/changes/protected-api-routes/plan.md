@@ -285,12 +285,12 @@ No data migration. Deploy is code-only. Rollback: revert middleware guard and he
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` passes
-- [x] 3.3 No inline `if (!locals.user)` in meter/tuya route handlers
+- [x] 3.1 `npm run lint` passes — ba37f52
+- [x] 3.2 `npm run build` passes — ba37f52
+- [x] 3.3 No inline `if (!locals.user)` in meter/tuya route handlers — ba37f52
 
 #### Manual
 
-- [x] 3.4 Full auth + API smoke test passes
-- [x] 3.5 Tuya OAuth connect flow from dashboard works
-- [x] 3.6 AGENTS.md and README updated
+- [x] 3.4 Full auth + API smoke test passes — ba37f52
+- [x] 3.5 Tuya OAuth connect flow from dashboard works — ba37f52
+- [x] 3.6 AGENTS.md and README updated — ba37f52
