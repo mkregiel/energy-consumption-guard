@@ -53,6 +53,7 @@ export interface LimitBreachEvent {
   limit_id: string;
   user_id: string;
   breached_at: string;
+  window_start: string;
   consumption_kwh: number;
   notified_at: string | null;
   created_at: string;

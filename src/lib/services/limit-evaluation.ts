@@ -1,7 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getWindowBounds, toIso } from "@/lib/services/consumption-window";
-import { getUserMeter } from "@/lib/services/meter-service";
-import type { ConsumptionLimit, ConsumptionReading } from "@/types";
+import type { ConsumptionLimit, Meter } from "@/types";
 
 export interface LimitEvaluationJobResult {
   job: "evaluate-limits";
@@ -12,6 +11,20 @@ export interface LimitEvaluationJobResult {
 }
 
 const emptyStats = () => ({ processed: 0, skipped: 0, breached: 0, errors: 0 });
+
+const loadMetersByUserId = async (supabase: SupabaseClient, userIds: string[]): Promise<Map<string, Meter>> => {
+  if (userIds.length === 0) {
+    return new Map();
+  }
+
+  const response = await supabase.from("meters").select("*").in("user_id", userIds);
+
+  if (response.error) {
+    throw new Error(`Failed to load meters: ${response.error.message}`);
+  }
+
+  return new Map((response.data as Meter[]).map((meter) => [meter.user_id, meter]));
+};
 
 export const runLimitEvaluation = async (supabase: SupabaseClient): Promise<LimitEvaluationJobResult> => {
   const startedAt = toIso(new Date());
@@ -25,10 +38,14 @@ export const runLimitEvaluation = async (supabase: SupabaseClient): Promise<Limi
   }
 
   const limits = limitsResponse.data as ConsumptionLimit[];
+  const metersByUserId = await loadMetersByUserId(
+    supabase,
+    limits.map((limit) => limit.user_id),
+  );
 
   for (const limit of limits) {
     try {
-      const outcome = await evaluateLimit(supabase, limit);
+      const outcome = await evaluateLimit(supabase, limit, metersByUserId.get(limit.user_id) ?? null);
       stats.processed++;
 
       if (outcome === "skipped") {
@@ -57,8 +74,11 @@ export const runLimitEvaluation = async (supabase: SupabaseClient): Promise<Limi
   };
 };
 
-const evaluateLimit = async (supabase: SupabaseClient, limit: ConsumptionLimit): Promise<"skipped" | "breached"> => {
-  const meter = await getUserMeter(supabase, limit.user_id);
+const evaluateLimit = async (
+  supabase: SupabaseClient,
+  limit: ConsumptionLimit,
+  meter: Meter | null,
+): Promise<"skipped" | "breached"> => {
   if (!meter) {
     return "skipped";
   }
@@ -67,23 +87,34 @@ const evaluateLimit = async (supabase: SupabaseClient, limit: ConsumptionLimit):
   const windowStartIso = toIso(windowStart);
   const windowEndIso = toIso(windowEnd);
 
-  const readingsResponse = await supabase
+  const sumResponse = await supabase.rpc("sum_meter_consumption_in_window", {
+    p_meter_id: meter.id,
+    p_window_start: windowStartIso,
+    p_window_end: windowEndIso,
+  });
+
+  if (sumResponse.error) {
+    throw new Error(`Failed to sum consumption readings: ${sumResponse.error.message}`);
+  }
+
+  const consumptionKwh = Number(sumResponse.data ?? 0);
+
+  const readingsExistResponse = await supabase
     .from("consumption_readings")
-    .select("kwh_delta")
+    .select("id")
     .eq("meter_id", meter.id)
     .gte("recorded_at", windowStartIso)
-    .lt("recorded_at", windowEndIso);
+    .lt("recorded_at", windowEndIso)
+    .limit(1)
+    .maybeSingle();
 
-  if (readingsResponse.error) {
-    throw new Error(`Failed to load consumption readings: ${readingsResponse.error.message}`);
+  if (readingsExistResponse.error) {
+    throw new Error(`Failed to check consumption readings: ${readingsExistResponse.error.message}`);
   }
 
-  const readings = readingsResponse.data as Pick<ConsumptionReading, "kwh_delta">[];
-  if (readings.length === 0) {
+  if (!readingsExistResponse.data) {
     return "skipped";
   }
-
-  const consumptionKwh = readings.reduce((sum, row) => sum + (row.kwh_delta ?? 0), 0);
 
   if (consumptionKwh <= limit.threshold_kwh) {
     return "skipped";
@@ -93,7 +124,7 @@ const evaluateLimit = async (supabase: SupabaseClient, limit: ConsumptionLimit):
     .from("limit_breach_events")
     .select("id")
     .eq("limit_id", limit.id)
-    .gte("breached_at", windowStartIso)
+    .eq("window_start", windowStartIso)
     .limit(1)
     .maybeSingle();
 
@@ -105,16 +136,28 @@ const evaluateLimit = async (supabase: SupabaseClient, limit: ConsumptionLimit):
     return "skipped";
   }
 
-  const insertResponse = await supabase.from("limit_breach_events").insert({
-    limit_id: limit.id,
-    user_id: limit.user_id,
-    breached_at: toIso(new Date()),
-    consumption_kwh: consumptionKwh,
-    notified_at: null,
-  });
+  const insertResponse = await supabase
+    .from("limit_breach_events")
+    .upsert(
+      {
+        limit_id: limit.id,
+        user_id: limit.user_id,
+        breached_at: toIso(new Date()),
+        window_start: windowStartIso,
+        consumption_kwh: consumptionKwh,
+        notified_at: null,
+      },
+      { onConflict: "limit_id,window_start", ignoreDuplicates: true },
+    )
+    .select("id")
+    .maybeSingle();
 
   if (insertResponse.error) {
     throw new Error(`Failed to insert breach event: ${insertResponse.error.message}`);
+  }
+
+  if (!insertResponse.data) {
+    return "skipped";
   }
 
   return "breached";

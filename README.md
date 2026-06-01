@@ -205,6 +205,8 @@ npm run build
 npx wrangler deploy
 ```
 
+**Important:** Always deploy using the root `wrangler.jsonc` (which sets `"main": "./src/worker.ts"` and includes the `scheduled` cron handler). Do not deploy using Astro's built `dist/server/entry.mjs` alone — that bundle exports only the SSR `fetch` handler and will not run scheduled cron jobs.
+
 Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
 
 ## Background cron jobs

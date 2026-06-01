@@ -1,5 +1,17 @@
+import { timingSafeEqual } from "node:crypto";
 import { CRON_SECRET } from "astro:env/server";
 import { cronJsonError } from "@/lib/services/cron-api-response";
+
+const safeEqualSecret = (provided: string, secret: string): boolean => {
+  const providedBuffer = Buffer.from(provided);
+  const secretBuffer = Buffer.from(secret);
+
+  if (providedBuffer.length !== secretBuffer.length) {
+    return false;
+  }
+
+  return timingSafeEqual(providedBuffer, secretBuffer);
+};
 
 export function assertCronAuthorized(request: Request): Response | null {
   if (!CRON_SECRET) {
@@ -12,7 +24,7 @@ export function assertCronAuthorized(request: Request): Response | null {
   }
 
   const token = authHeader.slice("Bearer ".length).trim();
-  if (token !== CRON_SECRET) {
+  if (!safeEqualSecret(token, CRON_SECRET)) {
     return cronJsonError(401, "CRON_UNAUTHORIZED", "Invalid cron authorization token.");
   }
 
