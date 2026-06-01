@@ -1,31 +1,12 @@
 import { TuyaServiceError } from "@/lib/services/tuya-errors";
+import { apiJsonError, apiJsonSuccess } from "@/lib/services/api-response";
 
-export const tuyaJsonError = (status: number, code: string, message: string, details?: unknown) =>
-  Response.json(
-    {
-      ok: false,
-      error: {
-        code,
-        message,
-        details,
-      },
-    },
-    { status },
-  );
-
-export const tuyaJsonSuccess = (status: number, data: Record<string, unknown>) =>
-  Response.json(
-    {
-      ok: true,
-      data,
-    },
-    { status },
-  );
+export { apiJsonError as tuyaJsonError, apiJsonSuccess as tuyaJsonSuccess };
 
 export const tuyaErrorResponse = (error: unknown) => {
   if (error instanceof TuyaServiceError) {
-    return tuyaJsonError(error.httpStatus, error.code, error.message, error.details);
+    return apiJsonError(error.httpStatus, error.code, error.message, error.details);
   }
 
-  return tuyaJsonError(500, "TUYA_PROVIDER_ERROR", "Unexpected Tuya integration error.");
+  return apiJsonError(500, "TUYA_PROVIDER_ERROR", "Unexpected Tuya integration error.");
 };
