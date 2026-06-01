@@ -1,9 +1,9 @@
 ---
 project: Monitor zużycia prądu w gospodarstwie domowym
 version: 1
-status: draft
+status: in_progress
 created: 2026-05-25
-updated: 2026-05-25
+updated: 2026-06-01
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -21,21 +21,21 @@ Właściciel domu traci kontrolę nad zużyciem prądu, gdy rachunek w danym okr
 
 ## North star
 
-**S-02: Podłączenie licznika Tuya i widoczność zużycia** — Najwcześniejszy dowód, że dane z licznika realnie trafiają do aplikacji (wybór: najpierw widoczność zużycia, potem limity i alarm). Zgodne z `main_goal: speed` — odcięcie największego ryzyka integracji Tuya przed budową pełnego US-01.
+**S-02: Podłączenie licznika Tuya i widoczność zużycia** — ~~Najwcześniejszy dowód, że dane z licznika realnie trafiają do aplikacji~~ **Done (2026-05-31).** OAuth Tuya, rejestracja licznika, synchronizacja odczytów i dashboard zużycia działają end-to-end (`context/changes/tuya-device-and-consumption/`).
 
-> **Gwiazda przewodnia** — najmniejszy przepływ end-to-end, który potwierdza, że produkt „żyje” (tu: połączenie licznika i odczyt zużycia). Reszta roadmapy ma sens dopiero, gdy ten krok działa; umieszczony jak najwcześniej po spełnieniu Prerequisites.
+> **Gwiazda przewodnia — osiągnięta.** Kolejny focus: konfiguracja limitu (S-03) + email alarmowy (S-04) równolegle, potem F-04 + S-05 domknięcie US-01.
 
 ## At a glance
 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 |---|---|---|---|---|---|
-| F-01 | energy-domain-schema | (foundation) persist meters, limits, and consumption readings in Supabase | — | NFR (background), Business Logic | proposed |
-| F-02 | tuya-read-integration | (foundation) read consumption from Tuya / Smart Life without altering user’s platform setup | F-01 | FR-002, Guardrails | proposed |
-| F-03 | background-limit-evaluation | (foundation) periodic job compares stored consumption against configured limits | F-01 | NFR (background), FR-005 | proposed |
+| F-01 | energy-domain-schema | (foundation) persist meters, limits, and consumption readings in Supabase | — | NFR (background), Business Logic | done |
+| F-02 | tuya-read-integration | (foundation) read consumption from Tuya / Smart Life without altering user’s platform setup | F-01 | FR-002, Guardrails | done |
+| F-03 | background-limit-evaluation | (foundation) periodic job compares stored consumption against configured limits | F-01 | NFR (background), FR-005 | done |
 | F-04 | transactional-email-alerts | (foundation) send alarm emails to a configured address on limit breach | F-01 | FR-004, FR-005, US-01 | proposed |
-| F-05 | protected-api-routes | (foundation) authenticated API routes for device, limit, and notification configuration | — | FR-001, Access Control | proposed |
-| S-01 | user-login | log in with email and password | — | FR-001, US-01 | ready |
-| S-02 | tuya-device-and-consumption | connect an energy meter via Tuya / Smart Life and see current consumption in the app | F-01, F-02, F-05, S-01 | FR-002, US-01 | proposed |
+| F-05 | protected-api-routes | (foundation) authenticated API routes for device, limit, and notification configuration | — | FR-001, Access Control | done |
+| S-01 | user-login | log in with email and password | — | FR-001, US-01 | done |
+| S-02 | tuya-device-and-consumption | connect an energy meter via Tuya / Smart Life and see current consumption in the app | F-01, F-02, F-05, S-01 | FR-002, US-01 | done |
 | S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window | S-02, F-01, F-05 | FR-003, US-01 | proposed |
 | S-04 | configure-alarm-email | set the email address used for alarm notifications | S-01, F-01, F-05 | FR-004, US-01 | proposed |
 | S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01 | proposed |
@@ -46,22 +46,25 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 | Stream | Theme | Chain | Note |
 |---|---|---|---|
-| A | Dane i Tuya | `F-01` → `F-02` → `S-02` | Gwiazda przewodnia; `speed` — najpierw odcięcie ryzyka integracji i zapisu odczytów. |
-| B | Alarm w tle | `F-03` / `F-04` (parallel) → `S-05` | Dołącza do Stream A po `S-03` + `S-04`; job i email równolegle po `F-01`. |
-| C | Konfiguracja limitów | `S-03` | Po `S-02`; równolegle z `S-04` (Stream D). |
-| D | Konto i powiadomienia | `F-05` → `S-01` → `S-04` | Auth w baseline — `S-01` gotowy; `S-04` równolegle z `S-03`. |
+| A | Dane i Tuya | ~~`F-01` → `F-02` → `S-02`~~ **done** | Gwiazda przewodnia osiągnięta; cron sync co godzinę (`F-03`) utrzymuje odczyty w tle. |
+| B | Alarm w tle | `F-04` → `S-05` | `F-03` done — ewaluacja limitów co godzinę; brakuje wysyłki email (`F-04`) i UI konfiguracji. |
+| C | Konfiguracja limitów | `S-03` | **Następny slice** — schemat `consumption_limits` gotowy; brak API/UI. |
+| D | Konto i powiadomienia | `S-04` | **Następny slice (równolegle z C)** — schemat `notification_settings` gotowy; brak API/UI. |
 
 ## Baseline
 
-What's already in place in the codebase as of `2026-05-25` (auto-researched + user-confirmed).
+What's already in place in the codebase as of `2026-06-01` (auto-researched from repo + change folders).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** partial — Astro 6 + React islands, Tailwind, shadcn scaffold (`astro.config.mjs`, `src/components/ui/button.tsx`)
-- **Backend / API:** partial — Astro SSR + Cloudflare; auth API routes only (`src/pages/api/auth/`, `src/middleware.ts`)
-- **Data:** partial — `@supabase/supabase-js` client (`src/lib/supabase.ts`); brak `supabase/migrations/` w repo
-- **Auth:** present — Supabase email/password; session via cookies (`src/lib/supabase.ts`, `src/middleware.ts`); guard tylko na `/dashboard` (partial na `/api/*`)
-- **Deploy / infra:** present — per tech-stack.md: Cloudflare Pages, GitHub Actions CI/deploy (`.github/workflows/ci.yml`, `wrangler.jsonc`)
+- **Frontend:** present — Astro 6 + React islands, Tailwind, shadcn; dashboard Tuya (`src/pages/dashboard.astro`, `src/components/tuya/`, `src/components/consumption/`)
+- **Backend / API:** present — Astro SSR + Cloudflare Worker; auth (`/api/auth/*`), Tuya (`/api/tuya/*`), meters (`/api/meters`), cron (`/api/cron/*`); middleware guard na `/dashboard` i `/api/*` (`src/middleware.ts`, `src/lib/auth-guard.ts`)
+- **Data:** present — Supabase migrations: `energy_domain_schema`, `tuya_oauth_tokens`, breach idempotency (`supabase/migrations/`); tabele: `meters`, `consumption_limits`, `consumption_readings`, `notification_settings`, `limit_breach_events`, `tuya_oauth_tokens`
+- **Auth:** present — Supabase email/password; session via cookies; globalny guard API (deny-by-default, allowlist `/api/auth/*`)
+- **Tuya integration:** present — OAuth H5, token refresh, on-demand sync, device list (`src/lib/services/tuya-client.ts`)
+- **Background jobs:** present — Cloudflare cron via `src/scheduled.ts` + `src/worker.ts`: batch sync (`0 * * * *`), limit evaluation (`5 * * * *`); HTTP fallback z `CRON_SECRET`
+- **Deploy / infra:** present — Cloudflare Pages/Workers, GitHub Actions CI (`.github/workflows/ci.yml`, `wrangler.jsonc`); runbook w `context/deployment/deploy-plan.md`
 - **Observability:** partial — `wrangler.jsonc` observability; brak Sentry/Datadog w kodzie aplikacji
+- **Not yet built:** UI/API limitów (S-03), UI/API email alarmowego (S-04), wysyłka email przy breach (F-04, S-05)
 
 ## Foundations
 
@@ -76,7 +79,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Bez schematu każdy kolejny slice utknąłby na ad-hoc storage — na `speed` to pierwszy blocker techniczny przed Tuya.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-05-27 — `context/changes/energy-domain-schema/`; migracja `20260527120000_energy_domain_schema.sql`
 
 ### F-02: Tuya read integration
 
@@ -87,10 +91,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01
 - **Parallel with:** F-05
 - **Blockers:** —
-- **Unknowns:**
-  - Jakie uprawnienia / flow OAuth Tuya są wymagane dla licznika energii użytkownika? — Owner: user. Block: no.
-- **Risk:** Integracja poza starterem (tech-stack.md); największe ryzyko czasowe — dlatego north star celuje w ten slice przed alarmem email.
-- **Status:** proposed
+- **Unknowns:** ~~Jakie uprawnienia / flow OAuth Tuya są wymagane dla licznika energii użytkownika?~~ Rozstrzygnięte: OAuth H5 + token refresh (`tuya_oauth_tokens`).
+- **Risk:** Integracja poza starterem (tech-stack.md); największe ryzyko czasowe — dlatego north star celował w ten slice przed alarmem email.
+- **Status:** done
+- **Completed:** 2026-05-30 — `context/changes/tuya-read-integration/`; migracja `20260528120000_tuya_oauth_tokens_and_readings_idempotency.sql`
 
 ### F-03: Background limit evaluation
 
@@ -101,10 +105,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** F-01
 - **Parallel with:** F-04, F-02
 - **Blockers:** —
-- **Unknowns:**
-  - Gdzie uruchomić cron/worker przy deploy na Cloudflare (Workers cron vs external)? — Owner: team. Block: no.
+- **Unknowns:** ~~Gdzie uruchomić cron/worker przy deploy na Cloudflare?~~ Rozstrzygnięte: Cloudflare Workers cron (`src/scheduled.ts`, `src/worker.ts`) + HTTP fallback.
 - **Risk:** FR-005 wymaga działania bez użytkownika — bez joba S-05 to tylko UI, nie produkt.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-05-31 — `context/changes/background-limit-evaluation/`; cron sync `:00`, evaluate `:05` UTC; migracja `20260531193000_limit_breach_events_window_start_unique.sql`
 
 ### F-04: Transactional email alerts
 
@@ -131,7 +135,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Baseline ma auth, ale middleware nie obejmuje `/api/*` — bez tego konfiguracja licznika byłaby otwarta.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-05-31 — `context/changes/protected-api-routes/`; middleware deny-by-default na `/api/*`, `requireUser()` w handlerach
 
 ## Slices
 
@@ -145,7 +150,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Baseline Supabase auth już istnieje — slice może być głównie weryfikacją i UX, nie greenfield auth.
-- **Status:** ready
+- **Status:** done
 
 ### S-02: Tuya device and consumption visibility
 
@@ -156,9 +161,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:**
-  - Czy w MVP wystarczy ostatni odczyt / suma w oknie, czy wykres historyczny? — Owner: user. Block: no.
+  - ~~Czy w MVP wystarczy ostatni odczyt / suma w oknie, czy wykres historyczny?~~ Rozstrzygnięte: ostatni odczyt + tabela 20 odczytów (bez wykresu).
 - **Risk:** Dowód hipotezy produktu — bez tego limity i email nie mają źródła prawdy; `top_blocker: time` sugeruje nie rozszerzać UI poza must-have.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-05-31 — `context/changes/tuya-device-and-consumption/`; dashboard OAuth + meter + sync + consumption UI
 
 ### S-03: Configure consumption limit
 
@@ -202,16 +208,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 |---|---|---|---|---|
-| F-01 | energy-domain-schema | Add Supabase schema for meters, limits, and readings | no | Odblokowuje north star S-02 |
-| F-02 | tuya-read-integration | Integrate Tuya / Smart Life read-only consumption API | no | Wymaga F-01 |
-| F-03 | background-limit-evaluation | Add scheduled consumption vs limit evaluation job | no | Wymaga F-01 |
-| F-04 | transactional-email-alerts | Wire transactional email for limit breach alarms | no | Wymaga F-01 |
-| F-05 | protected-api-routes | Extend session guard to configuration API routes | no | Równolegle z F-01 |
-| S-01 | user-login | Verify and polish login flow for MVP | yes | Baseline auth present |
-| S-02 | tuya-device-and-consumption | Connect Tuya meter and show consumption in app | no | North star; wymaga F-01, F-02, F-05 |
-| S-03 | configure-consumption-limit | UI and API to set kWh limit in a time window | no | Wymaga S-02 |
-| S-04 | configure-alarm-email | UI and API to set alarm notification email | no | Wymaga F-01, F-05 |
-| S-05 | email-alarm-on-limit-breach | End-to-end limit breach email alarm (US-01) | no | Wymaga S-02–S-04, F-03, F-04 |
+| F-04 | transactional-email-alerts | Wire transactional email for limit breach alarms | yes | F-01 done; query `limit_breach_events WHERE notified_at IS NULL` (handoff w F-03) |
+| S-03 | configure-consumption-limit | UI and API to set kWh limit in a time window | yes | S-02 done; schemat `consumption_limits` gotowy |
+| S-04 | configure-alarm-email | UI and API to set alarm notification email | yes | S-01 + F-05 done; schemat `notification_settings` gotowy; równolegle z S-03 |
+| S-05 | email-alarm-on-limit-breach | End-to-end limit breach email alarm (US-01) | no | Wymaga S-03, S-04, F-04 |
 
 ## Open Roadmap Questions
 
@@ -229,3 +229,12 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Integracje poza Tuya / Smart Life** — Why parked: PRD §Non-Goals (Home Assistant, API dostawcy sieci itd.).
 
 ## Done
+
+| ID | Change ID | Completed | Notes |
+|---|---|---|---|
+| F-01 | energy-domain-schema | 2026-05-27 | Tabele domeny energii + RLS |
+| F-02 | tuya-read-integration | 2026-05-30 | OAuth, sync, idempotentne odczyty |
+| F-03 | background-limit-evaluation | 2026-05-31 | Cron sync + ewaluacja limitów → `limit_breach_events` |
+| F-05 | protected-api-routes | 2026-05-31 | Globalny guard `/api/*` + `requireUser()` |
+| S-01 | user-login | baseline | Supabase email/password, signin/signup/signout |
+| S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia |
