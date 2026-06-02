@@ -56,10 +56,16 @@ export interface LimitBreachEvent {
   window_start: string;
   consumption_kwh: number;
   notified_at: string | null;
+  notification_attempt_count: number;
+  notification_failed_at: string | null;
   created_at: string;
 }
 
-export type LimitBreachEventInsert = Omit<LimitBreachEvent, "id" | "created_at">;
+export type LimitBreachEventInsert = Omit<
+  LimitBreachEvent,
+  "id" | "created_at" | "notification_attempt_count" | "notification_failed_at"
+> &
+  Partial<Pick<LimitBreachEvent, "notification_attempt_count" | "notification_failed_at">>;
 
 /** Per-user Tuya OAuth credentials (matches `tuya_oauth_tokens`). */
 export interface TuyaOAuthToken {
