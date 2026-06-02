@@ -214,12 +214,13 @@ Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or
 
 ## Background cron jobs
 
-Two hourly UTC cron triggers run batch jobs on Cloudflare Workers:
+Three hourly UTC cron triggers run batch jobs on Cloudflare Workers:
 
 | Schedule (UTC) | Job | Route |
 | --- | --- | --- |
 | `:00` every hour | Tuya reading sync | `POST /api/cron/sync-readings` |
 | `:05` every hour | Limit evaluation | `POST /api/cron/evaluate-limits` |
+| `:10` every hour | Breach email notifications | `POST /api/cron/send-notifications` |
 
 Scheduled handlers call the same services as the HTTP routes (no self-fetch). Manual triggers use Bearer auth.
 
@@ -231,12 +232,16 @@ In addition to `SUPABASE_URL`, `SUPABASE_KEY`, and Tuya credentials:
 | --- | --- |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase dashboard → Settings → API → `service_role` (bypasses RLS for batch jobs) |
 | `CRON_SECRET` | Random string for `Authorization: Bearer <CRON_SECRET>` on cron routes |
+| `RESEND_API_KEY` | Resend dashboard → API Keys (required for breach alarm emails) |
+| `RESEND_FROM_EMAIL` | Verified sender address in Resend (e.g. `alarms@yourdomain.com`) |
 
 Set in production:
 
 ```bash
 npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 npx wrangler secret put CRON_SECRET
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put RESEND_FROM_EMAIL
 ```
 
 Copy both into `.env` and `.dev.vars` for local development (see `.env.example`).
@@ -246,6 +251,7 @@ Copy both into `.env` and `.dev.vars` for local development (see `.env.example`)
 ```powershell
 Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/sync-readings" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
 Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/evaluate-limits" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
+Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/send-notifications" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
 ```
 
 ### Monitoring

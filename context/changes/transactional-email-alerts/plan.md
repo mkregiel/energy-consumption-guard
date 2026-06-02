@@ -395,31 +395,31 @@ Finalize operator docs and contracts for S-05 and operators recovering failed no
 
 #### Automated
 
-- [x] 2.1 `email-client.ts`, `breach-email-content.ts`, `breach-notifications.ts` exist
-- [x] 2.2 `npm run lint` passes
-- [x] 2.3 `npm run build` passes
+- [x] 2.1 `email-client.ts`, `breach-email-content.ts`, `breach-notifications.ts` exist — 82c3fb4
+- [x] 2.2 `npm run lint` passes — 82c3fb4
+- [x] 2.3 `npm run build` passes — 82c3fb4
 
 #### Manual
 
-- [x] 2.4 Successful send sets `notified_at`
-- [x] 2.5 Third failed attempt sets `notification_failed_at`
-- [x] 2.6 Missing `notification_settings` → skip with error code
+- [x] 2.4 Successful send sets `notified_at` — 82c3fb4
+- [x] 2.5 Third failed attempt sets `notification_failed_at` — 82c3fb4
+- [x] 2.6 Missing `notification_settings` → skip with error code — 82c3fb4
 
 ### Phase 3: Cron Route and Scheduled Wiring
 
 #### Automated
 
-- [ ] 3.1 `src/pages/api/cron/send-notifications.ts` exists
-- [ ] 3.2 `wrangler.jsonc` lists three cron expressions
-- [ ] 3.3 `src/scheduled.ts` handles `10 * * * *`
-- [ ] 3.4 `npm run lint` passes
-- [ ] 3.5 `npm run build` passes
+- [x] 3.1 `src/pages/api/cron/send-notifications.ts` exists
+- [x] 3.2 `wrangler.jsonc` lists three cron expressions
+- [x] 3.3 `src/scheduled.ts` handles `10 * * * *`
+- [x] 3.4 `npm run lint` passes
+- [x] 3.5 `npm run build` passes
 
 #### Manual
 
-- [ ] 3.6 `wrangler tail` shows `send-notifications` on schedule
-- [ ] 3.7 Invalid `CRON_SECRET` → 401 when handler reached
-- [ ] 3.8 Three crons visible in Cloudflare dashboard
+- [x] 3.6 `wrangler tail` shows `send-notifications` on schedule
+- [x] 3.7 Invalid `CRON_SECRET` → 401 when handler reached
+- [x] 3.8 Three crons visible in Cloudflare dashboard
 
 ### Phase 4: Documentation and Downstream Handoff
 
