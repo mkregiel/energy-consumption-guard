@@ -382,28 +382,28 @@ Finalize operator docs and contracts for S-05 and operators recovering failed no
 
 #### Automated
 
-- [x] 1.1 Migration file exists under `supabase/migrations/`
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
+- [x] 1.1 Migration file exists under `supabase/migrations/` — 0c588bb
+- [x] 1.2 `npm run lint` passes — 0c588bb
+- [x] 1.3 `npm run build` passes — 0c588bb
 
 #### Manual
 
-- [x] 1.4 `npx supabase db reset` applies migration without error
-- [x] 1.5 New columns visible on `limit_breach_events` in Studio
+- [x] 1.4 `npx supabase db reset` applies migration without error — 0c588bb
+- [x] 1.5 New columns visible on `limit_breach_events` in Studio — 0c588bb
 
 ### Phase 2: Email Client and Breach Notification Service
 
 #### Automated
 
-- [ ] 2.1 `email-client.ts`, `breach-email-content.ts`, `breach-notifications.ts` exist
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run build` passes
+- [x] 2.1 `email-client.ts`, `breach-email-content.ts`, `breach-notifications.ts` exist
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.4 Successful send sets `notified_at`
-- [ ] 2.5 Third failed attempt sets `notification_failed_at`
-- [ ] 2.6 Missing `notification_settings` → skip with error code
+- [x] 2.4 Successful send sets `notified_at`
+- [x] 2.5 Third failed attempt sets `notification_failed_at`
+- [x] 2.6 Missing `notification_settings` → skip with error code
 
 ### Phase 3: Cron Route and Scheduled Wiring
 
