@@ -33,6 +33,8 @@ After a successful email send, set `notified_at` to the send timestamp (ISO). Do
 | `0 * * * *` | Batch Tuya sync | `POST /api/cron/sync-readings` |
 | `5 * * * *` | Limit evaluation | `POST /api/cron/evaluate-limits` |
 
+Email notifications (F-04) are implemented in `context/changes/transactional-email-alerts/` — notify cron at `10 * * * *` UTC.
+
 Both routes require `Authorization: Bearer <CRON_SECRET>`. Scheduled handler in `src/scheduled.ts` calls the same services directly (no self-HTTP).
 
 ### JSON response shapes (monitoring)
