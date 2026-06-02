@@ -109,6 +109,8 @@ export default defineConfig({
       SUPABASE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       SUPABASE_SERVICE_ROLE_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       CRON_SECRET: envField.string({ context: "server", access: "secret", optional: true }),
+      RESEND_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
+      RESEND_FROM_EMAIL: envField.string({ context: "server", access: "secret", optional: true }),
       TUYA_CLIENT_ID: envField.string({ context: "server", access: "secret", optional: true }),
       TUYA_CLIENT_SECRET: envField.string({ context: "server", access: "secret", optional: true }),
       TUYA_API_BASE_URL: envField.string({ context: "server", access: "secret", optional: true }),
