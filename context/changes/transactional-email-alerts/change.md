@@ -1,7 +1,7 @@
 ---
 change-id: transactional-email-alerts
 title: Transactional email alerts
-status: implementing
+status: implemented
 created: 2026-06-02
 updated: 2026-06-02
 ---

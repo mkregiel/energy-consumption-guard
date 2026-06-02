@@ -425,11 +425,11 @@ Finalize operator docs and contracts for S-05 and operators recovering failed no
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npm run build` passes
+- [x] 4.1 `npm run lint` passes — 59128bf
+- [x] 4.2 `npm run build` passes — 59128bf
 
 #### Manual
 
-- [x] 4.3 README documents notify cron and Resend secrets
-- [x] 4.4 Handoff section in `change.md` complete
-- [x] 4.5 Operator can reset failed breach and observe retry
+- [x] 4.3 README documents notify cron and Resend secrets — 59128bf
+- [x] 4.4 Handoff section in `change.md` complete — 59128bf
+- [x] 4.5 Operator can reset failed breach and observe retry — 59128bf
