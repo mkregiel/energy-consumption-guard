@@ -409,27 +409,27 @@ Finalize operator docs and contracts for S-05 and operators recovering failed no
 
 #### Automated
 
-- [x] 3.1 `src/pages/api/cron/send-notifications.ts` exists
-- [x] 3.2 `wrangler.jsonc` lists three cron expressions
-- [x] 3.3 `src/scheduled.ts` handles `10 * * * *`
-- [x] 3.4 `npm run lint` passes
-- [x] 3.5 `npm run build` passes
+- [x] 3.1 `src/pages/api/cron/send-notifications.ts` exists — d5863ab
+- [x] 3.2 `wrangler.jsonc` lists three cron expressions — d5863ab
+- [x] 3.3 `src/scheduled.ts` handles `10 * * * *` — d5863ab
+- [x] 3.4 `npm run lint` passes — d5863ab
+- [x] 3.5 `npm run build` passes — d5863ab
 
 #### Manual
 
-- [x] 3.6 `wrangler tail` shows `send-notifications` on schedule
-- [x] 3.7 Invalid `CRON_SECRET` → 401 when handler reached
-- [x] 3.8 Three crons visible in Cloudflare dashboard
+- [x] 3.6 `wrangler tail` shows `send-notifications` on schedule — d5863ab
+- [x] 3.7 Invalid `CRON_SECRET` → 401 when handler reached — d5863ab
+- [x] 3.8 Three crons visible in Cloudflare dashboard — d5863ab
 
 ### Phase 4: Documentation and Downstream Handoff
 
 #### Automated
 
-- [ ] 4.1 `npm run lint` passes
-- [ ] 4.2 `npm run build` passes
+- [x] 4.1 `npm run lint` passes
+- [x] 4.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 4.3 README documents notify cron and Resend secrets
-- [ ] 4.4 Handoff section in `change.md` complete
-- [ ] 4.5 Operator can reset failed breach and observe retry
+- [x] 4.3 README documents notify cron and Resend secrets
+- [x] 4.4 Handoff section in `change.md` complete
+- [x] 4.5 Operator can reset failed breach and observe retry
