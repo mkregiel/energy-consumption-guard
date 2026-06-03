@@ -5,9 +5,12 @@ import ConsumptionReadingsTable from "@/components/consumption/ConsumptionReadin
 import SyncConsumptionButton from "@/components/consumption/SyncConsumptionButton";
 import MeterRegistrationForm from "@/components/tuya/MeterRegistrationForm";
 import TuyaConnectCard from "@/components/tuya/TuyaConnectCard";
+import ConsumptionLimitForm from "@/components/limits/ConsumptionLimitForm";
 import { createClient } from "@/lib/supabase";
 import { getMeterConsumptionReadings } from "@/lib/services/consumption-query";
 import { getUserMeter } from "@/lib/services/meter-service";
+import { getUserLimit } from "@/lib/services/limit-service";
+import { getLimitWindowPreview } from "@/lib/services/limit-consumption-preview";
 import { getTuyaConnectionStatus } from "@/lib/services/tuya-client";
 import type { ConsumptionReading } from "@/types";
 
@@ -19,6 +22,7 @@ const tuyaStatus =
     ? await getTuyaConnectionStatus(supabase, user.id)
     : { linked: false, accessTokenExpiresAt: null, tuyaUid: null };
 const meter = supabase && user ? await getUserMeter(supabase, user.id) : null;
+const limit = supabase && user ? await getUserLimit(supabase, user.id) : null;
 
 let latestReading: ConsumptionReading | null = null;
 let readings: ConsumptionReading[] = [];
@@ -33,6 +37,17 @@ if (supabase && meter) {
     consumptionLoadError = "Nie udało się wczytać odczytów. Odśwież stronę lub spróbuj ponownie.";
   }
 }
+
+const limitPreview = supabase && meter && limit ? await getLimitWindowPreview(supabase, meter.id, limit) : null;
+
+const limitPreviewProps =
+  limitPreview && limit
+    ? {
+        consumptionKwh: limitPreview.consumptionKwh,
+        thresholdKwh: limit.threshold_kwh,
+        hasReadings: limitPreview.hasReadings,
+      }
+    : null;
 ---
 
 <Layout title="Pulpit">
@@ -48,6 +63,8 @@ if (supabase && meter) {
       </header>
 
       <TuyaConnectCard status={tuyaStatus} />
+
+      <ConsumptionLimitForm client:load initialLimit={limit} preview={limitPreviewProps} />
 
       <div id="meter-registration">
         <MeterRegistrationForm client:load linked={tuyaStatus.linked} meter={meter} />
