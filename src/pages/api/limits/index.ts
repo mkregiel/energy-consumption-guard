@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth-guard";
 import { createClient } from "@/lib/supabase";
 import { getUserLimit, upsertUserLimit } from "@/lib/services/limit-service";
 import { apiJsonError, apiJsonSuccess } from "@/lib/services/api-response";
+import { tuyaErrorResponse } from "@/lib/services/tuya-api-response";
 
 export const prerender = false;
 
@@ -29,7 +30,7 @@ export const GET: APIRoute = async ({ request, locals, cookies }) => {
     const limit = await getUserLimit(supabase, userOrResponse.id);
     return apiJsonSuccess(200, { limit });
   } catch (error) {
-    return apiJsonError(500, "INTERNAL_ERROR", error instanceof Error ? error.message : "Unexpected error.");
+    return tuyaErrorResponse(error);
   }
 };
 
@@ -62,6 +63,6 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
     const limit = await upsertUserLimit(supabase, userOrResponse.id, parsed.data);
     return apiJsonSuccess(200, { limit });
   } catch (error) {
-    return apiJsonError(500, "INTERNAL_ERROR", error instanceof Error ? error.message : "Unexpected error.");
+    return tuyaErrorResponse(error);
   }
 };

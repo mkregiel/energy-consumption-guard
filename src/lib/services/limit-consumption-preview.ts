@@ -18,6 +18,8 @@ export const getLimitWindowPreview = async (
   const windowStartIso = toIso(windowStart);
   const windowEndIso = toIso(windowEnd);
 
+  // MVP: fetches all rows and sums in JS; acceptable at household scale.
+  // Follow-up: replace with DB aggregate when window data grows large.
   const response = await supabase
     .from("consumption_readings")
     .select("kwh_delta")

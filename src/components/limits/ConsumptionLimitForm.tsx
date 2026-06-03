@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Save, Zap } from "lucide-react";
+import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
 import { useLimitUpsert } from "@/components/hooks/useLimitUpsert";
 import { Button } from "@/components/ui/button";
@@ -67,29 +68,18 @@ export default function ConsumptionLimitForm({ initialLimit, preview }: Consumpt
       ) : null}
 
       <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-        <div className="space-y-1">
-          <label htmlFor="threshold-kwh" className="block text-sm text-blue-100/80">
-            Próg zużycia (kWh)
-          </label>
-          <div className="relative">
-            <Zap className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-blue-100/50" />
-            <input
-              id="threshold-kwh"
-              type="number"
-              min="0.001"
-              step="any"
-              value={threshold}
-              onChange={(e) => {
-                setThreshold(e.target.value);
-                clearErrors();
-              }}
-              placeholder="np. 10"
-              className={cn(
-                "w-full rounded-lg border border-white/20 bg-white/10 py-2 pr-3 pl-9 text-sm text-white placeholder:text-blue-100/30 focus:border-purple-400/60 focus:ring-1 focus:ring-purple-400/40 focus:outline-none",
-              )}
-            />
-          </div>
-        </div>
+        <FormField
+          id="threshold-kwh"
+          label="Próg zużycia (kWh)"
+          type="number"
+          value={threshold}
+          onChange={(value) => {
+            setThreshold(value);
+            clearErrors();
+          }}
+          placeholder="np. 10"
+          icon={<Zap className="size-4" />}
+        />
 
         <div className="space-y-1">
           <label htmlFor="window-type" className="block text-sm text-blue-100/80">

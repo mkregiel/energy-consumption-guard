@@ -28,6 +28,7 @@ export function useLimitUpsert(): UseLimitUpsertResult {
   }, []);
 
   const upsert = useCallback(async (payload: LimitUpsertPayload): Promise<ConsumptionLimit | null> => {
+    setErrorMessage(null);
     if (!(payload.threshold_kwh > 0)) {
       setErrorMessage("Próg zużycia musi być większy od zera.");
       return null;

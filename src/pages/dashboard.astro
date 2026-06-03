@@ -22,7 +22,14 @@ const tuyaStatus =
     ? await getTuyaConnectionStatus(supabase, user.id)
     : { linked: false, accessTokenExpiresAt: null, tuyaUid: null };
 const meter = supabase && user ? await getUserMeter(supabase, user.id) : null;
-const limit = supabase && user ? await getUserLimit(supabase, user.id) : null;
+let limit = null;
+if (supabase && user) {
+  try {
+    limit = await getUserLimit(supabase, user.id);
+  } catch {
+    // silently degrade; limit section hides gracefully
+  }
+}
 
 let latestReading: ConsumptionReading | null = null;
 let readings: ConsumptionReading[] = [];
@@ -38,7 +45,14 @@ if (supabase && meter) {
   }
 }
 
-const limitPreview = supabase && meter && limit ? await getLimitWindowPreview(supabase, meter.id, limit) : null;
+let limitPreview = null;
+if (supabase && meter && limit) {
+  try {
+    limitPreview = await getLimitWindowPreview(supabase, meter.id, limit);
+  } catch {
+    // silently degrade; preview hidden, form still functional
+  }
+}
 
 const limitPreviewProps =
   limitPreview && limit
