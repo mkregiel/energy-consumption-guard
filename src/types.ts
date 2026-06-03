@@ -100,6 +100,12 @@ export interface TuyaDevicesResult {
   devices: TuyaDeviceSummary[];
 }
 
+/** POST /api/limits request body. */
+export interface LimitUpsertPayload {
+  threshold_kwh: number;
+  window_type: WindowType;
+}
+
 /** POST /api/meters request body. */
 export interface MeterUpsertPayload {
   label: string;
