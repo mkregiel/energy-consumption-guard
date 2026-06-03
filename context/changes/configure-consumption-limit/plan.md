@@ -317,8 +317,8 @@ No schema migration required. Existing `consumption_limits` RLS policies cover u
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npm run build` passes
+- [x] 4.1 `npm run lint` passes — 039262d
+- [x] 4.2 `npm run build` passes — 039262d
 
 #### Manual
 
