@@ -3,7 +3,7 @@ project: Monitor zużycia prądu w gospodarstwie domowym
 version: 1
 status: in_progress
 created: 2026-05-25
-updated: 2026-06-01
+updated: 2026-06-03
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -36,7 +36,7 @@ Właściciel domu traci kontrolę nad zużyciem prądu, gdy rachunek w danym okr
 | F-05 | protected-api-routes | (foundation) authenticated API routes for device, limit, and notification configuration | — | FR-001, Access Control | done |
 | S-01 | user-login | log in with email and password | — | FR-001, US-01 | done |
 | S-02 | tuya-device-and-consumption | connect an energy meter via Tuya / Smart Life and see current consumption in the app | F-01, F-02, F-05, S-01 | FR-002, US-01 | done |
-| S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window | S-02, F-01, F-05 | FR-003, US-01 | proposed |
+| S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window | S-02, F-01, F-05 | FR-003, US-01 | done |
 | S-04 | configure-alarm-email | set the email address used for alarm notifications | S-01, F-01, F-05 | FR-004, US-01 | proposed |
 | S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01 | proposed |
 
@@ -48,7 +48,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 |---|---|---|---|
 | A | Dane i Tuya | ~~`F-01` → `F-02` → `S-02`~~ **done** | Gwiazda przewodnia osiągnięta; cron sync co godzinę (`F-03`) utrzymuje odczyty w tle. |
 | B | Alarm w tle | `F-04` → `S-05` | `F-03` done — ewaluacja limitów co godzinę; brakuje wysyłki email (`F-04`) i UI konfiguracji. |
-| C | Konfiguracja limitów | `S-03` | **Następny slice** — schemat `consumption_limits` gotowy; brak API/UI. |
+| C | Konfiguracja limitów | ~~`S-03`~~ **done** | GET/POST `/api/limits`, inline form + window preview na dashboardzie (2026-06-03). |
 | D | Konto i powiadomienia | `S-04` | **Następny slice (równolegle z C)** — schemat `notification_settings` gotowy; brak API/UI. |
 
 ## Baseline
@@ -177,7 +177,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Semantyka okna czasowego (kalendarzowe vs rolling) — Owner: user. Block: no (MVP może iść na domyślnym, np. doba kalendarzowa).
 - **Risk:** Fałszywe alarmy zależą od definicji okna — warto rozstrzygnąć przed S-05, nie blokuje planowania S-03.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-06-03 — `context/changes/configure-consumption-limit/`; GET/POST `/api/limits`, inline form on dashboard with progress bar and window preview
 
 ### S-04: Configure alarm email
 
@@ -209,8 +210,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 |---|---|---|---|---|
 | F-04 | transactional-email-alerts | Wire transactional email for limit breach alarms | yes | F-01 done; query `limit_breach_events WHERE notified_at IS NULL` (handoff w F-03) |
-| S-03 | configure-consumption-limit | UI and API to set kWh limit in a time window | yes | S-02 done; schemat `consumption_limits` gotowy |
-| S-04 | configure-alarm-email | UI and API to set alarm notification email | yes | S-01 + F-05 done; schemat `notification_settings` gotowy; równolegle z S-03 |
+| S-04 | configure-alarm-email | UI and API to set alarm notification email | yes | S-01 + F-05 + S-03 done; schemat `notification_settings` gotowy |
 | S-05 | email-alarm-on-limit-breach | End-to-end limit breach email alarm (US-01) | no | Wymaga S-03, S-04, F-04 |
 
 ## Open Roadmap Questions
@@ -238,3 +238,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-05 | protected-api-routes | 2026-05-31 | Globalny guard `/api/*` + `requireUser()` |
 | S-01 | user-login | baseline | Supabase email/password, signin/signup/signout |
 | S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia |
+| S-03 | configure-consumption-limit | 2026-06-03 | GET/POST /api/limits, inline dashboard form, window preview + progress bar |
