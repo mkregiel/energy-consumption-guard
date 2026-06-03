@@ -293,8 +293,8 @@ No schema migration required. Existing `consumption_limits` RLS policies cover u
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes
+- [x] 2.1 `npm run lint` passes — 7a6db1a
+- [x] 2.2 `npm run build` passes — 7a6db1a
 
 #### Manual
 
@@ -305,8 +305,8 @@ No schema migration required. Existing `consumption_limits` RLS policies cover u
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
 
 #### Manual
 
