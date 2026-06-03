@@ -345,7 +345,9 @@ Optional but recommended before inviting real users or connecting Tuya (FR-005).
 
 ### FR-005 cron (implemented)
 
-Cron triggers are configured in [wrangler.jsonc](../../wrangler.jsonc): sync at `:00` UTC, evaluate at `:05` UTC. HTTP fallbacks: `POST /api/cron/sync-readings` and `POST /api/cron/evaluate-limits` (Bearer `CRON_SECRET`). Production still requires human approval before first `SUPABASE_SERVICE_ROLE_KEY` / `CRON_SECRET` rotation.
+Cron triggers are configured in [wrangler.jsonc](../../wrangler.jsonc): sync at `:00` UTC, evaluate at `:05` UTC, notify at `:10` UTC. HTTP fallbacks: `POST /api/cron/sync-readings`, `POST /api/cron/evaluate-limits`, and `POST /api/cron/send-notifications` (Bearer `CRON_SECRET`). Production still requires human approval before first `SUPABASE_SERVICE_ROLE_KEY` / `CRON_SECRET` rotation.
+
+**Resend (F-04 alarm emails):** `RESEND_API_KEY` and verified `RESEND_FROM_EMAIL` must be set via `npx wrangler secret put` before breach notifications can send; without them the notify job returns `RESEND_NOT_CONFIGURED`. Human approval gate unchanged.
 
 Design the handler as idempotent and short-lived (Cron Trigger timeouts). Validate schedule in UTC.
 
