@@ -178,12 +178,16 @@ async function seed(): Promise<SeedIds> {
   // 2. Consumption limit — select-or-insert (avoids onConflict PostgREST non-PK issue)
   const existingLimit = await supabase
     .from("consumption_limits")
-    .select("id")
+    .select("id, threshold_kwh, window_type, timezone")
     .eq("user_id", env.TEST_USER_ID)
     .maybeSingle();
   if (existingLimit.error) throw new Error(`Limit lookup failed: ${existingLimit.error.message}`);
   let limitId: string;
   if (existingLimit.data) {
+    const { threshold_kwh, window_type, timezone } = existingLimit.data;
+    console.warn(
+      `⚠ Overwriting real consumption limit (${threshold_kwh} kWh, ${window_type}, ${timezone}) with test values. Run --cleanup or restore manually after testing.`,
+    );
     // Overwrite threshold/window to guarantee the test values are active
     const limitUpdate = await supabase
       .from("consumption_limits")
@@ -206,9 +210,18 @@ async function seed(): Promise<SeedIds> {
   }
 
   // 3. Consumption reading — insert one row exceeding the 0.01 kWh threshold
+  // NOTE: Re-running without --cleanup on the same calendar day will leave orphaned readings
+  // and the evaluator will see the existing breach for today's window_start, returning "breached: 0".
+  // Run with --cleanup between tests, or wait until the next UTC day.
   const readingInsert = await supabase
     .from("consumption_readings")
-    .insert({ meter_id: meterId, recorded_at: new Date().toISOString(), kwh_cumulative: 0.05, kwh_delta: 0.05 })
+    .insert({
+      meter_id: meterId,
+      recorded_at: new Date().toISOString(),
+      kwh_cumulative: 0.05,
+      kwh_delta: 0.05,
+      source: "manual",
+    })
     .select("id")
     .single();
   if (readingInsert.error) throw new Error(`Reading insert failed: ${readingInsert.error.message}`);
@@ -247,7 +260,11 @@ async function triggerCron(cronPath: string): Promise<void> {
   if (!response.ok) {
     throw new Error(`${cronPath} failed (${response.status}): ${body}`);
   }
-  console.log(JSON.stringify(JSON.parse(body) as unknown, null, 2));
+  try {
+    console.log(JSON.stringify(JSON.parse(body) as unknown, null, 2));
+  } catch {
+    console.log(body);
+  }
 }
 
 // ── cleanup ───────────────────────────────────────────────────────────────────
@@ -294,7 +311,7 @@ async function main(): Promise<void> {
   // ── connectivity probe ──────────────────────────────────────────────────────
   // Direct fetch to PostgREST — bypasses the supabase-js client layer so we
   // see the raw HTTP status and error body if auth fails.
-  const probeUrl = `${env.SUPABASE_URL}/rest/v1/meters?select=id&limit=1`;
+  const probeUrl = `${env.SUPABASE_URL}/rest/v1/meters?select=id&user_id=eq.${env.TEST_USER_ID}&limit=1`;
   console.log(`Probe: GET ${probeUrl}`);
   const probeRes = await fetch(probeUrl, {
     headers: {
