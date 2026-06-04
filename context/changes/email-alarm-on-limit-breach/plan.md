@@ -178,21 +178,21 @@ No migrations. No production code changes. The script is purely additive.
 
 #### Manual
 
-- [ ] 1.3 `npm run seed:test-breach -- --help` prints usage without crashing
+- [x] 1.3 `npm run seed:test-breach -- --help` prints usage without crashing — c4fdffe
 
 ### Phase 2: Write `scripts/seed-test-breach.ts`
 
 #### Automated
 
-- [ ] 2.1 `npm run seed:test-breach` exits 0 against staging env
-- [x] 2.2 TypeScript type-check passes
-- [x] 2.3 ESLint passes: `npm run lint`
+- [x] 2.1 `npm run seed:test-breach` exits 0 against staging env
+- [x] 2.2 TypeScript type-check passes — c4fdffe
+- [x] 2.3 ESLint passes: `npm run lint` — c4fdffe
 
 #### Manual
 
-- [ ] 2.4 Script prints evaluate-limits result with `"breached": 1`
-- [ ] 2.5 Script prints send-notifications result with `"sent": 1`
-- [ ] 2.6 `TEST_EMAIL` inbox receives the alarm email within ~30 seconds
-- [ ] 2.7 Email subject is `[Monitor energii] Przekroczono limit zużycia`
-- [ ] 2.8 Email body mentions the consumption (0.05 kWh) and threshold (0.01 kWh)
-- [ ] 2.9 Running with `--cleanup` exits 0 and no test rows remain
+- [x] 2.4 Script prints evaluate-limits result with `"breached": 1`
+- [x] 2.5 Script prints send-notifications result with `"sent": 1`
+- [x] 2.6 `TEST_EMAIL` inbox receives the alarm email within ~30 seconds
+- [x] 2.7 Email subject is `[Monitor energii] Przekroczono limit zużycia`
+- [x] 2.8 Email body mentions the consumption (0.05 kWh) and threshold (0.01 kWh)
+- [x] 2.9 Running with `--cleanup` exits 0 and no test rows remain
