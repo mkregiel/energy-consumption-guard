@@ -27,29 +27,29 @@ Właściciel domu traci kontrolę nad zużyciem prądu, gdy rachunek w danym okr
 
 ## At a glance
 
-| ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
-|---|---|---|---|---|---|
-| F-01 | energy-domain-schema | (foundation) persist meters, limits, and consumption readings in Supabase | — | NFR (background), Business Logic | done |
-| F-02 | tuya-read-integration | (foundation) read consumption from Tuya / Smart Life without altering user’s platform setup | F-01 | FR-002, Guardrails | done |
-| F-03 | background-limit-evaluation | (foundation) periodic job compares stored consumption against configured limits | F-01 | NFR (background), FR-005 | done |
-| F-04 | transactional-email-alerts | (foundation) send alarm emails to a configured address on limit breach | F-01 | FR-004, FR-005, US-01 | proposed |
-| F-05 | protected-api-routes | (foundation) authenticated API routes for device, limit, and notification configuration | — | FR-001, Access Control | done |
-| S-01 | user-login | log in with email and password | — | FR-001, US-01 | done |
-| S-02 | tuya-device-and-consumption | connect an energy meter via Tuya / Smart Life and see current consumption in the app | F-01, F-02, F-05, S-01 | FR-002, US-01 | done |
-| S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window | S-02, F-01, F-05 | FR-003, US-01 | done |
-| S-04 | configure-alarm-email | set the email address used for alarm notifications | S-01, F-01, F-05 | FR-004, US-01 | done |
-| S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01 | proposed |
+| ID   | Change ID                   | Outcome (user can …)                                                                        | Prerequisites                | PRD refs                         | Status   |
+| ---- | --------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------- | -------------------------------- | -------- |
+| F-01 | energy-domain-schema        | (foundation) persist meters, limits, and consumption readings in Supabase                   | —                            | NFR (background), Business Logic | done     |
+| F-02 | tuya-read-integration       | (foundation) read consumption from Tuya / Smart Life without altering user’s platform setup | F-01                         | FR-002, Guardrails               | done     |
+| F-03 | background-limit-evaluation | (foundation) periodic job compares stored consumption against configured limits             | F-01                         | NFR (background), FR-005         | done     |
+| F-04 | transactional-email-alerts  | (foundation) send alarm emails to a configured address on limit breach                      | F-01                         | FR-004, FR-005, US-01            | done     |
+| F-05 | protected-api-routes        | (foundation) authenticated API routes for device, limit, and notification configuration     | —                            | FR-001, Access Control           | done     |
+| S-01 | user-login                  | log in with email and password                                                              | —                            | FR-001, US-01                    | done     |
+| S-02 | tuya-device-and-consumption | connect an energy meter via Tuya / Smart Life and see current consumption in the app        | F-01, F-02, F-05, S-01       | FR-002, US-01                    | done     |
+| S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window                                   | S-02, F-01, F-05             | FR-003, US-01                    | done     |
+| S-04 | configure-alarm-email       | set the email address used for alarm notifications                                          | S-01, F-01, F-05             | FR-004, US-01                    | done     |
+| S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit                | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01                    | proposed |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme | Chain | Note |
-|---|---|---|---|
-| A | Dane i Tuya | ~~`F-01` → `F-02` → `S-02`~~ **done** | Gwiazda przewodnia osiągnięta; cron sync co godzinę (`F-03`) utrzymuje odczyty w tle. |
-| B | Alarm w tle | `F-04` → `S-05` | `F-03` done — ewaluacja limitów co godzinę; brakuje wysyłki email (`F-04`). |
-| C | Konfiguracja limitów | ~~`S-03`~~ **done** | GET/POST `/api/limits`, inline form + window preview na dashboardzie (2026-06-03). |
-| D | Konto i powiadomienia | ~~`S-04`~~ **done** | GET/POST `/api/notifications`, `AlarmEmailForm` na dashboardzie (2026-06-04). |
+| Stream | Theme                 | Chain                                 | Note                                                                                  |
+| ------ | --------------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
+| A      | Dane i Tuya           | ~~`F-01` → `F-02` → `S-02`~~ **done** | Gwiazda przewodnia osiągnięta; cron sync co godzinę (`F-03`) utrzymuje odczyty w tle. |
+| B      | Alarm w tle           | `F-04` → `S-05`                       | `F-03` done — ewaluacja limitów co godzinę; brakuje wysyłki email (`F-04`).           |
+| C      | Konfiguracja limitów  | ~~`S-03`~~ **done**                   | GET/POST `/api/limits`, inline form + window preview na dashboardzie (2026-06-03).    |
+| D      | Konto i powiadomienia | ~~`S-04`~~ **done**                   | GET/POST `/api/notifications`, `AlarmEmailForm` na dashboardzie (2026-06-04).         |
 
 ## Baseline
 
@@ -112,7 +112,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ### F-04: Transactional email alerts
 
-- **Outcome:** (foundation) application can send a templated alarm email to a stored address when a breach event fires.
+- **Outcome:** (foundation) application can send a plain-text alarm email to a stored address when a breach event fires.
 - **Change ID:** transactional-email-alerts
 - **PRD refs:** FR-004, FR-005, US-01
 - **Unlocks:** S-05
@@ -122,7 +122,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Który dostawca email (Resend, SendGrid, Supabase Edge, inny) i limity darmowego tieru? — Owner: user. Block: no.
 - **Risk:** Ostatni element US-01 — sekwencjonowany po Tuya i konfiguracji, żeby nie budować emaili przed dowodem danych z licznika.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-06-02 — `context/changes/transactional-email-alerts/`; Resend client, breach notification job, cron `:10` UTC, retry policy (`notification_attempt_count`, `notification_failed_at`)
 
 ### F-05: Protected API routes
 
@@ -208,10 +209,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
-|---|---|---|---|---|
-| F-04 | transactional-email-alerts | Wire transactional email for limit breach alarms | yes | F-01 done; query `limit_breach_events WHERE notified_at IS NULL` (handoff w F-03) |
-| S-05 | email-alarm-on-limit-breach | End-to-end limit breach email alarm (US-01) | no | Wymaga F-04; S-03 + S-04 done |
+| Roadmap ID | Change ID                   | Suggested issue title                            | Ready for `/10x-plan` | Notes                                                    |
+| ---------- | --------------------------- | ------------------------------------------------ | --------------------- | -------------------------------------------------------- |
+| F-04       | transactional-email-alerts  | Wire transactional email for limit breach alarms | —                     | done — see `context/changes/transactional-email-alerts/` |
+| S-05       | email-alarm-on-limit-breach | End-to-end limit breach email alarm (US-01)      | no                    | Wymaga F-04; S-03 + S-04 done                            |
 
 ## Open Roadmap Questions
 
@@ -230,13 +231,14 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-| ID | Change ID | Completed | Notes |
-|---|---|---|---|
-| F-01 | energy-domain-schema | 2026-05-27 | Tabele domeny energii + RLS |
-| F-02 | tuya-read-integration | 2026-05-30 | OAuth, sync, idempotentne odczyty |
-| F-03 | background-limit-evaluation | 2026-05-31 | Cron sync + ewaluacja limitów → `limit_breach_events` |
-| F-05 | protected-api-routes | 2026-05-31 | Globalny guard `/api/*` + `requireUser()` |
-| S-01 | user-login | baseline | Supabase email/password, signin/signup/signout |
-| S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia |
+| ID   | Change ID                   | Completed  | Notes                                                                      |
+| ---- | --------------------------- | ---------- | -------------------------------------------------------------------------- |
+| F-01 | energy-domain-schema        | 2026-05-27 | Tabele domeny energii + RLS                                                |
+| F-02 | tuya-read-integration       | 2026-05-30 | OAuth, sync, idempotentne odczyty                                          |
+| F-03 | background-limit-evaluation | 2026-05-31 | Cron sync + ewaluacja limitów → `limit_breach_events`                      |
+| F-04 | transactional-email-alerts  | 2026-06-02 | Resend client, breach notification job, cron `:10` UTC, retry policy       |
+| F-05 | protected-api-routes        | 2026-05-31 | Globalny guard `/api/*` + `requireUser()`                                  |
+| S-01 | user-login                  | baseline   | Supabase email/password, signin/signup/signout                             |
+| S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia                        |
 | S-03 | configure-consumption-limit | 2026-06-03 | GET/POST /api/limits, inline dashboard form, window preview + progress bar |
-| S-04 | configure-alarm-email | 2026-06-04 | GET/POST /api/notifications, AlarmEmailForm na dashboardzie |
+| S-04 | configure-alarm-email       | 2026-06-04 | GET/POST /api/notifications, AlarmEmailForm na dashboardzie                |
