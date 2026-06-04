@@ -6,10 +6,12 @@ import SyncConsumptionButton from "@/components/consumption/SyncConsumptionButto
 import MeterRegistrationForm from "@/components/tuya/MeterRegistrationForm";
 import TuyaConnectCard from "@/components/tuya/TuyaConnectCard";
 import ConsumptionLimitForm from "@/components/limits/ConsumptionLimitForm";
+import AlarmEmailForm from "@/components/notifications/AlarmEmailForm";
 import { createClient } from "@/lib/supabase";
 import { getMeterConsumptionReadings } from "@/lib/services/consumption-query";
 import { getUserMeter } from "@/lib/services/meter-service";
 import { getUserLimit } from "@/lib/services/limit-service";
+import { getUserNotificationSettings } from "@/lib/services/notification-settings-service";
 import { getLimitWindowPreview } from "@/lib/services/limit-consumption-preview";
 import { getTuyaConnectionStatus } from "@/lib/services/tuya-client";
 import type { ConsumptionReading } from "@/types";
@@ -28,6 +30,15 @@ if (supabase && user) {
     limit = await getUserLimit(supabase, user.id);
   } catch {
     // silently degrade; limit section hides gracefully
+  }
+}
+
+let notificationSettings = null;
+if (supabase && user) {
+  try {
+    notificationSettings = await getUserNotificationSettings(supabase, user.id);
+  } catch {
+    // silently degrade; form renders empty
   }
 }
 
@@ -79,6 +90,8 @@ const limitPreviewProps =
       <TuyaConnectCard status={tuyaStatus} />
 
       <ConsumptionLimitForm client:load initialLimit={limit} preview={limitPreviewProps} />
+
+      <AlarmEmailForm client:load initialAlarmEmail={notificationSettings?.alarm_email ?? null} />
 
       <div id="meter-registration">
         <MeterRegistrationForm client:load linked={tuyaStatus.linked} meter={meter} />
