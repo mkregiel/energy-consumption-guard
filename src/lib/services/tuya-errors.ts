@@ -7,7 +7,9 @@ export type TuyaErrorCode =
   | "TUYA_PROVIDER_ERROR"
   | "TUYA_READING_UNAVAILABLE"
   | "TUYA_STATE_MISMATCH"
-  | "SUPABASE_NOT_CONFIGURED";
+  | "SUPABASE_NOT_CONFIGURED"
+  | "LIMIT_DB_ERROR"
+  | "NOTIFICATION_SETTINGS_DB_ERROR";
 
 export class TuyaServiceError extends Error {
   readonly code: TuyaErrorCode;
