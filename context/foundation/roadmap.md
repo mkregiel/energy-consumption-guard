@@ -3,7 +3,7 @@ project: Monitor zużycia prądu w gospodarstwie domowym
 version: 1
 status: in_progress
 created: 2026-05-25
-updated: 2026-06-03
+updated: 2026-06-04
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -37,7 +37,7 @@ Właściciel domu traci kontrolę nad zużyciem prądu, gdy rachunek w danym okr
 | S-01 | user-login | log in with email and password | — | FR-001, US-01 | done |
 | S-02 | tuya-device-and-consumption | connect an energy meter via Tuya / Smart Life and see current consumption in the app | F-01, F-02, F-05, S-01 | FR-002, US-01 | done |
 | S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window | S-02, F-01, F-05 | FR-003, US-01 | done |
-| S-04 | configure-alarm-email | set the email address used for alarm notifications | S-01, F-01, F-05 | FR-004, US-01 | proposed |
+| S-04 | configure-alarm-email | set the email address used for alarm notifications | S-01, F-01, F-05 | FR-004, US-01 | done |
 | S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01 | proposed |
 
 ## Streams
@@ -47,9 +47,9 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | Stream | Theme | Chain | Note |
 |---|---|---|---|
 | A | Dane i Tuya | ~~`F-01` → `F-02` → `S-02`~~ **done** | Gwiazda przewodnia osiągnięta; cron sync co godzinę (`F-03`) utrzymuje odczyty w tle. |
-| B | Alarm w tle | `F-04` → `S-05` | `F-03` done — ewaluacja limitów co godzinę; brakuje wysyłki email (`F-04`) i UI konfiguracji. |
+| B | Alarm w tle | `F-04` → `S-05` | `F-03` done — ewaluacja limitów co godzinę; brakuje wysyłki email (`F-04`). |
 | C | Konfiguracja limitów | ~~`S-03`~~ **done** | GET/POST `/api/limits`, inline form + window preview na dashboardzie (2026-06-03). |
-| D | Konto i powiadomienia | `S-04` | **Następny slice (równolegle z C)** — schemat `notification_settings` gotowy; brak API/UI. |
+| D | Konto i powiadomienia | ~~`S-04`~~ **done** | GET/POST `/api/notifications`, `AlarmEmailForm` na dashboardzie (2026-06-04). |
 
 ## Baseline
 
@@ -190,7 +190,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Prosty CRUD — równoległy ze S-03 po north star, żeby skrócić ścieżkę do US-01.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-06-04 — `context/changes/configure-alarm-email/`; GET/POST `/api/notifications`, `AlarmEmailForm` na dashboardzie
 
 ### S-05: Email alarm on limit breach
 
@@ -210,8 +211,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 |---|---|---|---|---|
 | F-04 | transactional-email-alerts | Wire transactional email for limit breach alarms | yes | F-01 done; query `limit_breach_events WHERE notified_at IS NULL` (handoff w F-03) |
-| S-04 | configure-alarm-email | UI and API to set alarm notification email | yes | S-01 + F-05 + S-03 done; schemat `notification_settings` gotowy |
-| S-05 | email-alarm-on-limit-breach | End-to-end limit breach email alarm (US-01) | no | Wymaga S-03, S-04, F-04 |
+| S-05 | email-alarm-on-limit-breach | End-to-end limit breach email alarm (US-01) | no | Wymaga F-04; S-03 + S-04 done |
 
 ## Open Roadmap Questions
 
@@ -239,3 +239,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-01 | user-login | baseline | Supabase email/password, signin/signup/signout |
 | S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia |
 | S-03 | configure-consumption-limit | 2026-06-03 | GET/POST /api/limits, inline dashboard form, window preview + progress bar |
+| S-04 | configure-alarm-email | 2026-06-04 | GET/POST /api/notifications, AlarmEmailForm na dashboardzie |
