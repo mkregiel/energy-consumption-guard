@@ -194,40 +194,40 @@ Fetch `notification_settings` server-side in `dashboard.astro` and render `<Alar
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run typecheck`
-- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.1 Type checking passes: `npm run typecheck` — 94a29ce
+- [x] 1.2 Linting passes: `npm run lint` — 94a29ce
 
 #### Manual
 
-- [x] 1.3 GET /api/notifications returns null for user with no settings row
-- [x] 1.4 POST with valid email creates/updates row and returns it
-- [x] 1.5 POST with invalid email returns 400 VALIDATION_ERROR
-- [x] 1.6 GET without auth returns 401
+- [x] 1.3 GET /api/notifications returns null for user with no settings row — 94a29ce
+- [x] 1.4 POST with valid email creates/updates row and returns it — 94a29ce
+- [x] 1.5 POST with invalid email returns 400 VALIDATION_ERROR — 94a29ce
+- [x] 1.6 GET without auth returns 401 — 94a29ce
 
 ### Phase 2: Hook and Component
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run typecheck`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npm run typecheck`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 Form renders with current email pre-filled (or empty)
-- [ ] 2.4 Saving a valid email shows green banner for ~4 seconds
-- [ ] 2.5 Saving an invalid email shows inline Polish error
-- [ ] 2.6 Button is disabled/loading while submitting
+- [x] 2.3 Form renders with current email pre-filled (or empty)
+- [x] 2.4 Saving a valid email shows green banner for ~4 seconds
+- [x] 2.5 Saving an invalid email shows inline Polish error
+- [x] 2.6 Button is disabled/loading while submitting
 
 ### Phase 3: Dashboard Wiring
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npm run typecheck`
-- [ ] 3.2 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npm run typecheck`
+- [x] 3.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 Dashboard loads without errors for user with no notification settings
-- [ ] 3.4 Dashboard loads with pre-filled email for user with existing settings
-- [ ] 3.5 Saving email from dashboard persists correctly
-- [ ] 3.6 No regression in ConsumptionLimitForm
+- [x] 3.3 Dashboard loads without errors for user with no notification settings
+- [x] 3.4 Dashboard loads with pre-filled email for user with existing settings
+- [x] 3.5 Saving email from dashboard persists correctly
+- [x] 3.6 No regression in ConsumptionLimitForm
