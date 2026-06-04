@@ -208,26 +208,26 @@ Fetch `notification_settings` server-side in `dashboard.astro` and render `<Alar
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run typecheck`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npm run typecheck` — 2c9436d
+- [x] 2.2 Linting passes: `npm run lint` — 2c9436d
 
 #### Manual
 
-- [x] 2.3 Form renders with current email pre-filled (or empty)
-- [x] 2.4 Saving a valid email shows green banner for ~4 seconds
-- [x] 2.5 Saving an invalid email shows inline Polish error
-- [x] 2.6 Button is disabled/loading while submitting
+- [x] 2.3 Form renders with current email pre-filled (or empty) — 2c9436d
+- [x] 2.4 Saving a valid email shows green banner for ~4 seconds — 2c9436d
+- [x] 2.5 Saving an invalid email shows inline Polish error — 2c9436d
+- [x] 2.6 Button is disabled/loading while submitting — 2c9436d
 
 ### Phase 3: Dashboard Wiring
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npm run typecheck`
-- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npm run typecheck` — 2c9436d
+- [x] 3.2 Linting passes: `npm run lint` — 2c9436d
 
 #### Manual
 
-- [x] 3.3 Dashboard loads without errors for user with no notification settings
-- [x] 3.4 Dashboard loads with pre-filled email for user with existing settings
-- [x] 3.5 Saving email from dashboard persists correctly
-- [x] 3.6 No regression in ConsumptionLimitForm
+- [x] 3.3 Dashboard loads without errors for user with no notification settings — 2c9436d
+- [x] 3.4 Dashboard loads with pre-filled email for user with existing settings — 2c9436d
+- [x] 3.5 Saving email from dashboard persists correctly — 2c9436d
+- [x] 3.6 No regression in ConsumptionLimitForm — 2c9436d

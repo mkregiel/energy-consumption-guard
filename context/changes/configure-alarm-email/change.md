@@ -1,7 +1,7 @@
 ---
 id: configure-alarm-email
 title: Configure Alarm Email (S-04)
-status: implementing
+status: implemented
 updated: 2026-06-04
 ---
 
