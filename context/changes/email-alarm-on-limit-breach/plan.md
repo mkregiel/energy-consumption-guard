@@ -173,8 +173,8 @@ No migrations. No production code changes. The script is purely additive.
 
 #### Automated
 
-- [x] 1.1 `npm install` completes without error
-- [x] 1.2 `npx tsx --version` prints a version string
+- [x] 1.1 `npm install` completes without error — c97a35f
+- [x] 1.2 `npx tsx --version` prints a version string — c97a35f
 
 #### Manual
 
@@ -185,8 +185,8 @@ No migrations. No production code changes. The script is purely additive.
 #### Automated
 
 - [ ] 2.1 `npm run seed:test-breach` exits 0 against staging env
-- [ ] 2.2 TypeScript type-check passes
-- [ ] 2.3 ESLint passes: `npm run lint`
+- [x] 2.2 TypeScript type-check passes
+- [x] 2.3 ESLint passes: `npm run lint`
 
 #### Manual
 
