@@ -152,6 +152,10 @@ interface SeedIds {
   meterId: string;
   limitId: string;
   readingId: string;
+  /** true when the meter already existed before this run — cleanup must not delete it */
+  meterWasPreExisting: boolean;
+  /** original alarm_email before this run; null = settings row didn't exist yet */
+  originalAlarmEmail: string | null;
 }
 
 // ── seed ──────────────────────────────────────────────────────────────────────
@@ -244,7 +248,13 @@ async function seed(): Promise<SeedIds> {
   if (settingsUpsert.error) throw new Error(`Notification settings upsert failed: ${settingsUpsert.error.message}`);
   console.log(`✓ Notification settings upserted (alarm_email: ${env.TEST_EMAIL})`);
 
-  return { meterId, limitId, readingId };
+  return {
+    meterId,
+    limitId,
+    readingId,
+    meterWasPreExisting: existingMeter.data !== null,
+    originalAlarmEmail: existingSettings.data?.alarm_email ?? null,
+  };
 }
 
 // ── cron triggers ─────────────────────────────────────────────────────────────
@@ -269,7 +279,13 @@ async function triggerCron(cronPath: string): Promise<void> {
 
 // ── cleanup ───────────────────────────────────────────────────────────────────
 
-async function cleanup({ meterId, limitId, readingId }: SeedIds): Promise<void> {
+async function cleanup({
+  meterId,
+  limitId,
+  readingId,
+  meterWasPreExisting,
+  originalAlarmEmail,
+}: SeedIds): Promise<void> {
   console.log("\n── Cleanup ──────────────────────────────────────────────────────");
 
   // Reverse FK order: readings → breaches → limits → meters → settings
@@ -286,16 +302,36 @@ async function cleanup({ meterId, limitId, readingId }: SeedIds): Promise<void> 
   if (limitDel.error) throw new Error(`Limit delete failed: ${limitDel.error.message}`);
   console.log(`✓ Deleted ${limitDel.count ?? 0} consumption_limit(s)`);
 
-  const meterDel = await supabase.from("meters").delete({ count: "exact" }).eq("id", meterId);
-  if (meterDel.error) throw new Error(`Meter delete failed: ${meterDel.error.message}`);
-  console.log(`✓ Deleted ${meterDel.count ?? 0} meter(s)`);
+  // Skip meter deletion if it pre-existed — deleting it would cascade to all real readings
+  if (meterWasPreExisting) {
+    console.log("✓ Meter was pre-existing — skipping deletion (real readings preserved)");
+  } else {
+    const meterDel = await supabase.from("meters").delete({ count: "exact" }).eq("id", meterId);
+    if (meterDel.error) throw new Error(`Meter delete failed: ${meterDel.error.message}`);
+    console.log(`✓ Deleted ${meterDel.count ?? 0} meter(s)`);
+  }
 
-  const settingsDel = await supabase
-    .from("notification_settings")
-    .delete({ count: "exact" })
-    .eq("user_id", env.TEST_USER_ID);
-  if (settingsDel.error) throw new Error(`Notification settings delete failed: ${settingsDel.error.message}`);
-  console.log(`✓ Deleted ${settingsDel.count ?? 0} notification_settings row(s)`);
+  // Restore or delete notification_settings based on pre-existing state
+  if (originalAlarmEmail === null) {
+    // Settings didn't exist before — delete the row the script created
+    const settingsDel = await supabase
+      .from("notification_settings")
+      .delete({ count: "exact" })
+      .eq("user_id", env.TEST_USER_ID);
+    if (settingsDel.error) throw new Error(`Notification settings delete failed: ${settingsDel.error.message}`);
+    console.log(`✓ Deleted ${settingsDel.count ?? 0} notification_settings row(s)`);
+  } else if (originalAlarmEmail !== env.TEST_EMAIL) {
+    // Settings pre-existed with a different email — restore the original
+    const settingsRestore = await supabase
+      .from("notification_settings")
+      .update({ alarm_email: originalAlarmEmail })
+      .eq("user_id", env.TEST_USER_ID);
+    if (settingsRestore.error)
+      throw new Error(`Notification settings restore failed: ${settingsRestore.error.message}`);
+    console.log(`✓ Restored notification_settings alarm_email → ${originalAlarmEmail}`);
+  } else {
+    console.log("✓ Notification settings unchanged — skipping restore");
+  }
 }
 
 // ── main ──────────────────────────────────────────────────────────────────────
