@@ -52,7 +52,7 @@
   - Tradeoff: A few more lines; no architectural change.
   - Confidence: HIGH — uniform fix pattern across all three tables.
   - Blind spot: Meter CASCADE behavior confirmed from schema.
-- **Decision**: SKIPPED
+- **Decision**: FIXED — Track meterWasPreExisting/originalAlarmEmail in SeedIds; cleanup skips meter deletion when pre-existing and restores original alarm_email instead of deleting the row.
 
 ### F3 — `source:'manual'` omitted from reading insert; DB default 'tuya' used
 
