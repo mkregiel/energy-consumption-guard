@@ -136,19 +136,18 @@ const evaluateLimit = async (
     return "skipped";
   }
 
+  // Plain insert — the existingBreachResponse check above already guards against duplicates.
+  // PostgREST cannot use the partial unique index on (limit_id, window_start) for ON CONFLICT.
   const insertResponse = await supabase
     .from("limit_breach_events")
-    .upsert(
-      {
-        limit_id: limit.id,
-        user_id: limit.user_id,
-        breached_at: toIso(new Date()),
-        window_start: windowStartIso,
-        consumption_kwh: consumptionKwh,
-        notified_at: null,
-      },
-      { onConflict: "limit_id,window_start", ignoreDuplicates: true },
-    )
+    .insert({
+      limit_id: limit.id,
+      user_id: limit.user_id,
+      breached_at: toIso(new Date()),
+      window_start: windowStartIso,
+      consumption_kwh: consumptionKwh,
+      notified_at: null,
+    })
     .select("id")
     .maybeSingle();
 
