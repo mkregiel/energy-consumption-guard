@@ -375,13 +375,13 @@ Update `context/foundation/test-plan.md` with the patterns established in Phases
 
 #### Automated
 
-- [x] 1.1 `npm install` completes; `vitest` appears in `node_modules/.bin/`
-- [x] 1.2 `npm test` exits 0 with no test files found
-- [x] 1.3 `npm run typecheck` passes (6 pre-existing errors in cron routes; vitest.config.ts clean)
+- [x] 1.1 `npm install` completes; `vitest` appears in `node_modules/.bin/` — 0742394
+- [x] 1.2 `npm test` exits 0 with no test files found — 0742394
+- [x] 1.3 `npm run typecheck` passes (6 pre-existing errors in cron routes; vitest.config.ts clean) — 0742394
 
 #### Manual
 
-- [x] 1.4 Copy `.env.test.example` to `.env.test`, populate with local credentials, `npm test` exits 0
+- [x] 1.4 Copy `.env.test.example` to `.env.test`, populate with local credentials, `npm test` exits 0 — 0742394
 
 ### Phase 2: R4 — Window boundary unit tests
 
