@@ -387,13 +387,13 @@ Update `context/foundation/test-plan.md` with the patterns established in Phases
 
 #### Automated
 
-- [ ] 2.1 `npm test` exits 0; all window boundary tests pass
-- [ ] 2.2 All expected values in test fixtures derived from oracle (calendar rules), not from code output
+- [x] 2.1 `npm test` exits 0; all window boundary tests pass
+- [x] 2.2 All expected values in test fixtures derived from oracle (calendar rules), not from code output
 
 #### Manual
 
-- [ ] 2.3 Mutate `.gte` → `.gt` in `limit-consumption-preview.ts:27`; verify predicate test fails; revert
-- [ ] 2.4 Verify DST fixture: `referenceDate = 2026-03-29T10:00:00.000Z` → `windowStart = 2026-03-28T23:00:00.000Z`, `windowEnd = 2026-03-29T22:00:00.000Z`
+- [x] 2.3 Mutate `.gte` → `.gt` in `limit-consumption-preview.ts:27`; verify predicate test fails; revert
+- [x] 2.4 Verify DST fixture: `referenceDate = 2026-03-29T10:00:00.000Z` → `windowStart = 2026-03-28T23:00:00.000Z`, `windowEnd = 2026-03-29T22:00:00.000Z`
 
 ### Phase 3: R2 — Dispatch idempotency integration test
 
