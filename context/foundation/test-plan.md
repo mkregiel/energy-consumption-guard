@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-05 (Phase 1 change opened)
+> Last updated: 2026-06-06 (Phase 2 shipped — window boundary + idempotency)
 
 ## 1. Strategy
 
@@ -63,12 +63,12 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status and Change-folder as artifacts appear on disk.
 
-| #   | Phase name                        | Goal                                                                                                                              | Risks covered | Test types                                                       | Status        | Change folder                           |
-| --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- | ------------- | --------------------------------------- |
-| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | change opened | context/changes/testing-breach-to-email |
-| 2   | Window boundary + idempotency     | Prove limit window sum uses correct time boundaries; prove no duplicate emails are sent for the same window                       | R2, R4        | unit (boundary arithmetic), integration (duplicate-run scenario) | not started   | —                                       |
-| 3   | Tuya sync resilience              | Prove token refresh fires on expiry; stale-reading detection surfaces an error, not silent success                                | R3            | unit (token refresh logic), integration (expired-token fixture)  | not started   | —                                       |
-| 4   | Auth boundary + CI gate           | Prove unauthenticated requests to config endpoints are rejected; wire all tests into GitHub Actions CI on PR                      | R6            | contract/integration (negative auth), CI config                  | not started   | —                                       |
+| #   | Phase name                        | Goal                                                                                                                              | Risks covered | Test types                                                       | Status        | Change folder                               |
+| --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- | ------------- | ------------------------------------------- |
+| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | change opened | context/changes/testing-breach-to-email     |
+| 2   | Window boundary + idempotency     | Prove limit window sum uses correct time boundaries; prove no duplicate emails are sent for the same window                       | R2, R4        | unit (boundary arithmetic), integration (duplicate-run scenario) | shipped       | context/changes/window-boundary-idempotency |
+| 3   | Tuya sync resilience              | Prove token refresh fires on expiry; stale-reading detection surfaces an error, not silent success                                | R3            | unit (token refresh logic), integration (expired-token fixture)  | not started   | —                                           |
+| 4   | Auth boundary + CI gate           | Prove unauthenticated requests to config endpoints are rejected; wire all tests into GitHub Actions CI on PR                      | R6            | contract/integration (negative auth), CI config                  | not started   | —                                           |
 
 ## 4. Stack
 
@@ -103,7 +103,49 @@ How to add new tests in this project. Each sub-section fills in once the relevan
 
 ### 6.1 Adding a unit test
 
-TBD — see §3 Phase 1.
+Reference file: `src/lib/services/__tests__/consumption-window.test.ts`
+
+**File location**: Place unit tests in `src/lib/services/__tests__/<module-name>.test.ts`.
+
+**Import style**: Use the `@/` alias for all production imports (`import { getWindowBounds } from "@/lib/services/consumption-window"`). The alias is wired in `vitest.config.ts` → `resolve.alias`.
+
+**Fixture approach — oracle first, not output-recorded**:
+
+1. Identify the function's explicit input knobs (e.g., `referenceDate?: Date`). If the function does not accept one, add it or test through a thin wrapper — this keeps fixtures timezone-independent.
+2. Derive `expected*` values from calendar rules / PRD / domain knowledge **before** running the code. Do not run the function, copy the output, and call that the oracle — that produces a mirror test that passes against bugs.
+3. Express fixtures as UTC ISO strings so the test results are the same regardless of the CI machine's local timezone.
+
+**`it.each` for parameterised boundary cases**:
+
+```ts
+it.each([
+  {
+    label: "day window — CEST",
+    windowType: "day",
+    referenceDate: "2026-06-15T10:00:00.000Z",
+    expectedStart: "2026-06-14T22:00:00.000Z",
+    expectedEnd: "2026-06-15T22:00:00.000Z",
+  },
+  {
+    label: "DST spring-forward",
+    windowType: "day",
+    referenceDate: "2026-03-29T10:00:00.000Z",
+    expectedStart: "2026-03-28T23:00:00.000Z",
+    expectedEnd: "2026-03-29T22:00:00.000Z",
+  },
+  // … one row per regression you want to catch
+])("$label", ({ windowType, referenceDate, expectedStart, expectedEnd }) => {
+  const result = getWindowBounds(windowType, "Europe/Warsaw", new Date(referenceDate));
+  expect(result.windowStart.toISOString()).toBe(expectedStart);
+  expect(result.windowEnd.toISOString()).toBe(expectedEnd);
+});
+```
+
+Each row must exercise a **different regression** (different window type, DST vs non-DST, etc.). Duplicate rows that assert the same property catch nothing extra.
+
+**`astro:env/server` in unit tests**: If the module under test imports (directly or transitively) from `astro:env/server`, mock it at the top level with `vi.mock('@/lib/services/<module>', () => ({ ... }))`. Vitest auto-hoists top-level `vi.mock` calls before any imports are evaluated, preventing the virtual module from being resolved. The `vitest.config.ts` also ships a belt-and-suspenders shim plugin for tests that do not mock the boundary.
+
+**Untyped Supabase returns**: When using the untyped Supabase client in helper code, satisfy `@typescript-eslint/no-unsafe-assignment` with an explicit inline assertion: `(data as { id: string }).id`.
 
 ### 6.2 Adding an integration test for a background job
 
@@ -111,7 +153,82 @@ TBD — see §3 Phase 1. Pattern: real job logic invoked in a `@cloudflare/vites
 
 ### 6.3 Adding a test for a new limit or window calculation
 
-TBD — see §3 Phase 2. Pattern: unit test with explicit timestamp fixtures at and around the window boundary.
+Reference files: `src/lib/services/__tests__/consumption-window.test.ts`, `src/lib/services/__tests__/consumption-preview-predicate.test.ts`
+
+Use a **two-layer approach**: one layer for boundary arithmetic, one for predicate operators. Both are unit tests; neither needs a running database.
+
+#### Layer 1 — Boundary arithmetic (test `getWindowBounds()` directly)
+
+Test the calendar function in isolation with an explicit `referenceDate` — do not route through the evaluation service. This keeps the fixture table simple and makes failures easy to diagnose.
+
+Oracle values for common European/Warsaw offsets:
+
+| Season                          | UTC offset          | midnight Warsaw in UTC      |
+| ------------------------------- | ------------------- | --------------------------- |
+| CEST (summer)                   | UTC+2               | `T22:00:00.000Z` day before |
+| CET (winter)                    | UTC+1               | `T23:00:00.000Z` day before |
+| DST spring-forward day (Mar 29) | start CET, end CEST | 23-hour window              |
+
+**Always include a DST fixture**. The spring-forward day in the Warsaw timezone is March 29 (clocks jump at 02:00 CET → 03:00 CEST). On that day the `day` window is 23 hours, not 24:
+
+```
+referenceDate: "2026-03-29T10:00:00.000Z"
+expectedStart: "2026-03-28T23:00:00.000Z"  // midnight CET = UTC-1h
+expectedEnd:   "2026-03-29T22:00:00.000Z"  // midnight CEST = UTC-2h
+```
+
+In addition to the parameterised arithmetic tests, add three standalone half-open interval semantics assertions (using any fixture as the vehicle):
+
+```ts
+it("windowStart is included in the window", () => {
+  expect(start.getTime() >= start.getTime()).toBe(true);
+});
+it("windowEnd is excluded from the window", () => {
+  expect(end.getTime() < end.getTime()).toBe(false);
+});
+it("one millisecond before windowStart is excluded", () => {
+  expect(start.getTime() - 1 < start.getTime()).toBe(true);
+});
+```
+
+These three pin the `>=`/`<` semantics. A future change to `>`/`<=` fails them immediately.
+
+#### Layer 2 — Predicate operators (recording mock on the Supabase query builder)
+
+Boundary arithmetic alone does not catch a `>` vs `>=` typo in the query that filters readings. Add a separate test that builds a recording Supabase client, calls the preview/evaluation function, and asserts which filter methods were called:
+
+```ts
+// Minimal recording builder — thenable so Supabase lazy-chain resolves
+const calls: { method: string; column: string }[] = [];
+const builder: Record<string, unknown> = {
+  gte: (col: string) => {
+    calls.push({ method: "gte", column: col });
+    return builder;
+  },
+  gt: (col: string) => {
+    calls.push({ method: "gt", column: col });
+    return builder;
+  },
+  lt: (col: string) => {
+    calls.push({ method: "lt", column: col });
+    return builder;
+  },
+  lte: (col: string) => {
+    calls.push({ method: "lte", column: col });
+    return builder;
+  },
+  then: (resolve: (v: unknown) => void) => resolve({ data: [], error: null }),
+  // … add select, eq, etc. as needed by the function under test
+};
+```
+
+Assert:
+
+- A `gte` call was recorded for column `"recorded_at"`.
+- A `lt` call was recorded for column `"recorded_at"`.
+- No `gt` or `lte` call for `"recorded_at"`.
+
+This test fails immediately if the wrong operator pair is used, even when no fixture reading sits exactly on the boundary.
 
 ### 6.4 Adding a test for a new API endpoint
 
