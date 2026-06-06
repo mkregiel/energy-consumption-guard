@@ -41,3 +41,8 @@ tuya-body.json
 # local HTTPS dev certs (see certs/README.md)
 certs/*.pem
 certs/*.key
+
+reports/mutation/
+
+# stryker temp files
+.stryker-tmp

@@ -30,7 +30,40 @@ Stack, setup, production deploy @README.md. Agents specific rules are below.
 
 ## Testing Guidelines
 
-No test runner is configured. Do not add test infrastructure unless explicitly requested.
+### Unit / Integration tests — Vitest
+
+- Runner: **Vitest** (`npm test` → `vitest run --passWithNoTests`, `npm run test:ci` → `vitest run`)
+- Config: @vitest.config.ts — `environment: "node"`, includes `src/**/*.test.ts`
+- Path alias `@` maps to `src/` (same as tsconfig)
+- Global setup: @vitest.setup.ts — loads `.env.test` into `process.env` before workers start
+- Integration tests that hit a real Supabase instance require a `.env.test` file (copy from @.env.example, fill in test-project credentials); without it they fail with a clear error
+- `astro:env/server` is shimmed in vitest.config.ts — import env vars from there normally in source, no special handling needed in tests
+- Test files live next to the code they test under a `__tests__/` subdirectory, e.g. `src/lib/services/__tests__/`
+
+### E2E tests
+
+No E2E test runner is configured yet (`tests/` directory does not exist).
+
+### Mutation testing — Stryker
+
+Config: @stryker.config.json — runner: `vitest`, reporters: `html + clear-text + progress`, `coverageAnalysis: perTest`
+
+Run selectively against a changed module:
+```
+npx stryker run --mutate "src/lib/services/my-service.ts"
+# or with line range:
+npx stryker run --mutate "src/lib/services/my-service.ts:10-80"
+```
+
+Do not run Stryker on the whole repo in CI. Review survived mutants one by one — add an assertion only when the mutant represents a user-visible or business-relevant bug.
+
+## Mutation testing
+
+Repo uses Stryker for selective mutation testing on risk-critical modules.
+Run it only for code covered by the current change or a risk from test-plan.md,
+prefer narrowed scope with --mutate "path/to/file.ts:start-end", and do not chase
+100% mutation score. Survived mutants should be reviewed one by one: add an
+assertion only when the mutant represents a user-visible or business-relevant bug.
 
 ## Commit & Pull Request Guidelines
 
