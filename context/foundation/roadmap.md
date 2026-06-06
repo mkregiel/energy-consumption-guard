@@ -3,7 +3,7 @@ project: Monitor zużycia prądu w gospodarstwie domowym
 version: 1
 status: in_progress
 created: 2026-05-25
-updated: 2026-06-04
+updated: 2026-06-05
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -38,7 +38,7 @@ Właściciel domu traci kontrolę nad zużyciem prądu, gdy rachunek w danym okr
 | S-02 | tuya-device-and-consumption | connect an energy meter via Tuya / Smart Life and see current consumption in the app        | F-01, F-02, F-05, S-01       | FR-002, US-01                    | done     |
 | S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window                                   | S-02, F-01, F-05             | FR-003, US-01                    | done     |
 | S-04 | configure-alarm-email       | set the email address used for alarm notifications                                          | S-01, F-01, F-05             | FR-004, US-01                    | done     |
-| S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit                | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01                    | proposed |
+| S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit                | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01                    | done     |
 
 ## Streams
 
@@ -47,7 +47,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | Stream | Theme                 | Chain                                 | Note                                                                                  |
 | ------ | --------------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
 | A      | Dane i Tuya           | ~~`F-01` → `F-02` → `S-02`~~ **done** | Gwiazda przewodnia osiągnięta; cron sync co godzinę (`F-03`) utrzymuje odczyty w tle. |
-| B      | Alarm w tle           | `F-04` → `S-05`                       | `F-03` done — ewaluacja limitów co godzinę; brakuje wysyłki email (`F-04`).           |
+| B      | Alarm w tle           | ~~`F-04` → `S-05`~~ **impl_reviewed**  | Impl-review 2026-06-04 (NEEDS ATTENTION) — wszystkie findingi (F1–F6) naprawione 2026-06-05. |
 | C      | Konfiguracja limitów  | ~~`S-03`~~ **done**                   | GET/POST `/api/limits`, inline form + window preview na dashboardzie (2026-06-03).    |
 | D      | Konto i powiadomienia | ~~`S-04`~~ **done**                   | GET/POST `/api/notifications`, `AlarmEmailForm` na dashboardzie (2026-06-04).         |
 
@@ -205,7 +205,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Czy w MVP wystarczy wyłącznie reguła progu (FR-005), bez heurystyki anomalii z wizji? — Owner: user. Block: no (Non-Goals wykluczają ML w v1).
 - **Risk:** Zamknięcie Primary Success Criteria — zależy od wszystkich warstw; przy `time` FR-006 i polish zostają w Parked.
-- **Status:** proposed
+- **Status:** done
+- **Completed:** 2026-06-05 — E2E verified against staging: breach created, email delivered, cleanup passed. Impl-review 2026-06-04 (all findings F1–F6 resolved).
 
 ## Backlog Handoff
 
@@ -242,3 +243,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia                        |
 | S-03 | configure-consumption-limit | 2026-06-03 | GET/POST /api/limits, inline dashboard form, window preview + progress bar |
 | S-04 | configure-alarm-email       | 2026-06-04 | GET/POST /api/notifications, AlarmEmailForm na dashboardzie                |
+| S-05 | email-alarm-on-limit-breach | 2026-06-05 | E2E seed script, staging verified: breach → email delivered end-to-end    |

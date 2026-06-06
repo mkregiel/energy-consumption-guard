@@ -1,8 +1,8 @@
 ---
 id: email-alarm-on-limit-breach
 title: E2E verification — email alarm on limit breach
-status: impl_reviewed
-updated: 2026-06-04
+status: done
+updated: 2026-06-05
 stream: B
 depends_on: [transactional-email-alerts, configure-alarm-email]
 ---
