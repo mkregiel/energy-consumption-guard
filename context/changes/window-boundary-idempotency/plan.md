@@ -399,22 +399,22 @@ Update `context/foundation/test-plan.md` with the patterns established in Phases
 
 #### Automated
 
-- [x] 3.1 `supabase start` running; `.env.test` populated; `npm test` exits 0
-- [x] 3.2 `sendPlainTextEmail` called exactly once after two sequential `runBreachNotifications()` invocations
+- [x] 3.1 `supabase start` running; `.env.test` populated; `npm test` exits 0 — 70af182
+- [x] 3.2 `sendPlainTextEmail` called exactly once after two sequential `runBreachNotifications()` invocations — 70af182
 
 #### Manual
 
-- [x] 3.3 Comment out `vi.mock('@/lib/services/email-client')`; verify test fails with `astro:env/server` error; uncomment
-- [x] 3.4 Run `npm test` twice in succession without clearing DB; verify `afterEach` prevents pollution
+- [x] 3.3 Comment out `vi.mock('@/lib/services/email-client')`; verify test fails with `astro:env/server` error; uncomment — 70af182
+- [x] 3.4 Run `npm test` twice in succession without clearing DB; verify `afterEach` prevents pollution — 70af182
 
 ### Phase 4: Cookbook + plan sync
 
 #### Automated
 
-- [ ] 4.1 `npm test` still exits 0 after documentation changes
-- [ ] 4.2 `npm run lint` passes on all modified markdown files
+- [x] 4.1 `npm test` still exits 0 after documentation changes
+- [x] 4.2 `npm run lint` passes on all modified markdown files
 
 #### Manual
 
-- [ ] 4.3 `context/foundation/test-plan.md §6.1` and `§6.3` readable as standalone patterns
-- [ ] 4.4 `context/foundation/test-plan.md §3` Phase 2 shows `shipped`
+- [x] 4.3 `context/foundation/test-plan.md §6.1` and `§6.3` readable as standalone patterns
+- [x] 4.4 `context/foundation/test-plan.md §3` Phase 2 shows `shipped`
