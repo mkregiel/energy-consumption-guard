@@ -411,10 +411,10 @@ Update `context/foundation/test-plan.md` with the patterns established in Phases
 
 #### Automated
 
-- [x] 4.1 `npm test` still exits 0 after documentation changes
-- [x] 4.2 `npm run lint` passes on all modified markdown files
+- [x] 4.1 `npm test` still exits 0 after documentation changes — cac55b3
+- [x] 4.2 `npm run lint` passes on all modified markdown files — cac55b3
 
 #### Manual
 
-- [x] 4.3 `context/foundation/test-plan.md §6.1` and `§6.3` readable as standalone patterns
-- [x] 4.4 `context/foundation/test-plan.md §3` Phase 2 shows `shipped`
+- [x] 4.3 `context/foundation/test-plan.md §6.1` and `§6.3` readable as standalone patterns — cac55b3
+- [x] 4.4 `context/foundation/test-plan.md §3` Phase 2 shows `shipped` — cac55b3
