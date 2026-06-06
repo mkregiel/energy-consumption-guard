@@ -58,19 +58,25 @@ describe("getWindowBounds", () => {
 });
 
 // Half-open interval semantics: windowStart is included (>=), windowEnd is excluded (<).
-// These use the month fixture as the vehicle.
+// Oracle values from the month fixture: windowStart = 2026-05-31T22:00:00.000Z,
+// windowEnd = 2026-06-30T22:00:00.000Z (both derived from calendar rules, not code output).
 describe("getWindowBounds — half-open interval semantics", () => {
   const { windowStart, windowEnd } = getWindowBounds("month", "Europe/Warsaw", new Date("2026-06-15T10:00:00.000Z"));
 
-  it("windowStart timestamp satisfies >= windowStart (inclusive lower bound)", () => {
-    expect(windowStart.getTime() >= windowStart.getTime()).toBe(true);
+  // windowStart is inclusive: a reading recorded exactly at windowStart passes the >= filter.
+  it("windowStart is included in the window (>= predicate passes)", () => {
+    expect(windowStart.getTime() >= new Date("2026-05-31T22:00:00.000Z").getTime()).toBe(true);
+    expect(windowStart.getTime() - 1 >= new Date("2026-05-31T22:00:00.000Z").getTime()).toBe(false);
   });
 
-  it("windowEnd timestamp does NOT satisfy < windowEnd (exclusive upper bound)", () => {
-    expect(windowEnd.getTime() < windowEnd.getTime()).toBe(false);
+  // windowEnd is exclusive: a reading recorded exactly at windowEnd fails the < filter.
+  it("windowEnd is excluded from the window (< predicate fails at boundary)", () => {
+    expect(windowEnd.getTime() < new Date("2026-06-30T22:00:00.000Z").getTime()).toBe(false);
+    expect(windowEnd.getTime() - 1 < new Date("2026-06-30T22:00:00.000Z").getTime()).toBe(true);
   });
 
-  it("one millisecond before windowStart is excluded by the >= predicate", () => {
-    expect(windowStart.getTime() - 1 < windowStart.getTime()).toBe(true);
+  // One millisecond before windowStart is outside the window.
+  it("one millisecond before windowStart is excluded from the window", () => {
+    expect(new Date("2026-05-31T21:59:59.999Z").getTime() >= windowStart.getTime()).toBe(false);
   });
 });

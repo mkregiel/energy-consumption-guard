@@ -68,6 +68,11 @@ beforeAll(async () => {
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
 
+  // Guard: clean up a leftover user from a previously aborted run (e.g. CI timeout).
+  const { data: existingUsers } = await supabase.auth.admin.listUsers();
+  const existing = existingUsers.users.find((u) => u.email === "test-idempotency@example.com");
+  if (existing) await supabase.auth.admin.deleteUser(existing.id);
+
   const { data, error } = await supabase.auth.admin.createUser({
     email: "test-idempotency@example.com",
     password: crypto.randomUUID(),
