@@ -387,25 +387,25 @@ Update `context/foundation/test-plan.md` with the patterns established in Phases
 
 #### Automated
 
-- [x] 2.1 `npm test` exits 0; all window boundary tests pass
-- [x] 2.2 All expected values in test fixtures derived from oracle (calendar rules), not from code output
+- [x] 2.1 `npm test` exits 0; all window boundary tests pass — 0955ca3
+- [x] 2.2 All expected values in test fixtures derived from oracle (calendar rules), not from code output — 0955ca3
 
 #### Manual
 
-- [x] 2.3 Mutate `.gte` → `.gt` in `limit-consumption-preview.ts:27`; verify predicate test fails; revert
-- [x] 2.4 Verify DST fixture: `referenceDate = 2026-03-29T10:00:00.000Z` → `windowStart = 2026-03-28T23:00:00.000Z`, `windowEnd = 2026-03-29T22:00:00.000Z`
+- [x] 2.3 Mutate `.gte` → `.gt` in `limit-consumption-preview.ts:27`; verify predicate test fails; revert — 0955ca3
+- [x] 2.4 Verify DST fixture: `referenceDate = 2026-03-29T10:00:00.000Z` → `windowStart = 2026-03-28T23:00:00.000Z`, `windowEnd = 2026-03-29T22:00:00.000Z` — 0955ca3
 
 ### Phase 3: R2 — Dispatch idempotency integration test
 
 #### Automated
 
-- [ ] 3.1 `supabase start` running; `.env.test` populated; `npm test` exits 0
-- [ ] 3.2 `sendPlainTextEmail` called exactly once after two sequential `runBreachNotifications()` invocations
+- [x] 3.1 `supabase start` running; `.env.test` populated; `npm test` exits 0
+- [x] 3.2 `sendPlainTextEmail` called exactly once after two sequential `runBreachNotifications()` invocations
 
 #### Manual
 
-- [ ] 3.3 Comment out `vi.mock('@/lib/services/email-client')`; verify test fails with `astro:env/server` error; uncomment
-- [ ] 3.4 Run `npm test` twice in succession without clearing DB; verify `afterEach` prevents pollution
+- [x] 3.3 Comment out `vi.mock('@/lib/services/email-client')`; verify test fails with `astro:env/server` error; uncomment
+- [x] 3.4 Run `npm test` twice in succession without clearing DB; verify `afterEach` prevents pollution
 
 ### Phase 4: Cookbook + plan sync
 
