@@ -1,5 +1,6 @@
 ﻿/.cursor
-/.claude
+/.claude/*
+!/.claude/settings.json
 /.agents
 
 # from 10x-astro-starter
