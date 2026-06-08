@@ -63,23 +63,23 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status and Change-folder as artifacts appear on disk.
 
-| #   | Phase name                        | Goal                                                                                                                              | Risks covered | Test types                                                       | Status        | Change folder                               |
-| --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- | ------------- | ------------------------------------------- |
-| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | change opened | context/changes/testing-breach-to-email     |
-| 2   | Window boundary + idempotency     | Prove limit window sum uses correct time boundaries; prove no duplicate emails are sent for the same window                       | R2, R4        | unit (boundary arithmetic), integration (duplicate-run scenario) | shipped       | context/changes/window-boundary-idempotency |
-| 3   | Tuya sync resilience              | Prove token refresh fires on expiry; stale-reading detection surfaces an error, not silent success                                | R3            | unit (token refresh logic), integration (expired-token fixture)  | not started   | —                                           |
-| 4   | Auth boundary + CI gate           | Prove unauthenticated requests to config endpoints are rejected; wire all tests into GitHub Actions CI on PR                      | R6            | contract/integration (negative auth), CI config                  | not started   | —                                           |
+| #   | Phase name                        | Goal                                                                                                                              | Risks covered | Test types                                                       | Status      | Change folder                               |
+| --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- | ----------- | ------------------------------------------- |
+| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | not started | —                                           |
+| 2   | Window boundary + idempotency     | Prove limit window sum uses correct time boundaries; prove no duplicate emails are sent for the same window                       | R2, R4        | unit (boundary arithmetic), integration (duplicate-run scenario) | shipped     | context/changes/window-boundary-idempotency |
+| 3   | Tuya sync resilience              | Prove token refresh fires on expiry; stale-reading detection surfaces an error, not silent success                                | R3            | unit (token refresh logic), integration (expired-token fixture)  | not started | —                                           |
+| 4   | Auth boundary + CI gate           | Prove unauthenticated requests to config endpoints are rejected; wire all tests into GitHub Actions CI on PR                      | R6            | contract/integration (negative auth), CI config                  | not started | —                                           |
 
 ## 4. Stack
 
 The project currently has **no test infrastructure** (test-base profile: `none` — no vitest.config, no test files found as of 2026-06-05). Phase 1 bootstraps the runner.
 
-| Layer              | Tool                               | Version              | Notes                                                                                                     |
-| ------------------ | ---------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------- |
-| Unit + integration | Vitest                             | TBD — see §3 Phase 1 | Recommended for Astro/TS projects on Cloudflare Workers; `@cloudflare/vitest-pool-workers` for Worker env |
-| Worker integration | `@cloudflare/vitest-pool-workers`  | TBD — see §3 Phase 1 | Runs test workers in real miniflare environment; needed for cron handler tests                            |
-| HTTP mocking       | MSW or `vi.fn()` at fetch boundary | TBD — see §3 Phase 1 | Mock Resend and Tuya HTTP at the network edge only; never mock internal modules                           |
-| e2e                | none yet                           | —                    | Not planned in this rollout; revisit if UI regression risk rises                                          |
+| Layer              | Tool                               | Version              | Notes                                                                                                                                                      |
+| ------------------ | ---------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit + integration | Vitest                             | TBD — see §3 Phase 1 | Recommended for Astro/TS projects on Cloudflare Workers; `@cloudflare/vitest-pool-workers` for Worker env                                                  |
+| Worker integration | `@cloudflare/vitest-pool-workers`  | TBD — see §3 Phase 1 | Runs test workers in real miniflare environment; needed for cron handler tests                                                                             |
+| HTTP mocking       | MSW or `vi.fn()` at fetch boundary | TBD — see §3 Phase 1 | Mock Resend and Tuya HTTP at the network edge only; never mock internal modules                                                                            |
+| e2e                | Playwright (`@playwright/test`)    | ^1.60.0              | Integrated via `playwright.config.ts` (testDir `e2e/`, chromium/firefox/webkit projects); not yet wired into a rollout phase — see `/10x-e2e` for workflow |
 
 **Stack grounding tools (current session):**
 
