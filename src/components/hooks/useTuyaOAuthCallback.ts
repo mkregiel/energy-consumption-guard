@@ -45,6 +45,12 @@ export function useTuyaOAuthCallback({ code, state }: UseTuyaOAuthCallbackParams
       return;
     }
 
+    // Narrow once here — TS can't carry the `string | null` narrowing into the
+    // nested async closure below (the props could theoretically change before
+    // it runs), so bind to local `string` consts the closure can safely use.
+    const oauthCode: string = code;
+    const oauthState: string = state;
+
     let cancelled = false;
 
     async function completeOAuth() {
@@ -56,7 +62,7 @@ export function useTuyaOAuthCallback({ code, state }: UseTuyaOAuthCallbackParams
         const response = await fetch("/api/tuya/oauth/callback", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, state } satisfies TuyaOAuthCallbackPayload),
+          body: JSON.stringify({ code: oauthCode, state: oauthState } satisfies TuyaOAuthCallbackPayload),
         });
 
         const body = (await response.json()) as TuyaApiSuccess<Record<string, unknown>> | TuyaApiErrorBody;
