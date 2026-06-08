@@ -130,8 +130,8 @@ beforeEach(async () => {
     .insert({ user_id: userId, alarm_email: "alarm@example.com" });
   if (settingsError) throw new Error(`Failed to insert notification_settings: ${settingsError.message}`);
 
-  // Reset mock call count before each test
-  vi.mocked(sendPlainTextEmail).mockClear();
+  // Reset mock implementation and call history before each test so per-test overrides don't bleed.
+  vi.mocked(sendPlainTextEmail).mockReset().mockResolvedValue(undefined);
 });
 
 afterEach(async () => {
@@ -139,6 +139,38 @@ afterEach(async () => {
   await supabase.from("notification_settings").delete().eq("user_id", userId);
   await supabase.from("limit_breach_events").delete().eq("id", breachId);
   await supabase.from("consumption_limits").delete().eq("id", limitId);
+});
+
+describe("runBreachNotifications — retry / terminal-failure", () => {
+  it("reaches terminal failure state after 3 failed send attempts and is excluded on the 4th run", async () => {
+    vi.mocked(sendPlainTextEmail).mockRejectedValue(new Error("Simulated send failure"));
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
+    await runBreachNotifications(supabase);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
+    await runBreachNotifications(supabase);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
+    await runBreachNotifications(supabase);
+
+    const { data: row } = await supabase
+      .from("limit_breach_events")
+      .select("notification_attempt_count, notification_failed_at, notified_at")
+      .eq("id", breachId)
+      .single();
+    if (!row) throw new Error("Breach row not found after 3 failed runs");
+
+    expect(row.notification_attempt_count).toBe(3);
+
+    expect(row.notification_failed_at).not.toBeNull();
+
+    expect(row.notified_at).toBeNull();
+
+    // 4th run: breach is excluded by notification_failed_at IS NULL filter — no email attempted.
+    vi.mocked(sendPlainTextEmail).mockClear();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
+    await runBreachNotifications(supabase);
+    expect(vi.mocked(sendPlainTextEmail).mock.calls.length).toBe(0);
+  });
 });
 
 describe("runBreachNotifications — idempotency", () => {

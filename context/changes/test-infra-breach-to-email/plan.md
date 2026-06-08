@@ -219,14 +219,14 @@ No data migrations. The only "migration" here is moving an existing test file's 
 
 #### Automated
 
-- [ ] 2.1 New test passes: `npm run test:ci -- breach-notifications`
-- [ ] 2.2 Type checking passes: `npm run typecheck`
-- [ ] 2.3 Linting passes: `npm run lint`
-- [ ] 2.4 Existing two idempotency tests remain green
+- [x] 2.1 New test passes: `npm run test:ci -- breach-notifications`
+- [x] 2.2 Type checking passes: `npm run typecheck`
+- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.4 Existing two idempotency tests remain green
 
 #### Manual
 
-- [ ] 2.5 Review test assertions against `markBreachNotified`/attempt-recording logic for precision
+- [x] 2.5 Review test assertions against `markBreachNotified`/attempt-recording logic for precision
 
 ### Phase 3: Resend HTTP-error path coverage
 
