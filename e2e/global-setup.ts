@@ -1,7 +1,7 @@
 // tests/global-setup.ts
 import { chromium, expect, type FullConfig } from "@playwright/test";
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_config: FullConfig) {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
