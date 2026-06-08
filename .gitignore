@@ -3,6 +3,9 @@
 !/.claude/settings.json
 /.agents
 
+# e2e
+e2e/user.json
+
 # from 10x-astro-starter
 # build output
 dist/
@@ -47,3 +50,10 @@ reports/mutation/
 
 # stryker temp files
 .stryker-tmp
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
