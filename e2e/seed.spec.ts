@@ -12,7 +12,7 @@ test.describe("Dashboard", () => {
     await page.route("**/api/tuya/sync", async (route) => {
       const response = await route.fetch();
       responseStatus = response.status();
-      responseBody = await response.json();
+      responseBody = (await response.json()) as { ok: boolean; data: { status: string; synced: boolean } };
       await route.fulfill({ response });
     });
 
@@ -36,7 +36,7 @@ test.describe("Dashboard", () => {
     await emailInput.fill(notificationEmail);
     await expect(emailInput).toHaveValue(notificationEmail);
 
-    const [response] = await Promise.all([
+    await Promise.all([
       page.waitForResponse("**/api/notifications"),
       page.getByRole("button", { name: "Zapisz adres e-mail" }).click(),
     ]);
