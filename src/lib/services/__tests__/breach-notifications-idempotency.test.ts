@@ -56,7 +56,13 @@ function currentMonthStartWarsaw(): string {
 // Suite
 // ---------------------------------------------------------------------------
 
-let supabase: ReturnType<typeof createClient>;
+// Untyped client (no Database generic) — `.from(table).insert(...)` would otherwise
+// resolve the row type to `never` and reject our literal fixture payloads below. The
+// codebase has no generated `Database` type to plug in (see supabase-service-role.ts),
+// so the `any` type arguments are the only way to bypass that generic chain for this
+// fixture-only test client — narrowly disabled here rather than widening prod typings.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let supabase: ReturnType<typeof createClient<any, any, any>>;
 let userId: string;
 let limitId: string;
 let breachId: string;
@@ -94,7 +100,8 @@ beforeEach(async () => {
     .select("id")
     .single();
   if (limitError) throw new Error(`Failed to insert limit: ${limitError.message}`);
-  limitId = (limitData as { id: string }).id;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- untyped fixture client, see line 61
+  limitId = limitData.id;
 
   // Insert limit_breach_events
   const { data: breachData, error: breachError } = await supabase
@@ -112,7 +119,8 @@ beforeEach(async () => {
     .select("id")
     .single();
   if (breachError) throw new Error(`Failed to insert breach: ${breachError.message}`);
-  breachId = (breachData as { id: string }).id;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- untyped fixture client, see line 61
+  breachId = breachData.id;
 
   // Insert notification_settings
   const { error: settingsError } = await supabase
@@ -133,6 +141,7 @@ afterEach(async () => {
 
 describe("runBreachNotifications — idempotency", () => {
   it("sends email on first run", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
     await runBreachNotifications(supabase);
     expect(vi.mocked(sendPlainTextEmail).mock.calls.length).toBe(1);
     expect(vi.mocked(sendPlainTextEmail).mock.calls[0][0]).toMatchObject({ to: "alarm@example.com" });
@@ -144,7 +153,9 @@ describe("runBreachNotifications — idempotency", () => {
   // (10 * * * * UTC, single-instance deployment). Sequential idempotency is the
   // achievable guarantee here.
   it("does not send email on second run for same breach", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
     await runBreachNotifications(supabase);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
     await runBreachNotifications(supabase);
     expect(vi.mocked(sendPlainTextEmail).mock.calls.length).toBe(1);
   });

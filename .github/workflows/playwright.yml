@@ -1,9 +1,8 @@
 name: Playwright Tests
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  # Disabled for now — re-enable by restoring the push/pull_request triggers
+  # once the e2e suite is ready to run in CI.
+  workflow_dispatch:
 jobs:
   test:
     timeout-minutes: 60

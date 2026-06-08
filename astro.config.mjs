@@ -16,7 +16,7 @@ const SERVER_OPTIMIZE_DEPS = ["react", "react-dom", "react-dom/server.edge", "re
 function optimizeServerDeps() {
   return {
     name: "optimize-server-deps",
-    configEnvironment(name) {
+    configEnvironment(/** @type {string} */ name) {
       if (name !== "client") {
         return {
           optimizeDeps: {

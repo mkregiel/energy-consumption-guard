@@ -11,7 +11,7 @@ export const cronJsonError = (status: number, code: string, message: string, det
     { status },
   );
 
-export const cronJsonSuccess = (status: number, data: Record<string, unknown>) =>
+export const cronJsonSuccess = (status: number, data: object) =>
   Response.json(
     {
       ok: true,
