@@ -204,16 +204,16 @@ No data migrations. The only "migration" here is moving an existing test file's 
 
 #### Automated
 
-- [ ] 1.1 Dependency installs cleanly: `npm install`
-- [ ] 1.2 Type checking passes: `npm run typecheck`
-- [ ] 1.3 Linting passes: `npm run lint`
-- [ ] 1.4 Migrated breach-job suite passes under the Workers pool: `npm run test:ci -- breach-notifications-idempotency`
-- [ ] 1.5 Both pre-existing tests pass with original assertions intact
+- [x] 1.1 Dependency installs cleanly: `npm install`
+- [x] 1.2 Type checking passes: `npm run typecheck`
+- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.4 Migrated breach-job suite passes under the Workers pool: `npm run test:ci -- breach-notifications-idempotency`
+- [x] 1.5 Both pre-existing tests pass with original assertions intact
 
 #### Manual
 
-- [ ] 1.6 Full suite run confirms pure-unit suites still run under `node` and pass
-- [ ] 1.7 Confirm breach-job suite actually executes inside `workerd` (not silently falling back to `node`)
+- [x] 1.6 Full suite run confirms pure-unit suites still run under `node` and pass
+- [x] 1.7 Confirm breach-job suite actually executes inside `workerd` (not silently falling back to `node`)
 
 ### Phase 2: Retry / terminal-failure path coverage
 
