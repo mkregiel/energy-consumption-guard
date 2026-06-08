@@ -232,12 +232,12 @@ No data migrations. The only "migration" here is moving an existing test file's 
 
 #### Automated
 
-- [ ] 3.1 New test passes: `npm run test:ci -- breach-notifications`
-- [ ] 3.2 Type checking passes: `npm run typecheck`
-- [ ] 3.3 Linting passes: `npm run lint`
-- [ ] 3.4 All prior tests in the suite remain green
+- [x] 3.1 New test passes: `npm run test:ci -- breach-notifications`
+- [x] 3.2 Type checking passes: `npm run typecheck`
+- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.4 All prior tests in the suite remain green
 
 #### Manual
 
-- [ ] 3.5 Confirm mocked error shape mirrors real `email-client.ts:24-28` output
-- [ ] 3.6 Full suite (`npm run test:ci`) runs cleanly end to end (node + Workers pool)
+- [x] 3.5 Confirm mocked error shape mirrors real `email-client.ts:24-28` output
+- [x] 3.6 Full suite (`npm run test:ci`) runs cleanly end to end (node + Workers pool)

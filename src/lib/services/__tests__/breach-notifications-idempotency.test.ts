@@ -173,6 +173,66 @@ describe("runBreachNotifications — retry / terminal-failure", () => {
   });
 });
 
+describe("runBreachNotifications — Resend HTTP-error path", () => {
+  it("records one failed attempt and does not crash the batch when sendPlainTextEmail rejects with an HTTP-error shape", async () => {
+    // Insert a second breach under the same limit to verify batch isolation
+    // (unique constraint on consumption_limits.user_id prevents a second limit row).
+    const { data: breach2Data, error: breach2Error } = await supabase
+      .from("limit_breach_events")
+      .insert({
+        limit_id: limitId,
+        user_id: userId,
+        breached_at: new Date(Date.now() + 1000).toISOString(),
+        consumption_kwh: 250,
+        notified_at: null,
+        notification_failed_at: null,
+        notification_attempt_count: 0,
+        // Use previous month's window_start — (limit_id, window_start) is unique.
+        window_start: new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() - 1, 1)).toISOString(),
+      })
+      .select("id")
+      .single();
+    if (breach2Error) throw new Error(`Failed to insert second breach: ${breach2Error.message}`);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- untyped fixture client, see line 61
+    const breach2Id: string = breach2Data.id;
+
+    try {
+      // First call rejects with the exact error shape email-client.ts:27 produces on a non-2xx Resend response.
+      vi.mocked(sendPlainTextEmail).mockRejectedValueOnce(
+        new Error("Resend API error (422): Unprocessable Content — invalid email address"),
+      );
+      // Second call (for the independent breach) succeeds as normal.
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
+      await runBreachNotifications(supabase);
+
+      // The failing breach: one attempt recorded, not yet terminal, never notified.
+      const { data: failRow } = await supabase
+        .from("limit_breach_events")
+        .select("notification_attempt_count, notification_failed_at, notified_at")
+        .eq("id", breachId)
+        .single();
+      if (!failRow) throw new Error("Failing breach row not found");
+
+      expect(failRow.notification_attempt_count).toBe(1);
+      expect(failRow.notification_failed_at).toBeNull();
+      expect(failRow.notified_at).toBeNull();
+
+      // The independent breach: successfully notified in the same run (batch not poisoned).
+      const { data: successRow } = await supabase
+        .from("limit_breach_events")
+        .select("notified_at")
+        .eq("id", breach2Id)
+        .single();
+      if (!successRow) throw new Error("Success breach row not found");
+
+      expect(successRow.notified_at).not.toBeNull();
+    } finally {
+      await supabase.from("limit_breach_events").delete().eq("id", breach2Id);
+    }
+  });
+});
+
 describe("runBreachNotifications — idempotency", () => {
   it("sends email on first run", async () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- untyped fixture client, see line 61
