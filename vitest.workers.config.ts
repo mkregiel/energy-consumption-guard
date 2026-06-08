@@ -78,6 +78,7 @@ export default defineWorkersProject({
     // The Supabase admin client in beforeAll/beforeEach runs on the main thread
     // (outside the worker), so it still needs .env.test in process.env — reuse
     // the existing global setup rather than duplicating the load logic.
+    // Depends on vitest.setup.ts — removing that file silently breaks the Supabase admin client in beforeAll.
     globalSetup: ["./vitest.setup.ts"],
     poolOptions: {
       workers: {

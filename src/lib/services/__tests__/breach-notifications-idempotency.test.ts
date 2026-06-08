@@ -7,7 +7,7 @@ import { sendPlainTextEmail } from "@/lib/services/email-client";
 // Hoisted mock — prevents astro:env/server from being evaluated at module load time.
 vi.mock("@/lib/services/email-client", () => ({
   isResendConfigured: vi.fn().mockReturnValue(true),
-  sendPlainTextEmail: vi.fn().mockResolvedValue(undefined),
+  sendPlainTextEmail: vi.fn(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -197,7 +197,8 @@ describe("runBreachNotifications — Resend HTTP-error path", () => {
     const breach2Id: string = breach2Data.id;
 
     try {
-      // First call rejects with the exact error shape email-client.ts:27 produces on a non-2xx Resend response.
+      // First call rejects with the same format as email-client.ts:27 produces on a non-2xx Resend response
+      // (real Resend bodies are JSON; the exact string doesn't matter — breach-notifications.ts stores it as-is).
       vi.mocked(sendPlainTextEmail).mockRejectedValueOnce(
         new Error("Resend API error (422): Unprocessable Content — invalid email address"),
       );
@@ -228,7 +229,11 @@ describe("runBreachNotifications — Resend HTTP-error path", () => {
 
       expect(successRow.notified_at).not.toBeNull();
     } finally {
-      await supabase.from("limit_breach_events").delete().eq("id", breach2Id);
+      try {
+        await supabase.from("limit_breach_events").delete().eq("id", breach2Id);
+      } catch (_) {
+        // swallow — cleanup errors must not mask the original assertion failure
+      }
     }
   });
 });

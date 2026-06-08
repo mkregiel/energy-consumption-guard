@@ -1,7 +1,7 @@
 ---
 change_id: test-infra-breach-to-email
 title: Test infra + breach-to-email path
-status: implemented
+status: impl_reviewed
 created: 2026-06-08
 updated: 2026-06-08
 archived_at: null
