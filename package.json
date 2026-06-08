@@ -3,8 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "test": "vitest run --passWithNoTests",
-    "test:ci": "vitest run",
+    "test": "vitest run --passWithNoTests && vitest run --passWithNoTests --config vitest.workers.config.ts",
+    "test:ci": "vitest run && vitest run --config vitest.workers.config.ts",
     "test:watch": "vitest",
     "typecheck": "astro check",
     "dev": "astro dev",
@@ -42,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.0",
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^9.29.0",
     "@playwright/test": "^1.60.0",

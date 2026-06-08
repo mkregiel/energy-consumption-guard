@@ -1,5 +1,6 @@
 import { beforeAll, beforeEach, afterEach, afterAll, describe, it, expect, vi } from "vitest";
 import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from "astro:env/server";
 import { runBreachNotifications } from "@/lib/services/breach-notifications";
 import { sendPlainTextEmail } from "@/lib/services/email-client";
 
@@ -68,11 +69,12 @@ let limitId: string;
 let breachId: string;
 
 beforeAll(async () => {
-  supabase = createClient(
-    process.env.SUPABASE_URL ?? "http://127.0.0.1:54321",
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
+  // Sourced via the astro:env/server shim (not process.env directly) — under the
+  // Workers pool, workerd doesn't share process.env across the main thread and
+  // the isolated worker, but the shim resolves correctly in both runtimes.
+  supabase = createClient(SUPABASE_URL ?? "http://127.0.0.1:54321", SUPABASE_SERVICE_ROLE_KEY ?? "", {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 
   // Guard: clean up a leftover user from a previously aborted run (e.g. CI timeout).
   const { data: existingUsers } = await supabase.auth.admin.listUsers();
