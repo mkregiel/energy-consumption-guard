@@ -350,22 +350,22 @@ production files.
 
 #### Automated
 
-- [x] 2.1 TypeScript compilation clean: `npx tsc --noEmit`
-- [x] 2.2 Existing tests still pass: `npm test`
+- [x] 2.1 TypeScript compilation clean: `npx tsc --noEmit` — 1262cb7
+- [x] 2.2 Existing tests still pass: `npm test` — 1262cb7
 
 #### Manual
 
-- [x] 2.3 Sync with missing config env var surfaces thrown error (not silent success)
+- [x] 2.3 Sync with missing config env var surfaces thrown error (not silent success) — 1262cb7
 
 ### Phase 3: Integration Tests + Config
 
 #### Automated
 
-- [ ] 3.1 Workers-pool tests pass: `npx vitest run --config vitest.workers.config.ts`
-- [ ] 3.2 Full test suite passes: `npm test`
-- [ ] 3.3 TypeScript compilation clean: `npx tsc --noEmit`
+- [x] 3.1 Workers-pool tests pass: `npx vitest run --config vitest.workers.config.ts`
+- [x] 3.2 Full test suite passes: `npm test`
+- [x] 3.3 TypeScript compilation clean: `npx tsc --noEmit`
 
 #### Manual
 
-- [ ] 3.4 `npm test` passes twice consecutively (idempotency)
-- [ ] 3.5 After T3, direct DB query confirms no `consumption_readings` row for test meter
+- [x] 3.4 `npm test` passes twice consecutively (idempotency)
+- [x] 3.5 After T3, direct DB query confirms no `consumption_readings` row for test meter
