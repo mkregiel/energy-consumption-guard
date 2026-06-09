@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-09 (Phase 1 impl_reviewed — test infra + breach-to-email path; MCP stack updated: context7 + supabase + cloudflare now active)
+> Last updated: 2026-06-09 (Phases 1 + 2 shipped; MCP stack updated: context7 + supabase + cloudflare now active)
 
 ## 1. Strategy
 
@@ -65,20 +65,20 @@ orchestrator updates Status and Change-folder as artifacts appear on disk.
 
 | #   | Phase name                        | Goal                                                                                                                              | Risks covered | Test types                                                       | Status      | Change folder                               |
 | --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- | ----------- | ------------------------------------------- |
-| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | impl_reviewed | context/changes/test-infra-breach-to-email  |
+| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | shipped       | context/changes/test-infra-breach-to-email  |
 | 2   | Window boundary + idempotency     | Prove limit window sum uses correct time boundaries; prove no duplicate emails are sent for the same window                       | R2, R4        | unit (boundary arithmetic), integration (duplicate-run scenario) | shipped     | context/changes/window-boundary-idempotency |
 | 3   | Tuya sync resilience              | Prove token refresh fires on expiry; stale-reading detection surfaces an error, not silent success                                | R3            | unit (token refresh logic), integration (expired-token fixture)  | not started | —                                           |
 | 4   | Auth boundary + CI gate           | Prove unauthenticated requests to config endpoints are rejected; wire all tests into GitHub Actions CI on PR                      | R6            | contract/integration (negative auth), CI config                  | not started | —                                           |
 
 ## 4. Stack
 
-The project currently has **no test infrastructure** (test-base profile: `none` — no vitest.config, no test files found as of 2026-06-05). Phase 1 bootstraps the runner.
+Test infrastructure is **active** (bootstrapped in Phase 1 — shipped 2026-06-08). `vitest.config.ts` + `vitest.workers.config.ts` present; 3 test files in `src/lib/services/__tests__/`.
 
 | Layer              | Tool                               | Version              | Notes                                                                                                                                                      |
 | ------------------ | ---------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Unit + integration | Vitest                             | TBD — see §3 Phase 1 | Recommended for Astro/TS projects on Cloudflare Workers; `@cloudflare/vitest-pool-workers` for Worker env                                                  |
-| Worker integration | `@cloudflare/vitest-pool-workers`  | TBD — see §3 Phase 1 | Runs test workers in real miniflare environment; needed for cron handler tests                                                                             |
-| HTTP mocking       | MSW or `vi.fn()` at fetch boundary | TBD — see §3 Phase 1 | Mock Resend and Tuya HTTP at the network edge only; never mock internal modules                                                                            |
+| Unit + integration | Vitest                             | see `vitest.config.ts`        | Active — `vitest.config.ts` for unit/service tests; `@/` alias wired via `resolve.alias`                                                                   |
+| Worker integration | `@cloudflare/vitest-pool-workers`  | see `vitest.workers.config.ts` | Active — real miniflare environment; used for cron handler + breach-notification integration tests                                                         |
+| HTTP mocking       | `vi.fn()` at fetch boundary        | n/a (no MSW)                  | `vi.spyOn(global, "fetch")` pattern established in breach-notifications tests; mock Resend and Tuya at network edge only; never mock internal modules       |
 | e2e                | Playwright (`@playwright/test`)    | ^1.60.0              | Integrated via `playwright.config.ts` (testDir `e2e/`, chromium/firefox/webkit projects); not yet wired into a rollout phase — see `/10x-e2e` for workflow |
 
 **Stack grounding tools (current session):**
@@ -248,8 +248,8 @@ TBD — see §3 Phase 4. Pattern: integration test — unauthenticated request �
 
 ## 8. Freshness Ledger
 
-- Strategy (§1–§5) last reviewed: 2026-06-05
-- Stack versions last verified: 2026-06-05
+- Strategy (§1–§5) last reviewed: 2026-06-09
+- Stack versions last verified: 2026-06-09 (Vitest active; vitest.config.ts + vitest.workers.config.ts confirmed on disk)
 - AI-native tool references last verified: 2026-06-09 (context7, supabase, cloudflare MCPs installed and active)
 
 Refresh (`/10x-test-plan --refresh`) when:
