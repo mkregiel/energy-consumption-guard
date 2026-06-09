@@ -226,8 +226,8 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Automated
 
-- [x] 1.1 `vitest run src/lib/__tests__/auth-guard.test.ts` — all tests pass
-- [x] 1.2 `npm run lint` — no new errors
+- [x] 1.1 `vitest run src/lib/__tests__/auth-guard.test.ts` — all tests pass — b69d5b4
+- [x] 1.2 `npm run lint` — no new errors — b69d5b4
 
 #### Manual
 
@@ -237,8 +237,8 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Automated
 
-- [ ] 2.1 `vitest run src/pages/api/__tests__/auth-boundary.test.ts` — all four tests pass
-- [ ] 2.2 `npm run lint` — no new errors
+- [x] 2.1 `vitest run src/pages/api/__tests__/auth-boundary.test.ts` — all four tests pass
+- [x] 2.2 `npm run lint` — no new errors
 
 #### Manual
 
