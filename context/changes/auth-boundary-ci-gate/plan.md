@@ -248,8 +248,8 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Automated
 
-- [x] 3.1 `npm run test:unit` passes locally with all 10 tests
-- [x] 3.2 CI job on a PR shows green `npm run test:unit` step
+- [x] 3.1 `npm run test:unit` passes locally with all 10 tests — 1d81e4e
+- [x] 3.2 CI job on a PR shows green `npm run test:unit` step — 1d81e4e
 
 #### Manual
 
