@@ -339,23 +339,23 @@ production files.
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npx vitest run --config vitest.config.ts`
-- [x] 1.2 TypeScript compilation clean: `npx tsc --noEmit`
+- [x] 1.1 Unit tests pass: `npx vitest run --config vitest.config.ts` — d3da9fe
+- [x] 1.2 TypeScript compilation clean: `npx tsc --noEmit` — d3da9fe
 
 #### Manual
 
-- [x] 1.3 `.todo` test appears in output as pending, not failed
+- [x] 1.3 `.todo` test appears in output as pending, not failed — d3da9fe
 
 ### Phase 2: Production Code Fixes
 
 #### Automated
 
-- [ ] 2.1 TypeScript compilation clean: `npx tsc --noEmit`
-- [ ] 2.2 Existing tests still pass: `npm test`
+- [x] 2.1 TypeScript compilation clean: `npx tsc --noEmit`
+- [x] 2.2 Existing tests still pass: `npm test`
 
 #### Manual
 
-- [ ] 2.3 Sync with missing config env var surfaces thrown error (not silent success)
+- [x] 2.3 Sync with missing config env var surfaces thrown error (not silent success)
 
 ### Phase 3: Integration Tests + Config
 

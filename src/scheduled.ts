@@ -42,5 +42,6 @@ export const runScheduledJob = async (controller: ScheduledController): Promise<
     console.error("Scheduled job received unknown cron expression", { cron: controller.cron });
   } catch (error) {
     console.error("Scheduled job failed", { cron: controller.cron, error });
+    throw error;
   }
 };

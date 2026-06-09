@@ -328,7 +328,16 @@ export const syncMeterReading = async (
     snapshot = await cloudClient.getDeviceConsumption(meter.tuya_device_id, projectTokens.accessToken);
   } else {
     const { accessToken } = await resolveAccessToken(supabase, client, userId, options.forceRefresh ?? false);
-    snapshot = await client.getDeviceConsumption(meter.tuya_device_id, accessToken);
+    try {
+      snapshot = await client.getDeviceConsumption(meter.tuya_device_id, accessToken);
+    } catch (err) {
+      if (err instanceof TuyaServiceError && (err.code === "TUYA_TOKEN_EXPIRED" || err.code === "TUYA_AUTH_FAILED")) {
+        const { accessToken: freshToken } = await resolveAccessToken(supabase, client, userId, true);
+        snapshot = await client.getDeviceConsumption(meter.tuya_device_id, freshToken);
+      } else {
+        throw err;
+      }
+    }
   }
 
   const reading = await upsertConsumptionReading(supabase, meter.id, snapshot);
