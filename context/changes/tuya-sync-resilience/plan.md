@@ -361,11 +361,11 @@ production files.
 
 #### Automated
 
-- [x] 3.1 Workers-pool tests pass: `npx vitest run --config vitest.workers.config.ts`
-- [x] 3.2 Full test suite passes: `npm test`
-- [x] 3.3 TypeScript compilation clean: `npx tsc --noEmit`
+- [x] 3.1 Workers-pool tests pass: `npx vitest run --config vitest.workers.config.ts` — d219d37
+- [x] 3.2 Full test suite passes: `npm test` — d219d37
+- [x] 3.3 TypeScript compilation clean: `npx tsc --noEmit` — d219d37
 
 #### Manual
 
-- [x] 3.4 `npm test` passes twice consecutively (idempotency)
-- [x] 3.5 After T3, direct DB query confirms no `consumption_readings` row for test meter
+- [x] 3.4 `npm test` passes twice consecutively (idempotency) — d219d37
+- [x] 3.5 After T3, direct DB query confirms no `consumption_readings` row for test meter — d219d37
