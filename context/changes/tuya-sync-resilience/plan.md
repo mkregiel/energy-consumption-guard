@@ -339,12 +339,12 @@ production files.
 
 #### Automated
 
-- [ ] 1.1 Unit tests pass: `npx vitest run --config vitest.config.ts`
-- [ ] 1.2 TypeScript compilation clean: `npx tsc --noEmit`
+- [x] 1.1 Unit tests pass: `npx vitest run --config vitest.config.ts`
+- [x] 1.2 TypeScript compilation clean: `npx tsc --noEmit`
 
 #### Manual
 
-- [ ] 1.3 `.todo` test appears in output as pending, not failed
+- [x] 1.3 `.todo` test appears in output as pending, not failed
 
 ### Phase 2: Production Code Fixes
 

@@ -20,11 +20,11 @@ export interface TuyaTransportAdapter {
   listUserDevices(uid: string, accessToken: string): Promise<TuyaDeviceRecord[]>;
 }
 
-const TOKEN_REFRESH_SKEW_MS = 60_000;
+export const TOKEN_REFRESH_SKEW_MS = 60_000;
 
 const addSecondsIso = (from: Date, seconds: number): string => new Date(from.getTime() + seconds * 1000).toISOString();
 
-const isAccessTokenExpired = (expiresAt: string, forceRefresh: boolean): boolean => {
+export const isAccessTokenExpired = (expiresAt: string, forceRefresh: boolean): boolean => {
   if (forceRefresh) {
     return true;
   }
