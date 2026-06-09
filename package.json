@@ -5,6 +5,7 @@
   "scripts": {
     "test": "vitest run --passWithNoTests && vitest run --passWithNoTests --config vitest.workers.config.ts",
     "test:ci": "vitest run && vitest run --config vitest.workers.config.ts",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
     "typecheck": "astro check",
     "dev": "astro dev",

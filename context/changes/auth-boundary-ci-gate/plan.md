@@ -237,8 +237,8 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Automated
 
-- [x] 2.1 `vitest run src/pages/api/__tests__/auth-boundary.test.ts` — all four tests pass
-- [x] 2.2 `npm run lint` — no new errors
+- [x] 2.1 `vitest run src/pages/api/__tests__/auth-boundary.test.ts` — all four tests pass — 753c81d
+- [x] 2.2 `npm run lint` — no new errors — 753c81d
 
 #### Manual
 
@@ -248,8 +248,8 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Automated
 
-- [ ] 3.1 `npm run test:unit` passes locally with all 10 tests
-- [ ] 3.2 CI job on a PR shows green `npm run test:unit` step
+- [x] 3.1 `npm run test:unit` passes locally with all 10 tests
+- [x] 3.2 CI job on a PR shows green `npm run test:unit` step
 
 #### Manual
 
