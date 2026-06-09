@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-09 (Phases 1 + 2 shipped; MCP stack updated: context7 + supabase + cloudflare now active)
+> Last updated: 2026-06-09 (Phases 1 + 2 shipped; MCP stack updated; Phase 5 E2E added: R-E1 Tuya OAuth, R-E2 auth redirect, R-E3 form round-trip)
 
 ## 1. Strategy
 
@@ -45,6 +45,9 @@ research's job, see §1 principle #3).
 | R4  | Limit window boundary wrong → consumption sum covers wrong period → breach never triggers or triggers on every evaluation                   | High   | Medium     | Interview Q3; roadmap open question on calendar vs rolling window semantics; lessons.md: JS reduce over all readings in window |
 | R5  | Cron handler throws but error is swallowed → limit evaluation never runs → silent no-alarm for arbitrary duration                           | Medium | Low        | Hot-spot `src/scheduled.ts` (2 commits/30d); Cloudflare Worker edge environment; roadmap baseline: partial observability       |
 | R6  | Unauthenticated caller reads or writes `/api/limits` or `/api/notifications` configuration                                                  | Medium | Low        | PRD Access Control; roadmap baseline note: `/api/cron/` exempted from middleware — could widen surface                         |
+| R-E1 | Tuya OAuth connect flow fails silently in the browser — redirect chain breaks, callback token is not stored, meter never appears in the app | High   | Medium     | FR-002; OAuth H5 redirect chain is browser-only; unit/integration tests cannot exercise cookie state across redirect boundaries  |
+| R-E2 | Unauthenticated visit to `/dashboard` does not redirect to login — or post-login does not land on dashboard — breaking the auth UX          | Medium | Low        | FR-001; session cookie + browser redirect behaviour is distinct from the API-level 401 covered by Phase 4                       |
+| R-E3 | Limit form or alarm-email form saves successfully at the API level but the dashboard renders stale values — user sees no confirmation       | Medium | Low        | FR-003, FR-004; client-side re-render and progress bar state after POST are invisible to integration tests                       |
 
 ### Risk Response Guidance
 
@@ -56,6 +59,9 @@ research's job, see §1 principle #3).
 | R4   | A consumption reading timestamped just outside the configured window is excluded from the sum; a reading at the boundary is included                  | "The output looks plausible = the window arithmetic is correct"                                                                        | Window calculation in the limit-evaluation service; calendar vs rolling decision; how `window_start` is derived                                 | Unit test: boundary readings in/out of window with exact timestamps                                    | Testing only with readings all well within the window; accepting current output as oracle               |
 | R5   | A cron handler that throws does NOT silently return 200 — the error propagates or is logged                                                           | "No exception thrown = evaluation succeeded"                                                                                           | Error handling in `src/scheduled.ts`; Cloudflare Worker runtime error propagation; whether the HTTP fallback surfaces errors                    | Integration test: inject a failing dependency; assert error is not swallowed                           | Catching all errors at the top level and returning 200 unconditionally                                  |
 | R6   | A request to `/api/limits` or `/api/notifications` with no valid session cookie returns 401 or 403                                                    | "Global middleware protects all `/api/*` so individual handlers are safe" — verify the cron-route exemption does not widen the surface | Middleware allowlist rules; `requireUser()` placement in limit and notification handlers; which routes are actually exempt                      | Contract/integration test: unauthenticated request to each config endpoint; assert rejection           | Trusting middleware config without a negative test; testing only authenticated paths                    |
+| R-E1 | Tuya OAuth button triggers the redirect chain, callback stores the token, and the connected meter appears in the device list without a page reload    | "API returns 200 = OAuth worked" — token storage and UI update happen across a redirect boundary that integration tests cannot cross   | Tuya OAuth entry point in the UI; callback route and how it writes the token; how the device list re-fetches or rehydrates after the callback  | E2E: navigate to connect flow, complete OAuth (or intercept redirect), assert meter visible in device list | Mocking the entire OAuth flow at fetch level; asserting only API response, not rendered device list  |
+| R-E2 | Visiting `/dashboard` without a session redirects to `/login`; completing login lands back on `/dashboard`                                            | "Middleware returns 302 = UX is correct" — browser cookie jar and redirect chain behaviour differs from a raw HTTP check               | `src/middleware.ts` redirect logic; post-login redirect target; how Supabase session cookie is set and read across navigations                 | E2E: navigate to `/dashboard` unauthenticated → assert URL is `/login`; log in → assert URL is `/dashboard` | Testing only the API 401, not the rendered redirect; skipping the post-login landing assertion       |
+| R-E3 | After submitting the limit form and the email form, the dashboard immediately shows the saved values and the progress bar reflects the new limit       | "POST returns 200 = UI updated" — client-side re-render after form submission may read stale cache or skip a refetch                   | How each form triggers a data refetch or optimistic update after POST; whether the progress bar reads from server state or component-local state | E2E: fill and submit each form; assert updated values visible in the UI without a full page reload      | Only asserting the POST response; not asserting the rendered dashboard state after submission         |
 
 ## 3. Phased Rollout
 
@@ -69,6 +75,7 @@ orchestrator updates Status and Change-folder as artifacts appear on disk.
 | 2   | Window boundary + idempotency     | Prove limit window sum uses correct time boundaries; prove no duplicate emails are sent for the same window                       | R2, R4        | unit (boundary arithmetic), integration (duplicate-run scenario) | shipped     | context/changes/window-boundary-idempotency |
 | 3   | Tuya sync resilience              | Prove token refresh fires on expiry; stale-reading detection surfaces an error, not silent success                                | R3            | unit (token refresh logic), integration (expired-token fixture)  | not started | —                                           |
 | 4   | Auth boundary + CI gate           | Prove unauthenticated requests to config endpoints are rejected; wire all tests into GitHub Actions CI on PR                      | R6            | contract/integration (negative auth), CI config                  | not started | —                                           |
+| 5   | E2E critical user journeys        | Prove Tuya OAuth connect flow, auth redirect behaviour, and limit/email config round-trip work in a real browser                  | R-E1, R-E2, R-E3 | e2e (Playwright, DOM snapshot)                                 | not started | —                                           |
 
 ## 4. Stack
 
@@ -79,7 +86,7 @@ Test infrastructure is **active** (bootstrapped in Phase 1 — shipped 2026-06-0
 | Unit + integration | Vitest                             | see `vitest.config.ts`        | Active — `vitest.config.ts` for unit/service tests; `@/` alias wired via `resolve.alias`                                                                   |
 | Worker integration | `@cloudflare/vitest-pool-workers`  | see `vitest.workers.config.ts` | Active — real miniflare environment; used for cron handler + breach-notification integration tests                                                         |
 | HTTP mocking       | `vi.fn()` at fetch boundary        | n/a (no MSW)                  | `vi.spyOn(global, "fetch")` pattern established in breach-notifications tests; mock Resend and Tuya at network edge only; never mock internal modules       |
-| e2e                | Playwright (`@playwright/test`)    | ^1.60.0              | Integrated via `playwright.config.ts` (testDir `e2e/`, chromium/firefox/webkit projects); not yet wired into a rollout phase — see `/10x-e2e` for workflow |
+| e2e                | Playwright (`@playwright/test`)    | ^1.60.0              | Integrated via `playwright.config.ts` (testDir `e2e/`, chromium/firefox/webkit projects); Phase 5 — drive via `/10x-e2e` skill                             |
 
 **Stack grounding tools (current session):**
 
@@ -235,7 +242,23 @@ This test fails immediately if the wrong operator pair is used, even when no fix
 
 TBD — see §3 Phase 4. Pattern: integration test — unauthenticated request → assert 401/403; authenticated request → assert response shape and DB side-effect.
 
-### 6.5 Per-rollout-phase notes
+### 6.5 Adding an E2E test (Phase 5)
+
+Drive via `/10x-e2e`. Each test maps to one risk (R-E1, R-E2, R-E3); seed file lives in `e2e/`.
+
+**Locator priority** (per CLAUDE.md): `getByRole` / `getByLabel` / `getByText` first; `getByTestId` only when accessibility attributes are ambiguous. Never CSS selectors or XPath.
+
+**No `waitForTimeout`** — wait for state: `toBeVisible()`, `waitForURL()`, `waitForResponse()`.
+
+**Test independence** — each test owns its own setup, action, assertion, and cleanup. Use timestamp-suffixed unique data so parallel runs don't collide.
+
+**OAuth (R-E1)** — intercept the Tuya redirect at `waitForResponse()` on the callback URL rather than driving the external Tuya UI. Assert the meter row is visible in the device list after the callback resolves.
+
+**Auth redirect (R-E2)** — use a fresh browser context with no stored session to guarantee no cookie leakage from other tests.
+
+**Form round-trip (R-E3)** — assert the updated value is visible in the DOM after the POST response, not just that the form submitted successfully.
+
+### 6.6 Per-rollout-phase notes
 
 (Filled in as phases ship.)
 
