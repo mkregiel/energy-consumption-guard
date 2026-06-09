@@ -1,7 +1,7 @@
 ---
 change_id: tuya-sync-resilience
 title: Tuya sync resilience
-status: planned
+status: implementing
 created: 2026-06-09
 updated: 2026-06-09
 archived_at: null
