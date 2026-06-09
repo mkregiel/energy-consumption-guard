@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-09 (Phase 1 impl_reviewed — test infra + breach-to-email path)
+> Last updated: 2026-06-09 (Phase 1 impl_reviewed — test infra + breach-to-email path; MCP stack updated: context7 + supabase + cloudflare now active)
 
 ## 1. Strategy
 
@@ -83,10 +83,11 @@ The project currently has **no test infrastructure** (test-base profile: `none` 
 
 **Stack grounding tools (current session):**
 
-- Docs: none — no Context7 or framework docs MCP available in this session; checked: 2026-06-05
-- Search: WebSearch available (deferred tool) — not used for stack grounding; checked: 2026-06-05
-- Runtime/browser: Claude in Chrome MCP available — not used (no e2e phase planned); checked: 2026-06-05
-- Provider/platform: no Supabase/Cloudflare MCP detected — not used; checked: 2026-06-05
+- Docs: **context7 MCP active** (`mcp__context7__query-docs` / `resolve-library-id`) — use for Vitest, Cloudflare Workers, MSW, Astro docs; checked: 2026-06-09
+- Search: WebSearch available (deferred tool) — fallback when context7 has no match; checked: 2026-06-09
+- Runtime/browser: Claude in Chrome MCP available — not used (no e2e phase planned); checked: 2026-06-09
+- Provider/platform: **Supabase MCP active** (`mcp__supabase__*`) — use for schema inspection, SQL execution, migration listing; checked: 2026-06-09
+- Provider/platform: **Cloudflare MCP active** (`mcp__cloudflare__*`) — use for Workers config, KV, D1, deploy queries; checked: 2026-06-09
 
 ## 5. Quality Gates
 
@@ -249,7 +250,7 @@ TBD — see §3 Phase 4. Pattern: integration test — unauthenticated request �
 
 - Strategy (§1–§5) last reviewed: 2026-06-05
 - Stack versions last verified: 2026-06-05
-- AI-native tool references last verified: 2026-06-05
+- AI-native tool references last verified: 2026-06-09 (context7, supabase, cloudflare MCPs installed and active)
 
 Refresh (`/10x-test-plan --refresh`) when:
 
