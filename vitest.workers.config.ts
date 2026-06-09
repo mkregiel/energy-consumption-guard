@@ -74,7 +74,7 @@ export default defineWorkersProject({
     },
   },
   test: {
-    include: ["src/lib/services/__tests__/breach-notifications*.test.ts"],
+    include: ["src/lib/services/__tests__/{breach-notifications,tuya-token-sync}*.test.ts"],
     // The Supabase admin client in beforeAll/beforeEach runs on the main thread
     // (outside the worker), so it still needs .env.test in process.env — reuse
     // the existing global setup rather than duplicating the load logic.
