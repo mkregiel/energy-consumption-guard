@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-06 (Phase 2 shipped — window boundary + idempotency)
+> Last updated: 2026-06-09 (Phase 1 impl_reviewed — test infra + breach-to-email path)
 
 ## 1. Strategy
 
@@ -65,7 +65,7 @@ orchestrator updates Status and Change-folder as artifacts appear on disk.
 
 | #   | Phase name                        | Goal                                                                                                                              | Risks covered | Test types                                                       | Status      | Change folder                               |
 | --- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- | ----------- | ------------------------------------------- |
-| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | not started | —                                           |
+| 1   | Test infra + breach-to-email path | Bootstrap Vitest + Cloudflare Workers test env; prove breach event → email dispatch is correct and called exactly once per breach | R1, R2, R5    | integration (job logic, stub at Resend ACK boundary)             | impl_reviewed | context/changes/test-infra-breach-to-email  |
 | 2   | Window boundary + idempotency     | Prove limit window sum uses correct time boundaries; prove no duplicate emails are sent for the same window                       | R2, R4        | unit (boundary arithmetic), integration (duplicate-run scenario) | shipped     | context/changes/window-boundary-idempotency |
 | 3   | Tuya sync resilience              | Prove token refresh fires on expiry; stale-reading detection surfaces an error, not silent success                                | R3            | unit (token refresh logic), integration (expired-token fixture)  | not started | —                                           |
 | 4   | Auth boundary + CI gate           | Prove unauthenticated requests to config endpoints are rejected; wire all tests into GitHub Actions CI on PR                      | R6            | contract/integration (negative auth), CI config                  | not started | —                                           |
