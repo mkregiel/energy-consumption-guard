@@ -10,8 +10,12 @@ export default defineConfig({
       name: "astro-env-server-shim",
       resolveId(id: string) {
         if (id === "astro:env/server") return "\0astro:env/server";
+        if (id === "astro:middleware") return "\0astro:middleware";
       },
       load(id: string) {
+        if (id === "\0astro:middleware") {
+          return "export const defineMiddleware = (fn) => fn;";
+        }
         if (id === "\0astro:env/server") {
           return [
             "export const SUPABASE_URL = process.env.SUPABASE_URL;",

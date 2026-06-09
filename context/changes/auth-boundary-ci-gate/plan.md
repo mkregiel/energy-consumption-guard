@@ -226,8 +226,8 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Automated
 
-- [ ] 1.1 `vitest run src/lib/__tests__/auth-guard.test.ts` — all tests pass
-- [ ] 1.2 `npm run lint` — no new errors
+- [x] 1.1 `vitest run src/lib/__tests__/auth-guard.test.ts` — all tests pass
+- [x] 1.2 `npm run lint` — no new errors
 
 #### Manual
 
