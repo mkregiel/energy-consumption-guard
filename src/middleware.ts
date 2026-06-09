@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase";
 const PROTECTED_ROUTES = ["/dashboard"];
 const PUBLIC_API_PREFIXES = ["/api/auth/", "/api/cron/"];
 
-const isPublicApiRoute = (pathname: string): boolean =>
+export const isPublicApiRoute = (pathname: string): boolean =>
   PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
 export const onRequest = defineMiddleware(async (context, next) => {
