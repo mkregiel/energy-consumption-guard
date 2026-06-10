@@ -159,6 +159,8 @@ Each row must exercise a **different regression** (different window type, DST vs
 
 TBD — see §3 Phase 1. Pattern: real job logic invoked in a `@cloudflare/vitest-pool-workers` env; stub only at the Resend HTTP boundary and Tuya HTTP boundary. Assert both the DB side-effect AND the external call.
 
+**Config-boundary mocking**: `tuya-config` (env-var → config-object adapter, no business logic) may also be mocked alongside the `tuya-http` transport — e.g. to keep tests independent of `.env.test`'s `TUYA_*` vars, or to control `getMissingTuyaConfigKeys()` for fatal-config-error scenarios (see `tuya-token-sync.test.ts` T4). This is a config boundary, not an internal business-logic module, so it does not violate the "mock only at the network boundary" rule. Do not mock `tuya-client`, `cron-sync`, or `scheduled` themselves.
+
 ### 6.3 Adding a test for a new limit or window calculation
 
 Reference files: `src/lib/services/__tests__/consumption-window.test.ts`, `src/lib/services/__tests__/consumption-preview-predicate.test.ts`
