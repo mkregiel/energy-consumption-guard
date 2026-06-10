@@ -1,9 +1,10 @@
 ---
 change-id: background-limit-evaluation
 title: Background limit evaluation
-status: impl_reviewed
+status: archived
 created: 2026-05-31
-updated: 2026-05-31
+updated: 2026-06-10
+archived_at: 2026-06-10T20:29:40Z
 ---
 
 ## Notes
@@ -28,9 +29,9 @@ After a successful email send, set `notified_at` to the send timestamp (ISO). Do
 
 ### Cron routes and schedules (UTC)
 
-| Schedule | Job | HTTP fallback |
-| --- | --- | --- |
-| `0 * * * *` | Batch Tuya sync | `POST /api/cron/sync-readings` |
+| Schedule    | Job              | HTTP fallback                    |
+| ----------- | ---------------- | -------------------------------- |
+| `0 * * * *` | Batch Tuya sync  | `POST /api/cron/sync-readings`   |
 | `5 * * * *` | Limit evaluation | `POST /api/cron/evaluate-limits` |
 
 Email notifications (F-04) are implemented in `context/changes/transactional-email-alerts/` — notify cron at `10 * * * *` UTC.

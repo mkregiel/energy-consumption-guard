@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Background Limit Evaluation
 
 - **Plan**: context/changes/background-limit-evaluation/plan.md
@@ -9,26 +10,26 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | PASS |
-| Scope Discipline | PASS |
-| Safety & Quality | PASS (after F1/F6 fixes) |
-| Architecture | PASS (after F3 doc) |
-| Pattern Consistency | PASS |
-| Success Criteria | PASS |
+| Dimension           | Verdict                  |
+| ------------------- | ------------------------ |
+| Plan Adherence      | PASS                     |
+| Scope Discipline    | PASS                     |
+| Safety & Quality    | PASS (after F1/F6 fixes) |
+| Architecture        | PASS (after F3 doc)      |
+| Pattern Consistency | PASS                     |
+| Success Criteria    | PASS                     |
 
 ## Triage Summary
 
-| ID | Decision |
-|----|----------|
-| F1 | FIXED (Fix A — migration + upsert on `limit_id,window_start`) |
-| F2 | SKIPPED — documented in change.md handoff |
-| F3 | FIXED (Fix A — README deploy note) |
-| F4 | FIXED — SQL RPC `get_eligible_sync_targets` |
-| F5 | FIXED — prefetch meters + RPC `sum_meter_consumption_in_window` |
-| F6 | FIXED — `timingSafeEqual` in cron-auth |
-| F7 | SKIPPED — acceptable structural adaptation |
+| ID  | Decision                                                        |
+| --- | --------------------------------------------------------------- |
+| F1  | FIXED (Fix A — migration + upsert on `limit_id,window_start`)   |
+| F2  | SKIPPED — documented in change.md handoff                       |
+| F3  | FIXED (Fix A — README deploy note)                              |
+| F4  | FIXED — SQL RPC `get_eligible_sync_targets`                     |
+| F5  | FIXED — prefetch meters + RPC `sum_meter_consumption_in_window` |
+| F6  | FIXED — `timingSafeEqual` in cron-auth                          |
+| F7  | SKIPPED — acceptable structural adaptation                      |
 
 ## Findings
 
@@ -78,10 +79,10 @@
 
 ## Success Criteria Verification
 
-| Check | Result |
-|-------|--------|
-| `npm run lint` | PASS (after triage fixes) |
-| `npm run build` | PASS |
+| Check           | Result                    |
+| --------------- | ------------------------- |
+| `npm run lint`  | PASS (after triage fixes) |
+| `npm run build` | PASS                      |
 
 All manual Progress items confirmed by user.
 
