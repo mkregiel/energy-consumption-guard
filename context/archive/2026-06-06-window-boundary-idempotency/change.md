@@ -1,9 +1,10 @@
 ---
 change-id: window-boundary-idempotency
 title: Window boundary + idempotency tests
-status: done
+status: archived
 created: 2026-06-06
-updated: 2026-06-06
+updated: 2026-06-10
+archived_at: 2026-06-10T20:22:43Z
 ---
 
 ## Notes
