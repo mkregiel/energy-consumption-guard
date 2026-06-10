@@ -1,8 +1,8 @@
 ---
-status: impl_reviewed
+status: archived
 created: 2026-06-02
-updated: 2026-06-03
-
+updated: 2026-06-10
+archived_at: 2026-06-10T20:29:40Z
 ---
 
 # Configure consumption limit
