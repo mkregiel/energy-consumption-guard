@@ -16,18 +16,18 @@ Co godzinę UTC Cloudflare uruchamia dwa joby: (1) batch sync odczytów Tuya dla
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Scope jobów | Dwa osobne crony: sync + ocena | Izolacja timeoutów Tuya od szybkiej oceny limitów | Plan |
-| Harmonogram | Co godzinę UTC (`0` sync, `5` evaluate) | Zgodne z deploy-plan; evaluate 5 min po sync | Plan |
-| Agregacja zużycia | Suma `kwh_delta` w oknie kalendarzowym | Odzwierciedla przyrost w oknie; `kwh_cumulative` służy do sync | Plan |
-| Idempotencja breach | Max 1 event na `(limit_id, okno)` | Unika spamu przed F-04; lookup `breached_at >= window_start` | Plan |
-| Ponowny breach | Dopiero w następnym oknie | Naturalnie wynika z idempotencji per okno | Plan |
-| Auth cron HTTP | `Authorization: Bearer CRON_SECRET` | Ręczne testy i fallback bez polegania wyłącznie na CF | Plan |
-| Batch DB access | `SUPABASE_SERVICE_ROLE_KEY` | Job musi iterować wszystkich użytkowników poza RLS sesji | Plan |
-| Brak odczytów | Pomiń użytkownika, log w JSON response | Nie failuj całego joba przez jednego usera bez danych | Plan |
-| Logowanie jobów | JSON response + `wrangler tail` | Prosto na MVP; bez nowej tabeli | Plan |
-| Email / UI limitów | Out of scope | F-04, S-03, S-05 | Roadmap |
+| Decision            | Choice                                  | Why (1 sentence)                                               | Source  |
+| ------------------- | --------------------------------------- | -------------------------------------------------------------- | ------- |
+| Scope jobów         | Dwa osobne crony: sync + ocena          | Izolacja timeoutów Tuya od szybkiej oceny limitów              | Plan    |
+| Harmonogram         | Co godzinę UTC (`0` sync, `5` evaluate) | Zgodne z deploy-plan; evaluate 5 min po sync                   | Plan    |
+| Agregacja zużycia   | Suma `kwh_delta` w oknie kalendarzowym  | Odzwierciedla przyrost w oknie; `kwh_cumulative` służy do sync | Plan    |
+| Idempotencja breach | Max 1 event na `(limit_id, okno)`       | Unika spamu przed F-04; lookup `breached_at >= window_start`   | Plan    |
+| Ponowny breach      | Dopiero w następnym oknie               | Naturalnie wynika z idempotencji per okno                      | Plan    |
+| Auth cron HTTP      | `Authorization: Bearer CRON_SECRET`     | Ręczne testy i fallback bez polegania wyłącznie na CF          | Plan    |
+| Batch DB access     | `SUPABASE_SERVICE_ROLE_KEY`             | Job musi iterować wszystkich użytkowników poza RLS sesji       | Plan    |
+| Brak odczytów       | Pomiń użytkownika, log w JSON response  | Nie failuj całego joba przez jednego usera bez danych          | Plan    |
+| Logowanie jobów     | JSON response + `wrangler tail`         | Prosto na MVP; bez nowej tabeli                                | Plan    |
+| Email / UI limitów  | Out of scope                            | F-04, S-03, S-05                                               | Roadmap |
 
 ## Scope
 
@@ -69,13 +69,13 @@ Dispatcher wywołuje te same funkcje serwisowe co trasy HTTP (bez self-fetch). T
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Cron infrastructure | Service role client, CRON_SECRET auth, env docs | Service role key w prod wymaga human approval |
-| 2. Limit evaluation | Window math, breach insert, evaluate route | Timezone/week boundaries edge cases |
-| 3. Batch Tuya sync | Iteracja userów, sync route | Tuya timeout przy wielu użytkownikach |
-| 4. Wrangler crons | Dwa triggery + scheduled dispatcher | Astro custom `scheduled` export wiring |
-| 5. Verification & handoff | Manual runbook, JSON contract dla F-04 | Brak seed limitów w UI — test przez SQL/Studio |
+| Phase                     | What it delivers                                | Key risk                                       |
+| ------------------------- | ----------------------------------------------- | ---------------------------------------------- |
+| 1. Cron infrastructure    | Service role client, CRON_SECRET auth, env docs | Service role key w prod wymaga human approval  |
+| 2. Limit evaluation       | Window math, breach insert, evaluate route      | Timezone/week boundaries edge cases            |
+| 3. Batch Tuya sync        | Iteracja userów, sync route                     | Tuya timeout przy wielu użytkownikach          |
+| 4. Wrangler crons         | Dwa triggery + scheduled dispatcher             | Astro custom `scheduled` export wiring         |
+| 5. Verification & handoff | Manual runbook, JSON contract dla F-04          | Brak seed limitów w UI — test przez SQL/Studio |
 
 **Prerequisites:** F-01 implemented; F-02 implemented (dla sync cron); lokalny Supabase z migracjami.
 
