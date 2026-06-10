@@ -1,10 +1,10 @@
 ---
 change_id: email-alarm-on-limit-breach
 title: E2E verification — email alarm on limit breach
-status: done
+status: archived
 created: 2026-06-04
-updated: 2026-06-05
-archived_at: null
+updated: 2026-06-10
+archived_at: 2026-06-10T20:10:53Z
 stream: B
 depends_on: [transactional-email-alerts, configure-alarm-email]
 ---
