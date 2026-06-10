@@ -15,7 +15,7 @@ Implement foundation slice F-05: extend session protection to configuration API 
 
 ### Key Discoveries:
 
-- Roadmap F-05 outcome: *"device, limit, and notification API routes require the same session as the dashboard"* (`context/foundation/roadmap.md:123-134`).
+- Roadmap F-05 outcome: _"device, limit, and notification API routes require the same session as the dashboard"_ (`context/foundation/roadmap.md:123-134`).
 - F-02/S-02 explicitly deferred global `/api/*` guard and relied on local checks (`context/changes/tuya-read-integration/change.md`, `context/changes/tuya-device-and-consumption/change.md`).
 - `oauth/start.ts` redirects unauthenticated users to sign-in (`src/pages/api/tuya/oauth/start.ts:23-27`); with middleware JSON 401, that branch becomes defense-in-depth only (middleware blocks first).
 - AGENTS.md requires `prerender = false` on new API routes but `signup.ts` and `signout.ts` omit it.
