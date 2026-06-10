@@ -50,7 +50,11 @@ export default defineConfig({
     environment: "node",
     include: ["src/**/*.test.ts"],
     // Runs under @cloudflare/vitest-pool-workers instead — see vitest.workers.config.ts.
-    exclude: ["**/node_modules/**", "src/lib/services/__tests__/breach-notifications*.test.ts"],
+    exclude: [
+      "**/node_modules/**",
+      "src/lib/services/__tests__/breach-notifications*.test.ts",
+      "src/lib/services/__tests__/tuya-token-sync*.test.ts",
+    ],
     // globalSetup loads .env.test into process.env before workers fork. Using globalSetup
     // (not envFile) so the same vars are visible to the Supabase admin client calls in
     // beforeAll, which run in the main thread. If worker parallelism is added later,
