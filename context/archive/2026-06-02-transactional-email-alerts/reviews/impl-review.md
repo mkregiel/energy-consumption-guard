@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Transactional Email Alerts
 
 - **Plan**: context/changes/transactional-email-alerts/plan.md
@@ -9,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | WARNING |
-| Scope Discipline | PASS |
-| Safety & Quality | WARNING |
-| Architecture | PASS |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | WARNING |
+| Scope Discipline    | PASS    |
+| Safety & Quality    | WARNING |
+| Architecture        | PASS    |
 | Pattern Consistency | WARNING |
-| Success Criteria | PASS |
+| Success Criteria    | PASS    |
 
 ## Findings
 
@@ -72,10 +73,10 @@
 
 ## Triage summary
 
-| Finding | Outcome |
-|---------|---------|
-| F1 | FIXED (comments on all entries) |
-| F2 | FIXED |
-| F3 | FIXED via Fix A |
-| F4 | FIXED |
-| F5 | FIXED |
+| Finding | Outcome                         |
+| ------- | ------------------------------- |
+| F1      | FIXED (comments on all entries) |
+| F2      | FIXED                           |
+| F3      | FIXED via Fix A                 |
+| F4      | FIXED                           |
+| F5      | FIXED                           |
