@@ -17,14 +17,14 @@ Operator z Resend i zweryfikowanym `from` uruchamia trzeci cron; użytkownik z s
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Email provider | Resend (REST via `fetch`) | Prosty HTTP, bez SDK — pasuje do Cloudflare Workers | Plan |
-| Trigger | Cron `10 * * * *` UTC | Oddzielenie od evaluate `:05`; świeże breach events | Plan |
-| Brak `notification_settings` | Skip + `NO_NOTIFICATION_SETTINGS` w errors | S-04 jeszcze nie ma UI; nie wysyłamy na losowy adres | Plan |
-| Format wiadomości | Plain text (PL) | Najszybsze MVP; bez biblioteki szablonów | Plan |
-| Błąd wysyłki | Max 3 próby, potem `notification_failed_at` | Ogranicza spam przy awarii Resend; wymaga małej migracji | Plan |
-| Scope change | Tylko F-04 foundation | S-04/S-05 i middleware cron osobno | Plan |
+| Decision                     | Choice                                      | Why (1 sentence)                                         | Source |
+| ---------------------------- | ------------------------------------------- | -------------------------------------------------------- | ------ |
+| Email provider               | Resend (REST via `fetch`)                   | Prosty HTTP, bez SDK — pasuje do Cloudflare Workers      | Plan   |
+| Trigger                      | Cron `10 * * * *` UTC                       | Oddzielenie od evaluate `:05`; świeże breach events      | Plan   |
+| Brak `notification_settings` | Skip + `NO_NOTIFICATION_SETTINGS` w errors  | S-04 jeszcze nie ma UI; nie wysyłamy na losowy adres     | Plan   |
+| Format wiadomości            | Plain text (PL)                             | Najszybsze MVP; bez biblioteki szablonów                 | Plan   |
+| Błąd wysyłki                 | Max 3 próby, potem `notification_failed_at` | Ogranicza spam przy awarii Resend; wymaga małej migracji | Plan   |
+| Scope change                 | Tylko F-04 foundation                       | S-04/S-05 i middleware cron osobno                       | Plan   |
 
 ## Scope
 
@@ -58,12 +58,12 @@ Job używa tego samego service role co F-03. Idempotencja dostawy = `notified_at
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Schema & secrets | Kolumny retry + env Resend | Migracja przed deploy kodu |
-| 2. Email & notification service | Resend + batch job | Niezweryfikowana domena `from` w Resend |
-| 3. Cron wiring | Route + scheduled `:10` | Lokalny HTTP cron może dostać 401 z middleware |
-| 4. Docs & handoff | README, S-05 contract | Operator musi ręcznie ustawić sekrety prod |
+| Phase                           | What it delivers           | Key risk                                       |
+| ------------------------------- | -------------------------- | ---------------------------------------------- |
+| 1. Schema & secrets             | Kolumny retry + env Resend | Migracja przed deploy kodu                     |
+| 2. Email & notification service | Resend + batch job         | Niezweryfikowana domena `from` w Resend        |
+| 3. Cron wiring                  | Route + scheduled `:10`    | Lokalny HTTP cron może dostać 401 z middleware |
+| 4. Docs & handoff               | README, S-05 contract      | Operator musi ręcznie ustawić sekrety prod     |
 
 **Prerequisites:** F-01, F-03 done; konto Resend z verified domain; dla testów — ręczny seed `notification_settings`.
 

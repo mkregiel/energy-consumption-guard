@@ -1,9 +1,10 @@
 ---
 change-id: transactional-email-alerts
 title: Transactional email alerts
-status: impl_reviewed
+status: archived
 created: 2026-06-02
-updated: 2026-06-02
+updated: 2026-06-10
+archived_at: 2026-06-10T20:29:40Z
 ---
 
 ## Notes
@@ -16,9 +17,9 @@ F-04 delivers breach alarm email dispatch via Resend. S-04 must populate `notifi
 
 ### Cron schedule and route
 
-| Schedule (UTC) | Job | HTTP fallback |
-| --- | --- | --- |
-| `10 * * * *` | Breach email notifications | `POST /api/cron/send-notifications` |
+| Schedule (UTC) | Job                        | HTTP fallback                       |
+| -------------- | -------------------------- | ----------------------------------- |
+| `10 * * * *`   | Breach email notifications | `POST /api/cron/send-notifications` |
 
 Route requires `Authorization: Bearer <CRON_SECRET>`. Scheduled handler in `src/scheduled.ts` calls `runBreachNotifications` directly (no self-HTTP).
 
