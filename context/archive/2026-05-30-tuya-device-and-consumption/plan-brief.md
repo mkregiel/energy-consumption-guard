@@ -17,16 +17,16 @@ Użytkownik po zalogowaniu na **`https://127.0.0.1:3000`** (dev): (1) klika „P
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Lokalny dev HTTPS | mkcert + `npm run dev:https` na porcie 3000 | Tuya odrzuca `http://` callback; Supabase już ma `https://127.0.0.1:3000` w redirect URLs | Plan |
-| Widok zużycia | Ostatni odczyt + tabela N | Więcej kontekstu niż sam hero, bez kosztu biblioteki wykresów | Plan |
-| Rejestracja licznika | Lista Tuya + fallback ręczny ID | FR-002 dla nietechnicznych + odporność na błędy API uprawnień | Plan |
-| Meter API | W S-02 (`/api/meters`) | Odblokowuje north star bez czekania na F-05; ten sam wzorzec co Tuya routes | Plan |
-| Ładowanie odczytów | SSR Astro + RLS | Prostsze; sync kończy się reload lub odświeżeniem island | Plan |
-| OAuth start | `GET /api/tuya/oauth/start` + cookie state | Bezpieczny HttpOnly state; spójne z istniejącym callback | Plan |
-| Błędy integracji | Inline banner + CTA | Mapowanie `error.code` na akcję (ponów link / wybierz urządzenie / sync) | Plan |
-| Must-have | Pełny flow link → meter → sync → widok | Zamknięcie north star i odblokowanie S-03 | Plan |
+| Decision             | Choice                                      | Why (1 sentence)                                                                          | Source |
+| -------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------- | ------ |
+| Lokalny dev HTTPS    | mkcert + `npm run dev:https` na porcie 3000 | Tuya odrzuca `http://` callback; Supabase już ma `https://127.0.0.1:3000` w redirect URLs | Plan   |
+| Widok zużycia        | Ostatni odczyt + tabela N                   | Więcej kontekstu niż sam hero, bez kosztu biblioteki wykresów                             | Plan   |
+| Rejestracja licznika | Lista Tuya + fallback ręczny ID             | FR-002 dla nietechnicznych + odporność na błędy API uprawnień                             | Plan   |
+| Meter API            | W S-02 (`/api/meters`)                      | Odblokowuje north star bez czekania na F-05; ten sam wzorzec co Tuya routes               | Plan   |
+| Ładowanie odczytów   | SSR Astro + RLS                             | Prostsze; sync kończy się reload lub odświeżeniem island                                  | Plan   |
+| OAuth start          | `GET /api/tuya/oauth/start` + cookie state  | Bezpieczny HttpOnly state; spójne z istniejącym callback                                  | Plan   |
+| Błędy integracji     | Inline banner + CTA                         | Mapowanie `error.code` na akcję (ponów link / wybierz urządzenie / sync)                  | Plan   |
+| Must-have            | Pełny flow link → meter → sync → widok      | Zamknięcie north star i odblokowanie S-03                                                 | Plan   |
 
 ## Scope
 
@@ -64,14 +64,14 @@ Warstwa prezentacji: Astro SSR + React islands (`client:load`) dla OAuth callbac
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Local HTTPS dev | mkcert, `dev:https`, port 3000, README + Tuya callback URL | mkcert nie zainstalowany / zły trust store na Windows |
-| 2. API & routing foundation | oauth/start, status, devices, meters API; typy; listDevices | Tuya device-list API wymaga uprawnień |
-| 3. OAuth linking UI | Przycisk połączenia, callback page, hook | Redirect URI mismatch w konsoli Tuya |
-| 4. Meter registration | Lista urządzeń + formularz ręczny ID | Puste listy po OAuth — UX fallback |
-| 5. Consumption dashboard | Hero + tabela N + Sync + błędy inline | SSR stale po sync bez reload |
-| 6. E2E verification | Dowód pełnego flow na realnym koncie | Brak urządzenia energii w Smart Life |
+| Phase                       | What it delivers                                            | Key risk                                              |
+| --------------------------- | ----------------------------------------------------------- | ----------------------------------------------------- |
+| 1. Local HTTPS dev          | mkcert, `dev:https`, port 3000, README + Tuya callback URL  | mkcert nie zainstalowany / zły trust store na Windows |
+| 2. API & routing foundation | oauth/start, status, devices, meters API; typy; listDevices | Tuya device-list API wymaga uprawnień                 |
+| 3. OAuth linking UI         | Przycisk połączenia, callback page, hook                    | Redirect URI mismatch w konsoli Tuya                  |
+| 4. Meter registration       | Lista urządzeń + formularz ręczny ID                        | Puste listy po OAuth — UX fallback                    |
+| 5. Consumption dashboard    | Hero + tabela N + Sync + błędy inline                       | SSR stale po sync bez reload                          |
+| 6. E2E verification         | Dowód pełnego flow na realnym koncie                        | Brak urządzenia energii w Smart Life                  |
 
 **Prerequisites:** F-01, F-02, S-01; mkcert na maszynie dev; `TUYA_*` w `.env`; callback `https://127.0.0.1:3000/dashboard/tuya/callback` w Tuya Developer Console.
 
