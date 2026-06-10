@@ -563,15 +563,15 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [ ] 1.1 Tuya stub responds to `/v1.0/token` and `/v1.0/users/{uid}/devices` with documented envelopes
-- [ ] 1.2 `npm run test:e2e -- --list` succeeds
-- [ ] 1.3 `npx tsc --noEmit` passes
-- [ ] 1.4 `npm run test` still passes after `vitest.setup.ts` refactor
+- [x] 1.1 Tuya stub responds to `/v1.0/token` and `/v1.0/users/{uid}/devices` with documented envelopes
+- [x] 1.2 `npm run test:e2e -- --list` succeeds
+- [x] 1.3 `npx tsc --noEmit` passes
+- [x] 1.4 `npm run test` still passes after `vitest.setup.ts` refactor
 
 #### Manual
 
-- [ ] 1.5 `npm run test:e2e` auto-starts and tears down stub + dev server
-- [ ] 1.6 `e2e/seed.spec.ts` still passes against the auto-started server
+- [x] 1.5 `npm run test:e2e` auto-starts and tears down stub + dev server
+- [x] 1.6 `e2e/seed.spec.ts` still passes against the auto-started server
 
 ### Phase 2: Fix src/middleware.ts returnTo gap
 
