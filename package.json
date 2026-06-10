@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "seed:test-breach": "tsx scripts/seed-test-breach.ts"
+    "seed:test-breach": "tsx scripts/seed-test-breach.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",

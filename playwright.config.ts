@@ -81,9 +81,11 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run dev:https',
-  //   url: 'https://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    command: "npx tsx e2e/start-webserver.ts",
+    url: "https://127.0.0.1:3000",
+    reuseExistingServer: !process.env.CI,
+    ignoreHTTPSErrors: true,
+    timeout: 60_000,
+  },
 });
