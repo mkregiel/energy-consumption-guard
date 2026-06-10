@@ -1,9 +1,10 @@
 ---
 change-id: protected-api-routes
 title: Protected API routes
-status: impl_reviewed
+status: archived
 created: 2026-05-31
-updated: 2026-05-31
+updated: 2026-06-10
+archived_at: 2026-06-10T20:29:40Z
 ---
 
 ## Notes

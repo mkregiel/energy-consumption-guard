@@ -16,13 +16,13 @@ Niezalogowany request do dowolnego `/api/*` poza `/api/auth/*` dostaje spójny J
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Warstwy ochrony | Middleware + lokalne `requireUser()` | Defense in depth — zgodne z F-02/S-02; nowa trasa bez checku i tak blokowana | Plan |
-| Refaktor tras | Helper + uogólniony `api-response.ts` | Jedna definicja 401 i envelope JSON dla meter/Tuya/przyszłych limitów | Plan |
-| Middleware 401 | Zawsze JSON 401 | Spójny kontrakt dla fetch/XHR; OAuth start redirect tylko dla zalogowanych w handlerze | Plan |
-| Allowlista publiczna | Tylko `/api/auth/*` | Deny-by-default; prosta reguła zgodna z obecnym stanem repo | Plan |
-| Dokumentacja | AGENTS.md + README | Trwała konwencja dla agentów i devów przy S-03/S-04 | Plan |
+| Decision             | Choice                                | Why (1 sentence)                                                                       | Source |
+| -------------------- | ------------------------------------- | -------------------------------------------------------------------------------------- | ------ |
+| Warstwy ochrony      | Middleware + lokalne `requireUser()`  | Defense in depth — zgodne z F-02/S-02; nowa trasa bez checku i tak blokowana           | Plan   |
+| Refaktor tras        | Helper + uogólniony `api-response.ts` | Jedna definicja 401 i envelope JSON dla meter/Tuya/przyszłych limitów                  | Plan   |
+| Middleware 401       | Zawsze JSON 401                       | Spójny kontrakt dla fetch/XHR; OAuth start redirect tylko dla zalogowanych w handlerze | Plan   |
+| Allowlista publiczna | Tylko `/api/auth/*`                   | Deny-by-default; prosta reguła zgodna z obecnym stanem repo                            | Plan   |
+| Dokumentacja         | AGENTS.md + README                    | Trwała konwencja dla agentów i devów przy S-03/S-04                                    | Plan   |
 
 ## Scope
 
@@ -61,11 +61,11 @@ Publiczne: `POST /api/auth/signin`, `signup`, `signout`. Chronione: `/api/meters
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Shared utilities | `api-response.ts`, `auth-guard.ts`, re-export z Tuya | Rozjazd envelope między middleware a helperem — jedna stała UNAUTHORIZED |
-| 2. Middleware guard | Deny-by-default `/api/*`, allowlista auth | Regresja auth routes; oauth/start bez sesji → 401 zamiast redirect (akceptowane) |
-| 3. Route refactor & docs | Migracja 6 tras + AGENTS.md + README | Duży diff importów — lint/build jako brama |
+| Phase                    | What it delivers                                     | Key risk                                                                         |
+| ------------------------ | ---------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1. Shared utilities      | `api-response.ts`, `auth-guard.ts`, re-export z Tuya | Rozjazd envelope między middleware a helperem — jedna stała UNAUTHORIZED         |
+| 2. Middleware guard      | Deny-by-default `/api/*`, allowlista auth            | Regresja auth routes; oauth/start bez sesji → 401 zamiast redirect (akceptowane) |
+| 3. Route refactor & docs | Migracja 6 tras + AGENTS.md + README                 | Duży diff importów — lint/build jako brama                                       |
 
 **Prerequisites:** Istniejący auth baseline (S-01), trasy meter/Tuya z F-02/S-02.
 
