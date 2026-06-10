@@ -1,10 +1,10 @@
 ---
 change_id: auth-boundary-ci-gate
 title: Auth boundary and CI gate enforcement
-status: impl_reviewed
+status: archived
 created: 2026-06-09
 updated: 2026-06-10
-archived_at: null
+archived_at: 2026-06-10T20:29:40Z
 ---
 
 ## Notes
