@@ -1,10 +1,10 @@
 ---
 change_id: tuya-sync-resilience
 title: Tuya sync resilience
-status: impl_reviewed
+status: archived
 created: 2026-06-09
 updated: 2026-06-10
-archived_at: null
+archived_at: 2026-06-10T20:29:40Z
 ---
 
 ## Notes
