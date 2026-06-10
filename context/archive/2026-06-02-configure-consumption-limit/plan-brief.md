@@ -16,17 +16,17 @@ Zalogowany użytkownik na `/dashboard` ustawia lub zmienia limit (próg kWh + ok
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Semantyka okna | Kalendarzowe day/week/month | Spójność z `getWindowBounds` i jobem F-03 — unika fałszywych alarmów przez rozjazd definicji | Plan |
-| Strefa czasowa | Ukryta, `Europe/Warsaw` | Prostszy MVP; pole w DB na przyszłość bez ekspozycji w UI | Plan |
-| Widoczność UI | Formularz zawsze na dashboardzie | Użytkownik może skonfigurować limit przed licznikiem (ścieżka US-01) | Plan |
-| Podgląd zużycia | Suma w oknie + pasek postępu | Użytkownik widzi zbliżanie się do progu bez czekania na email | Plan |
-| Tryb edycji | Inline (bez osobnego podglądu) | Mniej kliknięć niż wzorzec view/edit licznika | Plan |
-| Po zapisie | Komunikat sukcesu, bez reload | Szybsza iteracja; stan formularza aktualizowany lokalnie | Plan |
-| Usuwanie limitu | Tylko upsert, brak DELETE | FR-003 wymaga dodania limitu; CHECK `threshold_kwh > 0` | Plan |
-| Agregacja w UI | Suma przez RLS + `getWindowBounds` | RPC F-03 bez grantu dla `authenticated` i bez luki ownership | Plan |
-| Ścieżka API | `GET/POST /api/limits` | Zgodne z F-05 (`/api/limits/*`) i wzorcem `meters/index.ts` | Plan |
+| Decision        | Choice                             | Why (1 sentence)                                                                             | Source |
+| --------------- | ---------------------------------- | -------------------------------------------------------------------------------------------- | ------ |
+| Semantyka okna  | Kalendarzowe day/week/month        | Spójność z `getWindowBounds` i jobem F-03 — unika fałszywych alarmów przez rozjazd definicji | Plan   |
+| Strefa czasowa  | Ukryta, `Europe/Warsaw`            | Prostszy MVP; pole w DB na przyszłość bez ekspozycji w UI                                    | Plan   |
+| Widoczność UI   | Formularz zawsze na dashboardzie   | Użytkownik może skonfigurować limit przed licznikiem (ścieżka US-01)                         | Plan   |
+| Podgląd zużycia | Suma w oknie + pasek postępu       | Użytkownik widzi zbliżanie się do progu bez czekania na email                                | Plan   |
+| Tryb edycji     | Inline (bez osobnego podglądu)     | Mniej kliknięć niż wzorzec view/edit licznika                                                | Plan   |
+| Po zapisie      | Komunikat sukcesu, bez reload      | Szybsza iteracja; stan formularza aktualizowany lokalnie                                     | Plan   |
+| Usuwanie limitu | Tylko upsert, brak DELETE          | FR-003 wymaga dodania limitu; CHECK `threshold_kwh > 0`                                      | Plan   |
+| Agregacja w UI  | Suma przez RLS + `getWindowBounds` | RPC F-03 bez grantu dla `authenticated` i bez luki ownership                                 | Plan   |
+| Ścieżka API     | `GET/POST /api/limits`             | Zgodne z F-05 (`/api/limits/*`) i wzorcem `meters/index.ts`                                  | Plan   |
 
 ## Scope
 
@@ -65,12 +65,12 @@ F-03 cron (unchanged) reads same consumption_limits + getWindowBounds semantics
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. API & service | `/api/limits`, limit-service, typy | Walidacja `threshold_kwh` musi być spójna z CHECK w DB |
-| 2. Window preview | Helper sumy w oknie dla dashboardu | Brak licznika → pasek ukryty; puste okno → 0 kWh |
-| 3. Limit UI | Inline form, hook, success banner | Brak biblioteki toast — prosty banner w komponencie |
-| 4. Dashboard wiring | SSR + kolejność sekcji | Rozmiar `dashboard.astro` — trzymać sekcje modularnie |
+| Phase               | What it delivers                   | Key risk                                               |
+| ------------------- | ---------------------------------- | ------------------------------------------------------ |
+| 1. API & service    | `/api/limits`, limit-service, typy | Walidacja `threshold_kwh` musi być spójna z CHECK w DB |
+| 2. Window preview   | Helper sumy w oknie dla dashboardu | Brak licznika → pasek ukryty; puste okno → 0 kWh       |
+| 3. Limit UI         | Inline form, hook, success banner  | Brak biblioteki toast — prosty banner w komponencie    |
+| 4. Dashboard wiring | SSR + kolejność sekcji             | Rozmiar `dashboard.astro` — trzymać sekcje modularnie  |
 
 **Prerequisites:** S-02, F-01, F-05 zaimplementowane; lokalny Supabase z migracjami.
 
