@@ -231,7 +231,7 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Manual
 
-- [ ] 1.3 Temporarily break one test assertion; confirm it fails; restore
+- [x] 1.3 Temporarily break one test assertion; confirm it fails; restore
 
 ### Phase 2: Handler integration tests
 
@@ -242,7 +242,7 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Manual
 
-- [ ] 2.3 Comment out one `requireUser` call; confirm the corresponding test fails; restore
+- [x] 2.3 Comment out one `requireUser` call; confirm the corresponding test fails; restore
 
 ### Phase 3: Wire unit tests into CI
 
@@ -253,4 +253,4 @@ No additional `env:` block needed — `vitest.config.ts` shims `astro:env/server
 
 #### Manual
 
-- [ ] 3.3 Break a test on a branch; confirm CI fails and PR is blocked
+- [x] 3.3 Break a test on a branch; confirm CI fails and PR is blocked
