@@ -26,6 +26,7 @@ CI (`ci.yml`) runs `lint` + `build` but has no test step. `playwright.yml` is in
 - `isPublicApiRoute` must be exported to enable clean allowlist tests (`src/middleware.ts:8`)
 - Handler tests can use a minimal mock `{ locals: { user: null } }` — `requireUser(locals)` is called before any async DB work, so the unauthenticated code path never reaches `createClient` (`src/pages/api/limits/index.ts:19`, `src/pages/api/notifications/index.ts:18`)
 - The `astro:env/server` virtual module is already shimmed by the plugin in `vitest.config.ts` — no extra mock needed for handler imports
+- Exporting `isPublicApiRoute` makes `src/middleware.ts` (and its `astro:middleware` import) load under Vitest for the first time; an additional `astro:middleware` shim (mirroring the `astro:env/server` one) was needed in `vitest.config.ts`
 - `vitest.config.ts` excludes workers tests (`src/lib/services/__tests__/breach-notifications*.test.ts`) — `vitest run` with the default config is safe to add to CI without needing `SUPABASE_SERVICE_ROLE_KEY` or `CRON_SECRET`
 
 ## What We're NOT Doing
