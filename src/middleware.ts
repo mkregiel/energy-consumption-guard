@@ -8,6 +8,9 @@ const PUBLIC_API_PREFIXES = ["/api/auth/", "/api/cron/"];
 export const isPublicApiRoute = (pathname: string): boolean =>
   PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
+export const buildSignInRedirectUrl = (pathname: string, search: string): string =>
+  `/auth/signin?returnTo=${encodeURIComponent(pathname + search)}`;
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createClient(context.request.headers, context.cookies);
 
@@ -24,7 +27,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
     if (!context.locals.user) {
-      return context.redirect("/auth/signin");
+      return context.redirect(buildSignInRedirectUrl(pathname, context.url.search));
     }
   }
 
