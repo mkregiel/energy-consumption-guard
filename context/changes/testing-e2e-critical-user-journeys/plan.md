@@ -577,8 +577,8 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [ ] 2.1 `npx tsc --noEmit` passes
-- [ ] 2.2 Existing middleware/auth-guard unit tests pass
+- [x] 2.1 `npx tsc --noEmit` passes
+- [x] 2.2 Existing middleware/auth-guard unit tests pass
 
 #### Manual
 
