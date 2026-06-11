@@ -10,10 +10,15 @@ const E2E_TEST_USER_EMAIL = "kregielm@gmail.com";
 export async function deleteTuyaOAuthTokenForTestUser(): Promise<void> {
   loadTestEnv();
 
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // The Playwright webServer runs the dev server against the LOCAL Supabase
+  // instance (.env's SUPABASE_URL), not the cloud project in .env.test — so
+  // cleanup must target the same local instance the dev server writes to.
+  // SUPABASE_LOCAL_URL/SUPABASE_LOCAL_SERVICE_ROLE_KEY are local-only secrets
+  // from `npx supabase status`, set in .env.test (gitignored).
+  const supabaseUrl = process.env.SUPABASE_LOCAL_URL;
+  const serviceRoleKey = process.env.SUPABASE_LOCAL_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in .env.test for tuya-cleanup");
+    throw new Error("SUPABASE_LOCAL_URL and SUPABASE_LOCAL_SERVICE_ROLE_KEY must be set in .env.test for tuya-cleanup");
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
