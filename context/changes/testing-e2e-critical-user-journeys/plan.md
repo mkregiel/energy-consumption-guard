@@ -577,12 +577,12 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [x] 2.1 `npx tsc --noEmit` passes
-- [x] 2.2 Existing middleware/auth-guard unit tests pass
+- [x] 2.1 `npx tsc --noEmit` passes — 1a076d4
+- [x] 2.2 Existing middleware/auth-guard unit tests pass — 1a076d4
 
 #### Manual
 
-- [ ] 2.3 `/dashboard` while logged out redirects to `/auth/signin?returnTo=%2Fdashboard`
+- [x] 2.3 `/dashboard` while logged out redirects to `/auth/signin?returnTo=%2Fdashboard` — 1a076d4
 
 ### Phase 3: R-E1 — Tuya OAuth connect E2E test
 
