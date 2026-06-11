@@ -588,13 +588,13 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [x] 3.1 `e2e/tuya-oauth-connect.spec.ts` passes on chromium
-- [x] 3.2 `npx tsc --noEmit` passes
+- [x] 3.1 `e2e/tuya-oauth-connect.spec.ts` passes on chromium — 1e76efd
+- [x] 3.2 `npx tsc --noEmit` passes — 1e76efd
 
 #### Manual
 
-- [x] 3.3 Spec passes on firefox and webkit
-- [x] 3.4 Re-running the spec twice in a row both pass
+- [x] 3.3 Spec passes on firefox and webkit — 1e76efd
+- [x] 3.4 Re-running the spec twice in a row both pass — 1e76efd
 
 ### Phase 4: R-E2 — Auth redirect E2E test
 
