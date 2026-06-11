@@ -1,5 +1,36 @@
 import { spawn } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { startTuyaStub } from "./tuya-stub-server";
+
+const DEV_VARS_PATH = resolve(process.cwd(), ".dev.vars");
+
+/**
+ * The Cloudflare adapter's dev runtime (Wrangler/Miniflare) sources
+ * `astro:env/server` secrets from `.dev.vars`, ignoring `process.env` —
+ * so overriding TUYA_API_BASE_URL via the spawned child's env (below) is
+ * not enough on its own. Temporarily rewrite .dev.vars's TUYA_API_BASE_URL
+ * to point at the stub; restoreDevVars() puts the original content back.
+ */
+function overrideDevVarsTuyaBaseUrl(stubUrl: string): string | null {
+  if (!existsSync(DEV_VARS_PATH)) {
+    return null;
+  }
+
+  const original = readFileSync(DEV_VARS_PATH, "utf-8");
+  const overridden = /^TUYA_API_BASE_URL=.*$/m.test(original)
+    ? original.replace(/^TUYA_API_BASE_URL=.*$/m, `TUYA_API_BASE_URL=${stubUrl}`)
+    : `${original}\nTUYA_API_BASE_URL=${stubUrl}\n`;
+
+  writeFileSync(DEV_VARS_PATH, overridden);
+  return original;
+}
+
+function restoreDevVars(original: string | null): void {
+  if (original !== null) {
+    writeFileSync(DEV_VARS_PATH, original);
+  }
+}
 
 /**
  * Single command Playwright's `webServer` runs: starts the local Tuya stub,
@@ -16,6 +47,8 @@ async function main(): Promise<void> {
   // eslint-disable-next-line no-console
   console.log(`[e2e] Tuya stub listening at ${stub.url}`);
 
+  const originalDevVars = overrideDevVarsTuyaBaseUrl(stub.url);
+
   const child = spawn("npm", ["run", "dev:https"], {
     stdio: "inherit",
     shell: true,
@@ -30,6 +63,7 @@ async function main(): Promise<void> {
     if (shuttingDown) return;
     shuttingDown = true;
     child.kill();
+    restoreDevVars(originalDevVars);
     await stub.close();
   };
 
