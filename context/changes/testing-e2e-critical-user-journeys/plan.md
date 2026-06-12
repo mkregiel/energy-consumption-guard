@@ -612,10 +612,10 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [x] 5.1 `e2e/dashboard-forms.spec.ts` passes on chromium
-- [x] 5.2 `npx tsc --noEmit` passes
+- [x] 5.1 `e2e/dashboard-forms.spec.ts` passes on chromium — 0a4072c
+- [x] 5.2 `npx tsc --noEmit` passes — 0a4072c
 
 #### Manual
 
-- [ ] 5.3 Spec passes on firefox and webkit
-- [ ] 5.4 Full `npm run test:e2e` suite passes end-to-end
+- [x] 5.3 Spec passes on firefox and webkit — 0a4072c
+- [x] 5.4 Full `npm run test:e2e` suite passes end-to-end — 0a4072c
