@@ -600,13 +600,13 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [x] 4.1 `e2e/auth-redirect.spec.ts` passes on chromium
-- [x] 4.2 `npx tsc --noEmit` passes
+- [x] 4.1 `e2e/auth-redirect.spec.ts` passes on chromium — d34ec45
+- [x] 4.2 `npx tsc --noEmit` passes — d34ec45
 
 #### Manual
 
-- [ ] 4.3 Spec passes on firefox and webkit
-- [ ] 4.4 No cross-test session leakage when run with the full suite
+- [x] 4.3 Spec passes on firefox and webkit — d34ec45
+- [x] 4.4 No cross-test session leakage when run with the full suite — d34ec45
 
 ### Phase 5: R-E3 — Dashboard form round-trip E2E tests
 
