@@ -612,8 +612,8 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [ ] 5.1 `e2e/dashboard-forms.spec.ts` passes on chromium
-- [ ] 5.2 `npx tsc --noEmit` passes
+- [x] 5.1 `e2e/dashboard-forms.spec.ts` passes on chromium
+- [x] 5.2 `npx tsc --noEmit` passes
 
 #### Manual
 
