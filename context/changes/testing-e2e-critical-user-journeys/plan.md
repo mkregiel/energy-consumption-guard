@@ -600,8 +600,8 @@ None — no schema or data changes. `.env.test` is local-only and gitignored.
 
 #### Automated
 
-- [ ] 4.1 `e2e/auth-redirect.spec.ts` passes on chromium
-- [ ] 4.2 `npx tsc --noEmit` passes
+- [x] 4.1 `e2e/auth-redirect.spec.ts` passes on chromium
+- [x] 4.2 `npx tsc --noEmit` passes
 
 #### Manual
 
