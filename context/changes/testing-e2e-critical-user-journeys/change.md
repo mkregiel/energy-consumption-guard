@@ -1,7 +1,7 @@
 ---
 change_id: testing-e2e-critical-user-journeys
 title: Testing e2e critical user journeys
-status: implemented
+status: impl_reviewed
 created: 2026-06-10
 updated: 2026-06-12
 archived_at: null
