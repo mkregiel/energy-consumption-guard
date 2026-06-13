@@ -1,7 +1,16 @@
 // tests/global-setup.ts
 import { chromium, expect, type FullConfig } from "@playwright/test";
+import { loadTestEnv } from "./load-test-env";
 
 async function globalSetup(_config: FullConfig) {
+  loadTestEnv();
+
+  const email = process.env.E2E_TEST_USER_EMAIL;
+  const password = process.env.E2E_TEST_USER_PASSWORD;
+  if (!email || !password) {
+    throw new Error("E2E_TEST_USER_EMAIL and E2E_TEST_USER_PASSWORD must be set in .env.test");
+  }
+
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
@@ -13,13 +22,13 @@ async function globalSetup(_config: FullConfig) {
   await page.waitForLoadState("networkidle");
 
   const emailInput = page.getByRole("textbox", { name: "email" });
-  await emailInput.fill("kregielm@gmail.com");
-  await expect(emailInput).toHaveValue("kregielm@gmail.com");
+  await emailInput.fill(email);
+  await expect(emailInput).toHaveValue(email);
 
   const passwordInput = page.getByRole("textbox", { name: "password" });
-  await passwordInput.fill("asdzxc");
-  await expect(passwordInput).toHaveValue("asdzxc");
-  await expect(emailInput).toHaveValue("kregielm@gmail.com");
+  await passwordInput.fill(password);
+  await expect(passwordInput).toHaveValue(password);
+  await expect(emailInput).toHaveValue(email);
 
   await page.getByRole("button", { name: "Sign in" }).click();
 
