@@ -6,7 +6,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Dashboard form round-trips (R-E3)", () => {
   test("Consumption limit form shows success message after save", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");
 
     // Read current threshold so we can set a distinct value
@@ -25,7 +25,7 @@ test.describe("Dashboard form round-trips (R-E3)", () => {
   });
 
   test("Alarm email form shows success message immediately after save", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");
 
     const uniqueEmail = `e2e-${Date.now()}@example.com`;
@@ -38,5 +38,11 @@ test.describe("Dashboard form round-trips (R-E3)", () => {
     ]);
 
     await expect(page.getByText("Adres e-mail zapisany pomyślnie.")).toBeVisible();
+
+    // Verify persistence across reload
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+
+    await expect(page.getByRole("textbox", { name: "Adres e-mail" })).toHaveValue(uniqueEmail);
   });
 });

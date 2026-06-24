@@ -1,8 +1,25 @@
 import { test, expect } from "@playwright/test";
 
+async function ensureTuyaLinked(page: import("@playwright/test").Page): Promise<void> {
+  const response = await page.request.get("/api/tuya/oauth/start", { maxRedirects: 0 });
+  const location = response.headers().location;
+  if (!location) throw new Error("Expected /api/tuya/oauth/start to respond with a Location header");
+
+  const state = new URL(location).searchParams.get("state");
+  if (!state) throw new Error(`Expected a state query param in Location header: ${location}`);
+
+  const callbackRes = await page.request.post("/api/tuya/oauth/callback", {
+    data: { code: "e2e-tuya-token", state },
+  });
+  const body = (await callbackRes.json()) as { ok: boolean };
+  if (!body.ok) throw new Error("Failed to link Tuya account for seed sync test");
+}
+
 test.describe("Dashboard", () => {
   test("Run sychronization ends with success", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await ensureTuyaLinked(page);
+
+    await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");
 
     expect(await page.title()).toContain("Pulpit");
@@ -23,28 +40,5 @@ test.describe("Dashboard", () => {
     expect(responseBody?.ok).toBe(true);
     expect(responseBody?.data.status).toBe("synced");
     expect(responseBody?.data.synced).toBe(true);
-  });
-
-  test("Notification email update persists after page reload", async ({ page }) => {
-    const notificationEmail = `kregielm+e2e-test-${Date.now()}@gmail.com`;
-    await page.goto("https://127.0.0.1:3000/dashboard");
-    await page.waitForLoadState("networkidle");
-
-    expect(await page.title()).toContain("Pulpit");
-
-    let emailInput = page.getByRole("textbox", { name: "Adres e-mail" });
-    await emailInput.fill(notificationEmail);
-    await expect(emailInput).toHaveValue(notificationEmail);
-
-    await Promise.all([
-      page.waitForResponse("**/api/notifications"),
-      page.getByRole("button", { name: "Zapisz adres e-mail" }).click(),
-    ]);
-
-    await page.reload();
-    await page.waitForLoadState("networkidle");
-
-    emailInput = page.getByRole("textbox", { name: "Adres e-mail" });
-    await expect(emailInput).toHaveValue(notificationEmail);
   });
 });

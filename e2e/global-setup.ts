@@ -1,11 +1,12 @@
 // tests/global-setup.ts
 import { chromium, expect, type FullConfig } from "@playwright/test";
 
-async function globalSetup(_config: FullConfig) {
+async function globalSetup(config: FullConfig) {
+  const baseURL = config.projects[0]?.use?.baseURL ?? process.env.BASE_URL ?? "https://127.0.0.1:3000";
   const browser = await chromium.launch();
-  const page = await browser.newPage();
+  const page = await browser.newPage({ ignoreHTTPSErrors: true });
 
-  await page.goto("https://127.0.0.1:3000/auth/signin");
+  await page.goto(`${baseURL}/auth/signin`);
 
   // The form hydrates client-side (client:load); wait for hydration to finish
   // before typing, otherwise React remounts with empty state and wipes input
@@ -24,7 +25,7 @@ async function globalSetup(_config: FullConfig) {
   await page.getByRole("button", { name: "Sign in" }).click();
 
   // wait for dashboard
-  await page.waitForURL("https://127.0.0.1:3000/");
+  await page.waitForURL(`${baseURL}/`);
 
   // save session state to file
   await page.context().storageState({ path: "e2e/user.json" });

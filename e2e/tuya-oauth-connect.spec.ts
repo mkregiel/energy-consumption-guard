@@ -10,7 +10,7 @@ import { deleteTuyaOAuthTokenForTestUser } from "./lib/tuya-cleanup";
 // redirect's Location header — this is the real tuya_oauth_state value the
 // tuya_oauth_state cookie now holds, required for the callback to accept the code.
 async function startOAuthAndGetState(page: Page): Promise<string> {
-  const response = await page.request.get("https://127.0.0.1:3000/api/tuya/oauth/start", { maxRedirects: 0 });
+  const response = await page.request.get("/api/tuya/oauth/start", { maxRedirects: 0 });
   const location = response.headers().location;
   if (!location) throw new Error("Expected /api/tuya/oauth/start to respond with a Location header");
 
@@ -30,11 +30,11 @@ test.describe("Tuya OAuth connect", () => {
   });
 
   test("Tuya OAuth connect stores token and shows linked device", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
     const state = await startOAuthAndGetState(page);
 
     const callbackResponse = page.waitForResponse("**/api/tuya/oauth/callback");
-    await page.goto(`https://127.0.0.1:3000/dashboard/tuya/callback?code=e2e-tuya-token&state=${state}`);
+    await page.goto(`/dashboard/tuya/callback?code=e2e-tuya-token&state=${state}`);
 
     const callbackBody = (await (await callbackResponse).json()) as { ok: boolean; data: { linked: boolean } };
     expect(callbackBody.ok).toBe(true);
@@ -43,7 +43,7 @@ test.describe("Tuya OAuth connect", () => {
     await expect(page.getByText("Konto Tuya zostało połączone.")).toBeVisible();
 
     await expect(page.getByRole("link", { name: "Przejdź do pulpitu" })).toBeVisible();
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
 
     await expect(page.getByText("Konto Tuya jest połączone")).toBeVisible();
     await expect(page.getByText("e2e-tuya-uid")).toBeVisible();
@@ -53,11 +53,11 @@ test.describe("Tuya OAuth connect", () => {
   });
 
   test("Tuya OAuth error response surfaces in callback panel", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
     const state = await startOAuthAndGetState(page);
 
     const callbackResponse = page.waitForResponse("**/api/tuya/oauth/callback");
-    await page.goto(`https://127.0.0.1:3000/dashboard/tuya/callback?code=e2e-tuya-error&state=${state}`);
+    await page.goto(`/dashboard/tuya/callback?code=e2e-tuya-error&state=${state}`);
 
     const callbackBody = (await (await callbackResponse).json()) as { ok: boolean; error: { code: string } };
     expect(callbackBody.ok).toBe(false);
