@@ -17,7 +17,7 @@ test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe("Auth redirect (R-E2)", () => {
   test("unauthenticated /dashboard visit redirects to signin and returns after login", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
 
     await page.waitForURL(/\/auth\/signin\?returnTo=%2Fdashboard/);
 
@@ -31,7 +31,7 @@ test.describe("Auth redirect (R-E2)", () => {
 
     await page.getByRole("button", { name: "Sign in" }).click();
 
-    await page.waitForURL("https://127.0.0.1:3000/dashboard");
+    await page.waitForURL("/dashboard");
 
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });

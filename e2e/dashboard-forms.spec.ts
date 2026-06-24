@@ -6,7 +6,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Dashboard form round-trips (R-E3)", () => {
   test("Consumption limit form shows success message after save", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
     // The form hydrates client-side (client:load); wait for hydration to finish
     // before typing, otherwise React remounts with empty state and wipes input
     // typed into the still-server-rendered markup.
@@ -28,7 +28,7 @@ test.describe("Dashboard form round-trips (R-E3)", () => {
   });
 
   test("Alarm email form shows success message immediately after save", async ({ page }) => {
-    await page.goto("https://127.0.0.1:3000/dashboard");
+    await page.goto("/dashboard");
     // The form hydrates client-side (client:load); wait for hydration to finish
     // before typing, otherwise React remounts with empty state and wipes input
     // typed into the still-server-rendered markup.
@@ -44,5 +44,11 @@ test.describe("Dashboard form round-trips (R-E3)", () => {
     ]);
 
     await expect(page.getByText("Adres e-mail zapisany pomyślnie.")).toBeVisible();
+
+    // Verify persistence across reload
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+
+    await expect(page.getByRole("textbox", { name: "Adres e-mail" })).toHaveValue(uniqueEmail);
   });
 });
