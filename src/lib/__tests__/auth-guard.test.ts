@@ -5,14 +5,14 @@ import { isPublicApiRoute } from "@/middleware";
 
 describe("requireUser", () => {
   it("returns a 401 Response when user is null", () => {
-    const result = requireUser({ user: null });
+    const result = requireUser({ user: null } as App.Locals);
     expect(result).toBeInstanceOf(Response);
     expect((result as Response).status).toBe(401);
   });
 
   it("returns the user when user is set", () => {
     const stub = { id: "user-1" } as unknown as User;
-    const result = requireUser({ user: stub });
+    const result = requireUser({ user: stub } as App.Locals);
     expect(result).toBe(stub);
   });
 });

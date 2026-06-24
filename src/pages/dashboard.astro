@@ -19,10 +19,18 @@ import type { ConsumptionReading } from "@/types";
 const { user } = Astro.locals;
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
-const tuyaStatus =
-  supabase && user
-    ? await getTuyaConnectionStatus(supabase, user.id)
-    : { linked: false, accessTokenExpiresAt: null, tuyaUid: null };
+let tuyaStatus: { linked: boolean; accessTokenExpiresAt: string | null; tuyaUid: string | null } = {
+  linked: false,
+  accessTokenExpiresAt: null,
+  tuyaUid: null,
+};
+if (supabase && user) {
+  try {
+    tuyaStatus = await getTuyaConnectionStatus(supabase, user.id);
+  } catch {
+    // Token missing or expired — show unlinked state
+  }
+}
 const meter = supabase && user ? await getUserMeter(supabase, user.id) : null;
 let limit = null;
 if (supabase && user) {
