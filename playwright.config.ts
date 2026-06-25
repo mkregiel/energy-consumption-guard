@@ -11,6 +11,9 @@ import { defineConfig, devices } from "@playwright/test";
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+const defaultBaseURL = process.env.CI ? "http://localhost:4321" : "https://127.0.0.1:3000";
+const baseURL = process.env.BASE_URL ?? defaultBaseURL;
+
 export default defineConfig({
   globalSetup: "./e2e/global-setup.ts",
   testDir: "./e2e",
@@ -26,7 +29,7 @@ export default defineConfig({
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: process.env.BASE_URL ?? "https://127.0.0.1:3000",
+    baseURL: baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -82,7 +85,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: "npx tsx e2e/start-webserver.ts",
-    url: process.env.BASE_URL ?? "https://127.0.0.1:3000",
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
     ignoreHTTPSErrors: true,
     timeout: 60_000,

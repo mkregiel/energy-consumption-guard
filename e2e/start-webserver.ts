@@ -49,7 +49,10 @@ async function main(): Promise<void> {
 
   const originalDevVars = overrideDevVarsTuyaBaseUrl(stub.url);
 
-  const child = spawn("npm", ["run", "dev:https"], {
+  const isCI = !!process.env.CI;
+  const devCommand = isCI ? "dev" : "dev:https";
+
+  const child = spawn("npm", ["run", devCommand], {
     stdio: "inherit",
     shell: true,
     env: {

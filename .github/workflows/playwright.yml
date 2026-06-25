@@ -1,7 +1,5 @@
 name: Playwright Tests
 on:
-  # Disabled for now — re-enable by restoring the push/pull_request triggers
-  # once the e2e suite is ready to run in CI.
   workflow_dispatch:
 jobs:
   test:
@@ -12,12 +10,70 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+
     - name: Install dependencies
       run: npm ci
+
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: npx playwright install --with-deps chromium
+
+    - name: Start Supabase
+      uses: supabase/setup-cli@v1
+    - run: supabase start
+
+    - name: Get Supabase status
+      id: supabase
+      run: |
+        echo "api_url=$(supabase status --output json | jq -r '.API_URL')" >> "$GITHUB_OUTPUT"
+        echo "anon_key=$(supabase status --output json | jq -r '.ANON_KEY')" >> "$GITHUB_OUTPUT"
+        echo "service_role_key=$(supabase status --output json | jq -r '.SERVICE_ROLE_KEY')" >> "$GITHUB_OUTPUT"
+
+    - name: Create E2E test user
+      run: |
+        curl -s -X POST "${{ steps.supabase.outputs.api_url }}/auth/v1/signup" \
+          -H "apikey: ${{ steps.supabase.outputs.anon_key }}" \
+          -H "Content-Type: application/json" \
+          -d '{"email":"e2e@test.local","password":"testpass123"}'
+
+    - name: Write .dev.vars
+      run: |
+        cat > .dev.vars <<DEVVARS
+        SUPABASE_URL=${{ steps.supabase.outputs.api_url }}
+        SUPABASE_KEY=${{ steps.supabase.outputs.anon_key }}
+        SUPABASE_SERVICE_ROLE_KEY=${{ steps.supabase.outputs.service_role_key }}
+        TUYA_CLIENT_ID=ci-placeholder
+        TUYA_CLIENT_SECRET=ci-placeholder
+        TUYA_API_BASE_URL=http://localhost:9999
+        TUYA_API_REGION=eu
+        TUYA_AUTH_MODE=app
+        TUYA_APP_IDENTIFIER=ci
+        TUYA_CLOUD_CLIENT_ID=ci-placeholder
+        TUYA_CLOUD_CLIENT_SECRET=ci-placeholder
+        TUYA_OAUTH_REDIRECT_URI=http://localhost:4321/dashboard/tuya/callback
+        TUYA_OAUTH_SCOPE=devicemessage
+        RESEND_API_KEY=ci-placeholder
+        RESEND_FROM_EMAIL=ci@example.com
+        CRON_SECRET=ci-cron-secret
+        DEVVARS
+
+    - name: Write .env.test
+      run: |
+        cat > .env.test <<ENVTEST
+        SUPABASE_URL=${{ steps.supabase.outputs.api_url }}
+        SUPABASE_SERVICE_ROLE_KEY=${{ steps.supabase.outputs.service_role_key }}
+        E2E_TEST_USER_EMAIL=e2e@test.local
+        E2E_TEST_USER_PASSWORD=testpass123
+        SUPABASE_LOCAL_URL=${{ steps.supabase.outputs.api_url }}
+        SUPABASE_LOCAL_SERVICE_ROLE_KEY=${{ steps.supabase.outputs.service_role_key }}
+        TUYA_CLIENT_ID=ci-placeholder
+        TUYA_CLIENT_SECRET=ci-placeholder
+        TUYA_API_BASE_URL=http://localhost:9999
+        TUYA_API_REGION=eu
+        ENVTEST
+
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npx playwright test --project=chromium
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
