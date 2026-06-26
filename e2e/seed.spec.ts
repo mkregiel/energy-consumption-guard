@@ -1,23 +1,10 @@
 import { test, expect } from "@playwright/test";
-
-async function ensureTuyaLinked(page: import("@playwright/test").Page): Promise<void> {
-  const response = await page.request.get("/api/tuya/oauth/start", { maxRedirects: 0 });
-  const location = response.headers().location;
-  if (!location) throw new Error("Expected /api/tuya/oauth/start to respond with a Location header");
-
-  const state = new URL(location).searchParams.get("state");
-  if (!state) throw new Error(`Expected a state query param in Location header: ${location}`);
-
-  const callbackRes = await page.request.post("/api/tuya/oauth/callback", {
-    data: { code: "e2e-tuya-token", state },
-  });
-  const body = (await callbackRes.json()) as { ok: boolean };
-  if (!body.ok) throw new Error("Failed to link Tuya account for seed sync test");
-}
+import { ensureTuyaLinked, ensureMeterRegistered } from "./lib/tuya-setup";
 
 test.describe("Dashboard", () => {
   test("Run sychronization ends with success", async ({ page }) => {
     await ensureTuyaLinked(page);
+    await ensureMeterRegistered(page);
 
     await page.goto("/dashboard");
     await page.waitForLoadState("networkidle");

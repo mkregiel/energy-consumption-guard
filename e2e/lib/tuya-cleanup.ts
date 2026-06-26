@@ -37,6 +37,9 @@ export async function deleteTuyaOAuthTokenForTestUser(): Promise<void> {
     throw new Error(`E2E test user not found: ${testUserEmail}`);
   }
 
+  const { error: meterDeleteError } = await supabase.from("meters").delete().eq("user_id", user.id);
+  if (meterDeleteError) throw new Error(`Failed to delete meters: ${meterDeleteError.message}`);
+
   const { error: deleteError } = await supabase.from("tuya_oauth_tokens").delete().eq("user_id", user.id);
   if (deleteError) throw new Error(`Failed to delete tuya_oauth_tokens: ${deleteError.message}`);
 }
