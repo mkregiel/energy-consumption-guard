@@ -49,7 +49,7 @@ test.describe("Tuya OAuth connect", () => {
     await expect(page.getByText("e2e-tuya-uid")).toBeVisible();
 
     await page.getByRole("button", { name: "Zmień urządzenie" }).click();
-    await expect(page.getByText("E2E Test Meter")).toBeVisible();
+    await expect(page.getByText("E2E Test Meter", { exact: true })).toBeVisible();
   });
 
   test("Tuya OAuth error response surfaces in callback panel", async ({ page }) => {
