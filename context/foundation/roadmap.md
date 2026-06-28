@@ -3,7 +3,7 @@ project: Monitor zużycia prądu w gospodarstwie domowym
 version: 1
 status: in_progress
 created: 2026-05-25
-updated: 2026-06-10
+updated: 2026-06-28
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -39,6 +39,7 @@ Właściciel domu traci kontrolę nad zużyciem prądu, gdy rachunek w danym okr
 | S-03 | configure-consumption-limit | set an energy limit (kWh) within a configured time window                                   | S-02, F-01, F-05             | FR-003, US-01                    | done   |
 | S-04 | configure-alarm-email       | set the email address used for alarm notifications                                          | S-01, F-01, F-05             | FR-004, US-01                    | done   |
 | S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit                | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01                    | done   |
+| S-06 | tuya-detach-device          | deactivate/reactivate meter monitoring when Tuya device is unavailable                      | S-02                         | Operational                      | done   |
 
 ## Streams
 
@@ -208,6 +209,19 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Status:** done
 - **Completed:** 2026-06-05 — E2E verified against staging: breach created, email delivered, cleanup passed. Impl-review 2026-06-04 (all findings F1–F6 resolved).
 
+### S-06: Tuya detach device
+
+- **Outcome:** user can deactivate/reactivate meter monitoring when the Tuya device is physically unavailable — cron sync and limit evaluation skip inactive meters; dashboard shows status and controls.
+- **Change ID:** tuya-detach-device
+- **PRD refs:** Operational (not in original PRD — addresses production pain point: hourly `TUYA_READING_UNAVAILABLE` errors when device is offline)
+- **Prerequisites:** S-02
+- **Parallel with:** —
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Bez tego cron sync produkuje błędy co godzinę dla niedostępnych urządzeń, a użytkownik nie ma kontroli.
+- **Status:** done
+- **Completed:** 2026-06-28 — 3 phases (schema+RPC, API endpoint, dashboard UI). Impl-review APPROVED. PR [#34](https://github.com/mkregiel/energy-consumption-guard/pull/34).
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID                   | Suggested issue title                            | Ready for `/10x-plan` | Notes                                                    |
@@ -244,3 +258,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-03 | configure-consumption-limit | 2026-06-03 | GET/POST /api/limits, inline dashboard form, window preview + progress bar |
 | S-04 | configure-alarm-email       | 2026-06-04 | GET/POST /api/notifications, AlarmEmailForm na dashboardzie                |
 | S-05 | email-alarm-on-limit-breach | 2026-06-05 | E2E seed script, staging verified: breach → email delivered end-to-end     |
+| S-06 | tuya-detach-device          | 2026-06-28 | Meter active/inactive status, PATCH endpoint, dashboard UI controls        |
