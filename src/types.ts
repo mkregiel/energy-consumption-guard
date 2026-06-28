@@ -15,7 +15,7 @@ export interface Meter {
   updated_at: string;
 }
 
-export type MeterInsert = Omit<Meter, "id" | "created_at" | "updated_at">;
+export type MeterInsert = Omit<Meter, "id" | "status" | "created_at" | "updated_at">;
 
 export interface ConsumptionLimit {
   id: string;

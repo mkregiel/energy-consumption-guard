@@ -17,3 +17,5 @@ AS $$
   INNER JOIN public.tuya_oauth_tokens t ON t.user_id = m.user_id
   WHERE m.status = 'active';
 $$;
+
+GRANT EXECUTE ON FUNCTION public.get_eligible_sync_targets() TO service_role;
