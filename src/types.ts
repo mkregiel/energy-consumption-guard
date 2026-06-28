@@ -10,6 +10,7 @@ export interface Meter {
   label: string;
   tuya_device_id: string;
   tuya_product_id: string | null;
+  status: "active" | "inactive";
   created_at: string;
   updated_at: string;
 }

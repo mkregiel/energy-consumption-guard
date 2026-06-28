@@ -17,7 +17,7 @@ const loadMetersByUserId = async (supabase: SupabaseClient, userIds: string[]): 
     return new Map();
   }
 
-  const response = await supabase.from("meters").select("*").in("user_id", userIds);
+  const response = await supabase.from("meters").select("*").in("user_id", userIds).eq("status", "active");
 
   if (response.error) {
     throw new Error(`Failed to load meters: ${response.error.message}`);

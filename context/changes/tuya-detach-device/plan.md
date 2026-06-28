@@ -227,9 +227,9 @@ Migracja jest addytywna — `DEFAULT 'active'` oznacza, że istniejące metery a
 
 #### Automated
 
-- [ ] 1.1 Migracja aplikuje się czysto
-- [ ] 1.2 Typ Meter zawiera pole status
-- [ ] 1.3 Typecheck przechodzi
+- [x] 1.1 Migracja aplikuje się czysto
+- [x] 1.2 Typ Meter zawiera pole status
+- [x] 1.3 Typecheck przechodzi
 
 #### Manual
 
