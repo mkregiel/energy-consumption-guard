@@ -12,6 +12,23 @@ export const getUserMeter = async (supabase: SupabaseClient, userId: string): Pr
   return response.data as Meter | null;
 };
 
+export const updateMeterStatus = async (
+  supabase: SupabaseClient,
+  userId: string,
+  status: "active" | "inactive",
+): Promise<Meter> => {
+  const response = await supabase.from("meters").update({ status }).eq("user_id", userId).select("*").single();
+
+  if (response.error) {
+    if (response.error.code === "PGRST116") {
+      throw new TuyaServiceError("TUYA_METER_NOT_FOUND", "No meter found for this user.", 404);
+    }
+    throw new TuyaServiceError("TUYA_PROVIDER_ERROR", "Failed to update meter status.", 500, response.error);
+  }
+
+  return response.data as Meter;
+};
+
 export const upsertUserMeter = async (
   supabase: SupabaseClient,
   userId: string,

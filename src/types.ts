@@ -10,11 +10,12 @@ export interface Meter {
   label: string;
   tuya_device_id: string;
   tuya_product_id: string | null;
+  status: "active" | "inactive";
   created_at: string;
   updated_at: string;
 }
 
-export type MeterInsert = Omit<Meter, "id" | "created_at" | "updated_at">;
+export type MeterInsert = Omit<Meter, "id" | "status" | "created_at" | "updated_at">;
 
 export interface ConsumptionLimit {
   id: string;

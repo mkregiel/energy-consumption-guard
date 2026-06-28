@@ -227,9 +227,9 @@ Migracja jest addytywna — `DEFAULT 'active'` oznacza, że istniejące metery a
 
 #### Automated
 
-- [ ] 1.1 Migracja aplikuje się czysto
-- [ ] 1.2 Typ Meter zawiera pole status
-- [ ] 1.3 Typecheck przechodzi
+- [x] 1.1 Migracja aplikuje się czysto — 8ec36aa
+- [x] 1.2 Typ Meter zawiera pole status — 8ec36aa
+- [x] 1.3 Typecheck przechodzi — 8ec36aa
 
 #### Manual
 
@@ -240,8 +240,8 @@ Migracja jest addytywna — `DEFAULT 'active'` oznacza, że istniejące metery a
 
 #### Automated
 
-- [ ] 2.1 Typecheck przechodzi
-- [ ] 2.2 Linting przechodzi
+- [x] 2.1 Typecheck przechodzi — 20c1363
+- [x] 2.2 Linting przechodzi — 20c1363
 
 #### Manual
 
@@ -253,9 +253,9 @@ Migracja jest addytywna — `DEFAULT 'active'` oznacza, że istniejące metery a
 
 #### Automated
 
-- [ ] 3.1 Typecheck przechodzi
-- [ ] 3.2 Linting przechodzi
-- [ ] 3.3 Istniejące testy E2E przechodzą
+- [x] 3.1 Typecheck przechodzi — 99ac456
+- [x] 3.2 Linting przechodzi — 99ac456
+- [x] 3.3 Istniejące testy E2E przechodzą — 99ac456
 
 #### Manual
 

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Gauge, Hash, Link2, Pencil, Save, Tag } from "lucide-react";
+import { ChevronDown, ChevronUp, Gauge, Hash, Link2, Pause, Pencil, Play, Save, Tag } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
+import { useMeterStatus } from "@/components/hooks/useMeterStatus";
 import { useMeterUpsert } from "@/components/hooks/useMeterUpsert";
 import { useTuyaDevices } from "@/components/hooks/useTuyaDevices";
 import { Button } from "@/components/ui/button";
@@ -28,11 +29,13 @@ export default function MeterRegistrationForm({ linked, meter }: MeterRegistrati
   const [label, setLabel] = useState(meter?.label ?? "");
   const [manualDeviceId, setManualDeviceId] = useState("");
   const [manualProductId, setManualProductId] = useState("");
+  const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
 
   const { devices, status, errorMessage, errorCode, isNotLinked, refetch } = useTuyaDevices({
     enabled: linked && isEditing,
   });
   const { upsert, isSubmitting, errorMessage: submitError, fieldErrors, clearErrors } = useMeterUpsert();
+  const { updateStatus, isLoading: isStatusUpdating, error: statusError } = useMeterStatus();
 
   const selectedDevice = devices.find((device) => device.deviceId === selectedDeviceId);
   const listLoadFailed = status === "error" && !isNotLinked;
@@ -76,10 +79,16 @@ export default function MeterRegistrationForm({ linked, meter }: MeterRegistrati
   }
 
   if (meter && !isEditing) {
+    const isActive = meter.status === "active";
+
     return (
       <section className={cn("rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl")}>
         <h2 className="mb-1 text-lg font-semibold text-white">Licznik energii</h2>
-        <p className="mb-4 text-sm text-blue-100/70">Zarejestrowany licznik gotowy do synchronizacji odczytów.</p>
+        <p className="mb-4 text-sm text-blue-100/70">
+          {isActive
+            ? "Zarejestrowany licznik gotowy do synchronizacji odczytów."
+            : "Monitoring jest wstrzymany. Synchronizacja i ewaluacja limitów są wyłączone."}
+        </p>
         <dl className="space-y-2 text-sm">
           <div>
             <dt className="text-blue-100/50">Nazwa</dt>
@@ -92,25 +101,109 @@ export default function MeterRegistrationForm({ linked, meter }: MeterRegistrati
             </dd>
           </div>
         </dl>
-        <Button
-          type="button"
-          onClick={() => {
-            setIsEditing(true);
-            setLabel(meter.label);
-            setSelectedDeviceId(null);
-            setManualDeviceId("");
-            setManualProductId("");
-            setManualOpen(false);
-          }}
-          className={cn(
-            "mt-4 w-full rounded-lg border border-white/20 bg-white/10 font-medium text-white hover:bg-white/20",
+
+        {statusError ? <ServerError message={statusError} /> : null}
+
+        {showDeactivateConfirm ? (
+          <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-900/20 p-4 text-sm">
+            <p className="mb-3 text-amber-200">
+              Czy na pewno chcesz dezaktywować monitoring? Synchronizacja odczytów i ewaluacja limitów zostaną
+              wstrzymane. Historia odczytów i konfiguracja limitów zostaną zachowane.
+            </p>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                disabled={isStatusUpdating}
+                onClick={() => {
+                  void updateStatus("inactive");
+                }}
+                className={cn("flex-1 rounded-lg bg-amber-600 font-medium text-white hover:bg-amber-500")}
+              >
+                {isStatusUpdating ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    Dezaktywacja…
+                  </span>
+                ) : (
+                  "Potwierdź dezaktywację"
+                )}
+              </Button>
+              <Button
+                type="button"
+                disabled={isStatusUpdating}
+                onClick={() => {
+                  setShowDeactivateConfirm(false);
+                }}
+                className={cn(
+                  "flex-1 rounded-lg border border-white/20 bg-white/10 font-medium text-white hover:bg-white/20",
+                )}
+              >
+                Anuluj
+              </Button>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <Button
+            type="button"
+            onClick={() => {
+              setIsEditing(true);
+              setLabel(meter.label);
+              setSelectedDeviceId(null);
+              setManualDeviceId("");
+              setManualProductId("");
+              setManualOpen(false);
+            }}
+            className={cn(
+              "rounded-lg border border-white/20 bg-white/10 font-medium text-white hover:bg-white/20 sm:flex-1",
+            )}
+          >
+            <span className="flex items-center justify-center gap-2">
+              <Pencil className="size-4" />
+              Zmień urządzenie
+            </span>
+          </Button>
+
+          {isActive ? (
+            <Button
+              type="button"
+              disabled={isStatusUpdating}
+              onClick={() => {
+                setShowDeactivateConfirm(true);
+              }}
+              className={cn(
+                "rounded-lg border border-amber-500/30 bg-amber-900/20 font-medium text-amber-200 hover:bg-amber-900/40 sm:flex-1",
+              )}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Pause className="size-4" />
+                Dezaktywuj monitoring
+              </span>
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              disabled={isStatusUpdating}
+              onClick={() => {
+                void updateStatus("active");
+              }}
+              className={cn("rounded-lg bg-emerald-600 font-medium text-white hover:bg-emerald-500 sm:flex-1")}
+            >
+              {isStatusUpdating ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Reaktywacja…
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <Play className="size-4" />
+                  Reaktywuj monitoring
+                </span>
+              )}
+            </Button>
           )}
-        >
-          <span className="flex items-center justify-center gap-2">
-            <Pencil className="size-4" />
-            Zmień urządzenie
-          </span>
-        </Button>
+        </div>
       </section>
     );
   }

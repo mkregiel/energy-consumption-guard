@@ -106,7 +106,18 @@ const limitPreviewProps =
       </div>
 
       {
-        meter ? (
+        meter?.status === "inactive" ? (
+          <section
+            class="rounded-2xl border border-amber-500/30 bg-amber-900/20 p-4 text-sm text-amber-200"
+            role="status"
+          >
+            <p class="font-medium">Monitoring wstrzymany</p>
+            <p class="mt-1 text-amber-200/70">
+              Synchronizacja odczytów i ewaluacja limitów są wyłączone. Użyj przycisku "Reaktywuj monitoring" powyżej,
+              aby wznowić.
+            </p>
+          </section>
+        ) : meter ? (
           <>
             {consumptionLoadError ? (
               <section class="rounded-2xl border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100" role="alert">
