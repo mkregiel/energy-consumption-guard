@@ -1,7 +1,7 @@
 ---
 change_id: tuya-detach-device
 title: Tuya detach device
-status: implementing
+status: implemented
 created: 2026-06-28
 updated: 2026-06-28
 archived_at: null

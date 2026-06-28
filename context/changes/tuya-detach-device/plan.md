@@ -253,9 +253,9 @@ Migracja jest addytywna — `DEFAULT 'active'` oznacza, że istniejące metery a
 
 #### Automated
 
-- [x] 3.1 Typecheck przechodzi
-- [x] 3.2 Linting przechodzi
-- [x] 3.3 Istniejące testy E2E przechodzą
+- [x] 3.1 Typecheck przechodzi — 99ac456
+- [x] 3.2 Linting przechodzi — 99ac456
+- [x] 3.3 Istniejące testy E2E przechodzą — 99ac456
 
 #### Manual
 
