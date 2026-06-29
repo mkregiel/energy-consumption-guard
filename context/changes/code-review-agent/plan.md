@@ -249,25 +249,25 @@ Not applicable — net-new script, no existing data or behavior to migrate.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro check`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 `npm ls zod` shows no unresolvable peer conflict
+- [x] 2.1 Type checking passes: `npx astro check` — 3539fac
+- [x] 2.2 Linting passes: `npm run lint` — 3539fac
+- [x] 2.3 `npm ls zod` shows no unresolvable peer conflict — 3539fac
 
 #### Manual
 
-- [x] 2.4 Valid `CURSOR_API_KEY` run returns schema-matching JSON and consistent exit code
-- [x] 2.5 Missing `CURSOR_API_KEY` run produces a clear error, not a fabricated verdict
-- [x] 2.6 Agent does not modify any files under the read-only sandbox
+- [x] 2.4 Valid `CURSOR_API_KEY` run returns schema-matching JSON and consistent exit code — 3539fac
+- [x] 2.5 Missing `CURSOR_API_KEY` run produces a clear error, not a fabricated verdict — 3539fac
+- [x] 2.6 Agent does not modify any files under the read-only sandbox — 3539fac
 
 ### Phase 3: Wiring, docs, and end-to-end verification
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx astro check`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 `npm run review --silent` produces clean JSON on stdout
+- [x] 3.1 Type checking passes: `npx astro check`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 `npm run review --silent` produces clean JSON on stdout
 
 #### Manual
 
-- [ ] 3.4 End-to-end run against a real historical diff produces a sensible review
-- [ ] 3.5 `.env.example` formatting reviewed for consistency
+- [x] 3.4 End-to-end run against a real historical diff produces a sensible review
+- [x] 3.5 `.env.example` formatting reviewed for consistency
