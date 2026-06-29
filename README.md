@@ -1,270 +1,147 @@
-# 10x Astro Starter
+# MeterMind — Home Energy Monitor
 
-![](./public/template.png)
+A web application that monitors household electricity consumption via a Tuya / Smart Life smart meter and sends email alerts when usage exceeds configured limits.
 
-A modern, opinionated starter template for building fast, accessible web applications.
+The owner connects their Tuya energy meter, sets a kWh threshold for a time window (day / week / month), and provides an email address. Three background jobs run hourly to sync readings, evaluate limits, and dispatch breach notifications — no manual meter checks required.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v6 - Modern web framework with server-first rendering
-- [React](https://react.dev/) v19 - UI library for interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4 - Utility-first CSS framework
-- [Supabase](https://supabase.com/) - Authentication and backend-as-a-service
-- [Cloudflare Workers](https://workers.cloudflare.com/) - Edge deployment runtime
+| Layer | Technology |
+|---|---|
+| Framework | Astro 6 + React 19, TypeScript |
+| Database & Auth | Supabase (PostgreSQL, email/password auth, RLS) |
+| Smart meter API | Tuya IoT Platform (OAuth H5 flow) |
+| Email | Resend (transactional breach alerts) |
+| Runtime | Cloudflare Workers (SSR + Cron Triggers) |
+| Testing | Vitest (unit/integration), Playwright (E2E) |
 
 ## Prerequisites
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+- **Node.js** ≥ 22 (see `.nvmrc`)
+- **npm**
+- **Supabase** project — cloud or local via Docker (`npx supabase start`)
+- **Tuya Developer Console** account with an IoT Cloud project
+- **mkcert** for local HTTPS (required by Tuya OAuth callback)
 
 ## Getting Started
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
-
-2. Install dependencies:
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-3. Set up Supabase and configure environment variables — see [Supabase Configuration](#supabase-configuration) below.
-
-4. Create a `.dev.vars` file for local Cloudflare dev secrets:
+### 2. Configure environment
 
 ```bash
 cp .env.example .dev.vars
 ```
 
-5. Run the development server:
+Fill in the values — at minimum `SUPABASE_URL`, `SUPABASE_KEY`, `TUYA_CLIENT_ID`, and `TUYA_CLIENT_SECRET`. See `.env.example` for the full variable list with comments.
 
-```bash
-npm run dev
-```
-
-## Available Scripts
-
-- `npm run dev` - Start development server (Cloudflare workerd runtime)
-- `npm run dev:https` - Start dev server over HTTPS on `https://127.0.0.1:3000` (required for Tuya OAuth)
-- `npm run certs:generate` - Generate local mkcert certificates for HTTPS dev
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint with type-checked rules
-- `npm run lint:fix` - Auto-fix ESLint issues
-- `npm run format` - Run Prettier
-
-## Project Structure
-
-```md
-src/
-├── layouts/           # Astro layouts
-├── pages/             # Astro pages (routes)
-│   ├── api/           # API endpoints (SSR, zod-validated)
-│   │   └── auth/      # signin, signup, signout
-│   └── auth/          # signin, signup, confirm-email
-├── components/        # UI (Astro for static; React when interactive)
-│   ├── auth/          # sign-in/up forms and shared auth UI
-│   └── ui/            # shadcn/ui primitives
-├── lib/               # Supabase client, helpers, config
-├── types.ts           # Shared domain entity/DTO types
-├── styles/            # Global CSS (Tailwind)
-├── middleware.ts      # Session resolution; protected routes
-└── env.d.ts           # Astro/env type declarations
-```
-
-## Local HTTPS for Tuya OAuth
-
-Tuya Developer Console rejects callback URLs that do not use `https://`. Default `npm run dev` serves HTTP on port 4321, which cannot be registered as an OAuth redirect.
-
-1. Install [mkcert](https://github.com/FiloSottile/mkcert) (`winget install FiloSottile.mkcert`)
-2. Generate certificates: `npm run certs:generate`
-3. Start HTTPS dev server: `npm run dev:https`
-4. Open `https://127.0.0.1:3000` (no browser cert warning when mkcert CA is trusted)
-5. Register callback URL in Tuya Developer Console: `https://127.0.0.1:3000/dashboard/tuya/callback`
-6. Set `TUYA_API_BASE_URL` to the same regional OpenAPI host as the H5 page (e.g. `https://openapi.tuyaeu.com` for Central Europe)
-
-Use `dev:https` for all Tuya OAuth manual tests — not default `npm run dev`. See `certs/README.md` for regeneration steps.
-
-After linking Tuya, open **`/dashboard`** to register a meter and view consumption. Set `TUYA_OAUTH_REDIRECT_URI` in `.env` to match the callback URL registered in Tuya console (see `.env.example`).
-
-## Supabase Configuration
-
-This project uses [Supabase](https://supabase.com/) for authentication. Environment variables are declared via Astro's `astro:env` schema and are treated as **server-only secrets** — they are never exposed to the client.
-
-Local Supabase `site_url` is set to `https://127.0.0.1:3000` to align with HTTPS dev. Sign in via `npm run dev:https` when testing Tuya flows.
-
-### First-time setup (local, no cloud project needed)
-
-Requires [Docker](https://www.docker.com/) and ~7 GB RAM.
-
-1. Create your `.env` file:
-
-```bash
-cp .env.example .env
-```
-
-2. Initialize the local Supabase project (creates a `supabase/` config folder):
-
-```bash
-npx supabase init
-```
-
-3. Start the local stack (downloads Docker images on first run):
+For local Supabase:
 
 ```bash
 npx supabase start
 ```
 
-4. Copy the credentials printed by the CLI into your `.env` and `.dev.vars`:
+Copy the `anon key` and `API URL` from the CLI output into `.dev.vars`.
 
-```
-SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_KEY=<anon key from CLI output>
-```
-
-5. To stop the stack when done:
+### 3. Apply database migrations
 
 ```bash
-npx supabase stop
-```
-
-The local Studio UI is available at `http://localhost:54323`.
-
-### Database migrations
-
-The energy monitoring domain lives in five `public` tables: `meters`, `consumption_limits`, `consumption_readings`, `notification_settings`, and `limit_breach_events`. SQL migrations are in `supabase/migrations/`; shared TypeScript types are in `src/types.ts`.
-
-**Local development** (with Docker running):
-
-```bash
-npx supabase start
+# Local (resets and reapplies all migrations)
 npx supabase db reset
+
+# Cloud
+npx supabase link --project-ref <ref>
+npx supabase db push
 ```
 
-`db reset` reapplies all migrations on a fresh local database. Auth still uses the built-in `auth.users` table.
+### 4. Generate local HTTPS certificates
 
-**Production** — requires explicit human approval before changing RLS or schema (see `context/deployment/deploy-plan.md`):
+Tuya's OAuth H5 redirect requires an HTTPS callback URL, even in development.
 
-1. Review migration SQL in the PR.
-2. After approval: `npx supabase link --project-ref <ref>` then `npx supabase db push`.
-3. Verify tables in the Supabase dashboard.
-
-### Using a cloud Supabase project instead
-
-If you prefer to use a hosted Supabase project, add these variables to your `.env` and `.dev.vars` files:
-
-| Variable       | Description                                                |
-| -------------- | ---------------------------------------------------------- |
-| `SUPABASE_URL` | Project URL from Supabase dashboard → Settings → API       |
-| `SUPABASE_KEY` | `anon` public key from Supabase dashboard → Settings → API |
-
-```
-SUPABASE_URL=https://<project-ref>.supabase.co
-SUPABASE_KEY=<anon-key>
+```bash
+npm run certs:generate
 ```
 
-### Email confirmation in local development
+This uses [mkcert](https://github.com/FiloSottile/mkcert) to create trusted certificates in `certs/`. Install mkcert first if you don't have it:
 
-By default Supabase requires email confirmation before a user can sign in. To skip this during local development:
+```bash
+# Windows
+winget install FiloSottile.mkcert
 
-1. Open the Supabase dashboard for your project
-2. Go to **Authentication → Email → Confirm email**
-3. Toggle it **off**
+# macOS
+brew install mkcert
+```
 
-Users can then sign in immediately after sign-up without clicking a confirmation link.
+### 5. Start the dev server
 
-### Auth routes
+```bash
+npm run dev:https
+```
 
-| Route                 | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `/auth/signin`        | Email/password sign-in form                                             |
-| `/auth/signup`        | Email/password sign-up form                                             |
-| `/auth/confirm-email` | Post-signup "check your inbox" page                                     |
-| `/dashboard`          | Example protected page (redirects to `/auth/signin` if unauthenticated) |
+Open **https://127.0.0.1:3000**. Register the same URL as the OAuth callback in Tuya Developer Console:
 
-Route protection is handled in `src/middleware.ts`:
+```
+https://127.0.0.1:3000/dashboard/tuya/callback
+```
 
-- Page routes: add paths to `PROTECTED_ROUTES` (e.g. `/dashboard`) — unauthenticated users are redirected to `/auth/signin`.
-- API routes: all `/api/*` paths require a session **except** `/api/auth/*` (sign-in, sign-up, sign-out). Unauthenticated API requests receive JSON `401` with `error.code: "UNAUTHORIZED"`. Handlers should still call `requireUser()` from `src/lib/auth-guard.ts` for defense in depth. Browser navigation to a protected API URL without a session (e.g. a stale-tab click on `/api/tuya/oauth/start`) shows that JSON response instead of a sign-in redirect.
+> For features that don't involve Tuya OAuth you can use plain `npm run dev` (HTTP on port 4321) instead.
+
+## Usage
+
+1. **Sign up** at `/auth/signup`, then **sign in** at `/auth/signin`.
+2. **Connect your Tuya account** — click the connect button on the dashboard, authorize via Tuya's OAuth page, then select your energy meter device from the list.
+3. **Set a consumption limit** — choose a time window (day, week, or month) and enter a kWh threshold.
+4. **Configure alarm email** — enter the address where breach alerts should be sent.
+5. **Done.** The system syncs meter readings, evaluates limits, and sends email notifications automatically every hour. You can also trigger a manual sync from the dashboard.
+
+## Background Cron Jobs
+
+Three hourly UTC cron triggers run on Cloudflare Workers:
+
+| Schedule (UTC) | Job | Route |
+|---|---|---|
+| `:00` every hour | Tuya reading sync | `POST /api/cron/sync-readings` |
+| `:05` every hour | Limit evaluation | `POST /api/cron/evaluate-limits` |
+| `:10` every hour | Breach email dispatch | `POST /api/cron/send-notifications` |
+
+Additional secrets required for cron and email — see `.env.example`:
+
+| Variable | Source |
+|---|---|
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase dashboard → Settings → API → `service_role` |
+| `CRON_SECRET` | Any random string (Bearer auth for cron routes) |
+| `RESEND_API_KEY` | Resend dashboard → API Keys |
+| `RESEND_FROM_EMAIL` | Verified sender address in Resend |
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start dev server (HTTP) |
+| `npm run dev:https` | Start dev server over HTTPS on `https://127.0.0.1:3000` |
+| `npm run build` | Production build |
+| `npm run test` | Run unit and integration tests (Vitest) |
+| `npm run test:e2e` | Run E2E tests (Playwright) |
+| `npm run lint` | Lint with ESLint |
+| `npm run format` | Format with Prettier |
+| `npm run certs:generate` | Generate local HTTPS certificates via mkcert |
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
-
-1. Build the project:
+Deploys to [Cloudflare Workers](https://workers.cloudflare.com/):
 
 ```bash
 npm run build
-```
-
-2. Deploy with Wrangler:
-
-```bash
 npx wrangler deploy
 ```
 
-**Important:** Always deploy using the root `wrangler.jsonc` (which sets `"main": "./src/worker.ts"` and includes the `scheduled` cron handler). Do not deploy using Astro's built `dist/server/entry.mjs` alone — that bundle exports only the SSR `fetch` handler and will not run scheduled cron jobs.
+Set secrets in Cloudflare via `npx wrangler secret put <NAME>` or the dashboard.
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
-
-## Background cron jobs
-
-Three hourly UTC cron triggers run batch jobs on Cloudflare Workers:
-
-| Schedule (UTC) | Job | Route |
-| --- | --- | --- |
-| `:00` every hour | Tuya reading sync | `POST /api/cron/sync-readings` |
-| `:05` every hour | Limit evaluation | `POST /api/cron/evaluate-limits` |
-| `:10` every hour | Breach email notifications | `POST /api/cron/send-notifications` |
-
-Scheduled handlers call the same services as the HTTP routes (no self-fetch). Manual triggers use Bearer auth.
-
-### Required secrets
-
-In addition to `SUPABASE_URL`, `SUPABASE_KEY`, and Tuya credentials:
-
-| Variable | Description |
-| --- | --- |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase dashboard → Settings → API → `service_role` (bypasses RLS for batch jobs) |
-| `CRON_SECRET` | Random string for `Authorization: Bearer <CRON_SECRET>` on cron routes |
-| `RESEND_API_KEY` | Resend dashboard → API Keys (required for breach alarm emails) |
-| `RESEND_FROM_EMAIL` | Verified sender address in Resend (e.g. `alarms@yourdomain.com`) |
-
-Set in production:
-
-```bash
-npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
-npx wrangler secret put CRON_SECRET
-npx wrangler secret put RESEND_API_KEY
-npx wrangler secret put RESEND_FROM_EMAIL
-```
-
-Copy both into `.env` and `.dev.vars` for local development (see `.env.example`).
-
-### Manual local trigger (PowerShell)
-
-```powershell
-Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/sync-readings" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
-Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/evaluate-limits" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
-Invoke-WebRequest -Method POST -Uri "http://127.0.0.1:3000/api/cron/send-notifications" -Headers @{ Authorization = "Bearer $env:CRON_SECRET" }
-```
-
-### Monitoring
-
-```bash
-npx wrangler tail energy-monitor
-```
-
-Job handlers log JSON summaries with `job`, `stats`, and per-user errors for correlation.
-
-## CI
-
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+> Always deploy using the root `wrangler.jsonc` — it includes the `scheduled` cron handler. Deploying only the Astro SSR bundle skips cron jobs.
 
 ## License
 
