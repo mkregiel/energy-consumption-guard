@@ -300,15 +300,15 @@ permissions:
 
 #### Automated
 
-- [ ] 1.1 Existing unit tests still pass: `npm run test:unit`
-- [ ] 1.2 Type checking passes: `npm run typecheck`
-- [ ] 1.3 Lint passes: `npm run lint`
-- [ ] 1.4 Local mode still works: `git diff HEAD~1 | CURSOR_API_KEY=$KEY npx tsx scripts/review.ts`
+- [x] 1.1 Existing unit tests still pass: `npm run test:unit`
+- [x] 1.2 Type checking passes: `npm run typecheck`
+- [x] 1.3 Lint passes: `npm run lint`
+- [x] 1.4 Local mode still works: `git diff HEAD~1 | CURSOR_API_KEY=$KEY npx tsx scripts/review.ts`
 
 #### Manual
 
-- [ ] 1.5 CI mode produces valid JSON with all 6 criteria
-- [ ] 1.6 Summary mentions stack-specific observations when relevant
+- [x] 1.5 CI mode produces valid JSON with all 6 criteria
+- [x] 1.6 Summary mentions stack-specific observations when relevant
 
 ### Phase 2: Create Composite Action
 
