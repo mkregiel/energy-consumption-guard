@@ -5,6 +5,7 @@ export interface UseLimitDeleteResult {
   deleteLimit: () => Promise<boolean>;
   isDeleting: boolean;
   errorMessage: string | null;
+  clearErrors: () => void;
 }
 
 const polishDeleteError = (code: string, fallback: string): string => {
@@ -19,6 +20,10 @@ const polishDeleteError = (code: string, fallback: string): string => {
 export function useLimitDelete(): UseLimitDeleteResult {
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const clearErrors = useCallback(() => {
+    setErrorMessage(null);
+  }, []);
 
   const deleteLimit = useCallback(async (): Promise<boolean> => {
     setIsDeleting(true);
@@ -42,5 +47,5 @@ export function useLimitDelete(): UseLimitDeleteResult {
     }
   }, []);
 
-  return { deleteLimit, isDeleting, errorMessage };
+  return { deleteLimit, isDeleting, errorMessage, clearErrors };
 }
