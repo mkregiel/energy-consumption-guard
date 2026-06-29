@@ -3,7 +3,7 @@ project: Monitor zużycia prądu w gospodarstwie domowym
 version: 1
 status: in_progress
 created: 2026-05-25
-updated: 2026-06-28
+updated: 2026-06-30
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -40,6 +40,7 @@ Właściciel domu traci kontrolę nad zużyciem prądu, gdy rachunek w danym okr
 | S-04 | configure-alarm-email       | set the email address used for alarm notifications                                          | S-01, F-01, F-05             | FR-004, US-01                    | done   |
 | S-05 | email-alarm-on-limit-breach | receive an email when consumption in the configured window exceeds the limit                | S-02, S-03, S-04, F-03, F-04 | FR-005, US-01                    | done   |
 | S-06 | tuya-detach-device          | deactivate/reactivate meter monitoring when Tuya device is unavailable                      | S-02                         | Operational                      | done   |
+| S-07 | delete-meter-limit          | delete a configured consumption limit and reset the form to empty                           | S-03                         | FR-003, Operational              | done   |
 
 ## Streams
 
@@ -222,6 +223,19 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Status:** done
 - **Completed:** 2026-06-28 — 3 phases (schema+RPC, API endpoint, dashboard UI). Impl-review APPROVED. PR [#34](https://github.com/mkregiel/energy-consumption-guard/pull/34).
 
+### S-07: Delete meter limit
+
+- **Outcome:** user can delete a configured consumption limit; form resets to empty, preview bar disappears, breach history cascade-deletes.
+- **Change ID:** delete-meter-limit
+- **PRD refs:** FR-003, Operational
+- **Prerequisites:** S-03
+- **Parallel with:** —
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Completes the CRUD lifecycle for limits — without delete, user must set threshold to an absurdly high value to effectively disable.
+- **Status:** done
+- **Completed:** 2026-06-30 — 2 phases (backend service+API+tests, frontend hook+UI). Impl-review APPROVED.
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID                   | Suggested issue title                            | Ready for `/10x-plan` | Notes                                                    |
@@ -246,16 +260,17 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-| ID   | Change ID                   | Completed  | Notes                                                                      |
-| ---- | --------------------------- | ---------- | -------------------------------------------------------------------------- |
-| F-01 | energy-domain-schema        | 2026-05-27 | Tabele domeny energii + RLS                                                |
-| F-02 | tuya-read-integration       | 2026-05-30 | OAuth, sync, idempotentne odczyty                                          |
-| F-03 | background-limit-evaluation | 2026-05-31 | Cron sync + ewaluacja limitów → `limit_breach_events`                      |
-| F-04 | transactional-email-alerts  | 2026-06-02 | Resend client, breach notification job, cron `:10` UTC, retry policy       |
-| F-05 | protected-api-routes        | 2026-05-31 | Globalny guard `/api/*` + `requireUser()`                                  |
-| S-01 | user-login                  | baseline   | Supabase email/password, signin/signup/signout                             |
-| S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia                        |
-| S-03 | configure-consumption-limit | 2026-06-03 | GET/POST /api/limits, inline dashboard form, window preview + progress bar |
-| S-04 | configure-alarm-email       | 2026-06-04 | GET/POST /api/notifications, AlarmEmailForm na dashboardzie                |
-| S-05 | email-alarm-on-limit-breach | 2026-06-05 | E2E seed script, staging verified: breach → email delivered end-to-end     |
-| S-06 | tuya-detach-device          | 2026-06-28 | Meter active/inactive status, PATCH endpoint, dashboard UI controls        |
+| ID   | Change ID                   | Completed  | Notes                                                                         |
+| ---- | --------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| F-01 | energy-domain-schema        | 2026-05-27 | Tabele domeny energii + RLS                                                   |
+| F-02 | tuya-read-integration       | 2026-05-30 | OAuth, sync, idempotentne odczyty                                             |
+| F-03 | background-limit-evaluation | 2026-05-31 | Cron sync + ewaluacja limitów → `limit_breach_events`                         |
+| F-04 | transactional-email-alerts  | 2026-06-02 | Resend client, breach notification job, cron `:10` UTC, retry policy          |
+| F-05 | protected-api-routes        | 2026-05-31 | Globalny guard `/api/*` + `requireUser()`                                     |
+| S-01 | user-login                  | baseline   | Supabase email/password, signin/signup/signout                                |
+| S-02 | tuya-device-and-consumption | 2026-05-31 | North star — Tuya OAuth, licznik, dashboard zużycia                           |
+| S-03 | configure-consumption-limit | 2026-06-03 | GET/POST /api/limits, inline dashboard form, window preview + progress bar    |
+| S-04 | configure-alarm-email       | 2026-06-04 | GET/POST /api/notifications, AlarmEmailForm na dashboardzie                   |
+| S-05 | email-alarm-on-limit-breach | 2026-06-05 | E2E seed script, staging verified: breach → email delivered end-to-end        |
+| S-06 | tuya-detach-device          | 2026-06-28 | Meter active/inactive status, PATCH endpoint, dashboard UI controls           |
+| S-07 | delete-meter-limit          | 2026-06-30 | DELETE /api/limits, deleteUserLimit service, "Usuń limit" button on dashboard |

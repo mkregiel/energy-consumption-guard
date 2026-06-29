@@ -12,6 +12,14 @@ export const getUserLimit = async (supabase: SupabaseClient, userId: string): Pr
   return response.data as ConsumptionLimit | null;
 };
 
+export async function deleteUserLimit(supabase: SupabaseClient, userId: string): Promise<void> {
+  const { error } = await supabase.from("consumption_limits").delete().eq("user_id", userId);
+
+  if (error) {
+    throw new TuyaServiceError("LIMIT_DB_ERROR", "Failed to delete consumption limit.", 500, error);
+  }
+}
+
 export const upsertUserLimit = async (
   supabase: SupabaseClient,
   userId: string,

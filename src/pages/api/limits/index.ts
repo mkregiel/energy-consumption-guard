@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth-guard";
 import { createClient } from "@/lib/supabase";
-import { getUserLimit, upsertUserLimit } from "@/lib/services/limit-service";
+import { getUserLimit, upsertUserLimit, deleteUserLimit } from "@/lib/services/limit-service";
 import { apiJsonError, apiJsonSuccess } from "@/lib/services/api-response";
 import { tuyaErrorResponse } from "@/lib/services/tuya-api-response";
 
@@ -62,6 +62,25 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
   try {
     const limit = await upsertUserLimit(supabase, userOrResponse.id, parsed.data);
     return apiJsonSuccess(200, { limit });
+  } catch (error) {
+    return tuyaErrorResponse(error);
+  }
+};
+
+export const DELETE: APIRoute = async ({ request, locals, cookies }) => {
+  const userOrResponse = requireUser(locals);
+  if (userOrResponse instanceof Response) {
+    return userOrResponse;
+  }
+
+  const supabase = createClient(request.headers, cookies);
+  if (!supabase) {
+    return apiJsonError(500, "SUPABASE_NOT_CONFIGURED", "Supabase is not configured.");
+  }
+
+  try {
+    await deleteUserLimit(supabase, userOrResponse.id);
+    return apiJsonSuccess(200, {});
   } catch (error) {
     return tuyaErrorResponse(error);
   }
