@@ -314,26 +314,26 @@ permissions:
 
 #### Automated
 
-- [x] 2.1 Action YAML is valid
-- [x] 2.2 `gh label create --force` is idempotent
+- [x] 2.1 Action YAML is valid — 76abcdb
+- [x] 2.2 `gh label create --force` is idempotent — 76abcdb
 
 #### Manual
 
-- [x] 2.3 Action posts well-formatted comment with all 6 scores and verdict
-- [x] 2.4 Correct label applied based on verdict
-- [x] 2.5 Re-running replaces old comment (marker cleanup)
+- [x] 2.3 Action posts well-formatted comment with all 6 scores and verdict — 76abcdb
+- [x] 2.4 Correct label applied based on verdict — 76abcdb
+- [x] 2.5 Re-running replaces old comment (marker cleanup) — 76abcdb
 
 ### Phase 3: Create Workflow
 
 #### Automated
 
-- [ ] 3.1 Workflow YAML has no syntax errors
-- [ ] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Workflow YAML has no syntax errors
+- [x] 3.2 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 PR to master triggers workflow and produces review comment + label
-- [ ] 3.4 New commit replaces prior comment and updates label
-- [ ] 3.5 ai-cr:review label triggers re-run and is auto-removed
-- [ ] 3.6 Fork PR does not trigger or fails gracefully
-- [ ] 3.7 Manual workflow_dispatch exits cleanly without PR context
+- [x] 3.3 PR to master triggers workflow and produces review comment + label
+- [x] 3.4 New commit replaces prior comment and updates label
+- [x] 3.5 ai-cr:review label triggers re-run and is auto-removed
+- [x] 3.6 Fork PR does not trigger or fails gracefully
+- [x] 3.7 Manual workflow_dispatch exits cleanly without PR context
