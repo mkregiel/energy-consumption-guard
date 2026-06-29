@@ -327,13 +327,13 @@ permissions:
 
 #### Automated
 
-- [x] 3.1 Workflow YAML has no syntax errors
-- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Workflow YAML has no syntax errors — 9ac832b
+- [x] 3.2 Lint passes: `npm run lint` — 9ac832b
 
 #### Manual
 
-- [x] 3.3 PR to master triggers workflow and produces review comment + label
-- [x] 3.4 New commit replaces prior comment and updates label
-- [x] 3.5 ai-cr:review label triggers re-run and is auto-removed
-- [x] 3.6 Fork PR does not trigger or fails gracefully
-- [x] 3.7 Manual workflow_dispatch exits cleanly without PR context
+- [x] 3.3 PR to master triggers workflow and produces review comment + label — 9ac832b
+- [x] 3.4 New commit replaces prior comment and updates label — 9ac832b
+- [x] 3.5 ai-cr:review label triggers re-run and is auto-removed — 9ac832b
+- [x] 3.6 Fork PR does not trigger or fails gracefully — 9ac832b
+- [x] 3.7 Manual workflow_dispatch exits cleanly without PR context — 9ac832b
