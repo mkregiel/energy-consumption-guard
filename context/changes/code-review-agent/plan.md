@@ -237,27 +237,27 @@ Not applicable — net-new script, no existing data or behavior to migrate.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro check`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 `ReviewSchema.parse({...validSample})` succeeds in a quick smoke check
+- [x] 1.1 Type checking passes: `npx astro check` — 8493cc1
+- [x] 1.2 Linting passes: `npm run lint` — 8493cc1
+- [x] 1.3 `ReviewSchema.parse({...validSample})` succeeds in a quick smoke check — 8493cc1
 
 #### Manual
 
-- [x] 1.4 Prose in `prompt.ts` matches `schema.ts` field names/criteria exactly
+- [x] 1.4 Prose in `prompt.ts` matches `schema.ts` field names/criteria exactly — 8493cc1
 
 ### Phase 2: Cursor SDK integration and entry script
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro check`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 `npm ls zod` shows no unresolvable peer conflict
+- [x] 2.1 Type checking passes: `npx astro check`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 `npm ls zod` shows no unresolvable peer conflict
 
 #### Manual
 
-- [ ] 2.4 Valid `CURSOR_API_KEY` run returns schema-matching JSON and consistent exit code
-- [ ] 2.5 Missing `CURSOR_API_KEY` run produces a clear error, not a fabricated verdict
-- [ ] 2.6 Agent does not modify any files under the read-only sandbox
+- [x] 2.4 Valid `CURSOR_API_KEY` run returns schema-matching JSON and consistent exit code
+- [x] 2.5 Missing `CURSOR_API_KEY` run produces a clear error, not a fabricated verdict
+- [x] 2.6 Agent does not modify any files under the read-only sandbox
 
 ### Phase 3: Wiring, docs, and end-to-end verification
 
