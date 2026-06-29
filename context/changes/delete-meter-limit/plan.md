@@ -183,20 +183,20 @@ Add the client-side delete hook and a delete button in the consumption limit for
 
 #### Manual
 
-- [ ] 1.4 DELETE /api/limits returns 200 with valid auth
-- [ ] 1.5 GET /api/limits returns null after delete
-- [ ] 1.6 Breach events cascade-deleted from database
+- [x] 1.4 DELETE /api/limits returns 200 with valid auth — 81befc4
+- [x] 1.5 GET /api/limits returns null after delete — 81befc4
+- [x] 1.6 Breach events cascade-deleted from database — 81befc4
 
 ### Phase 2: Frontend — Hook + UI
 
 #### Automated
 
-- [x] 2.1 Type checking passes
-- [x] 2.2 No lint errors in modified files
+- [x] 2.1 Type checking passes — d7369a7
+- [x] 2.2 No lint errors in modified files — d7369a7
 
 #### Manual
 
-- [ ] 2.3 Delete button visible only when limit exists
-- [ ] 2.4 Click delete resets form and hides preview bar
-- [ ] 2.5 Setting a new limit after deletion works
-- [ ] 2.6 Alarm email preserved after limit deletion
+- [x] 2.3 Delete button visible only when limit exists — d7369a7
+- [x] 2.4 Click delete resets form and hides preview bar — d7369a7
+- [x] 2.5 Setting a new limit after deletion works — d7369a7
+- [x] 2.6 Alarm email preserved after limit deletion — d7369a7
