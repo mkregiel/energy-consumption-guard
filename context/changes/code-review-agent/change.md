@@ -1,7 +1,7 @@
 ---
 change_id: code-review-agent
 title: Scripted code review agent on Cursor SDK (local, lesson 2 scope)
-status: implementing
+status: implemented
 created: 2026-06-29
 updated: 2026-06-29
 archived_at: null

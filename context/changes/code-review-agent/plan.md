@@ -263,11 +263,11 @@ Not applicable — net-new script, no existing data or behavior to migrate.
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx astro check`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 `npm run review --silent` produces clean JSON on stdout
+- [x] 3.1 Type checking passes: `npx astro check` — 4ed7ade
+- [x] 3.2 Linting passes: `npm run lint` — 4ed7ade
+- [x] 3.3 `npm run review --silent` produces clean JSON on stdout — 4ed7ade
 
 #### Manual
 
-- [x] 3.4 End-to-end run against a real historical diff produces a sensible review
-- [x] 3.5 `.env.example` formatting reviewed for consistency
+- [x] 3.4 End-to-end run against a real historical diff produces a sensible review — 4ed7ade
+- [x] 3.5 `.env.example` formatting reviewed for consistency — 4ed7ade
