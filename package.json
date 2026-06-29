@@ -18,13 +18,15 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "seed:test-breach": "tsx scripts/seed-test-breach.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "review": "tsx scripts/review.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
     "@astrojs/cloudflare": "^13.5.0",
     "@astrojs/react": "^5.0.4",
     "@astrojs/sitemap": "^3.7.2",
+    "@cursor/sdk": "^1.0.22",
     "@eslint/config-helpers": "^0.6.0",
     "@radix-ui/react-slot": "^1.1.2",
     "@supabase/ssr": "^0.10.3",
