@@ -36,7 +36,8 @@ function buildPromptInput(diff: string): string {
 function writeGitHubOutput(key: string, value: string): void {
   const outputFile = process.env.GITHUB_OUTPUT;
   if (!outputFile) return;
-  appendFileSync(outputFile, `${key}=${value}\n`, "utf8");
+  const delimiter = `ghadelim_${Date.now()}`;
+  appendFileSync(outputFile, `${key}<<${delimiter}\n${value}\n${delimiter}\n`, "utf8");
 }
 
 async function main(): Promise<void> {

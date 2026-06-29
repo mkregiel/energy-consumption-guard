@@ -53,6 +53,9 @@ runs:
         VERDICT: ${{ steps.review.outputs.verdict }}
         LARGE_DIFF: ${{ steps.review.outputs.REVIEW_LARGE_DIFF }}
       run: |
+        TMPFILE=$(mktemp)
+        trap 'rm -f "$TMPFILE"' EXIT
+
         IC=$(echo "$RESULT" | jq -r '.implementationCorrectness')
         ID=$(echo "$RESULT" | jq -r '.idiomaticity')
         CX=$(echo "$RESULT" | jq -r '.complexity')
@@ -69,28 +72,24 @@ runs:
           VERDICT_UPPER="FAIL"
         fi
 
-        BODY="${EMOJI} **AI Code Review: ${VERDICT_UPPER}**
+        {
+          printf '%s **AI Code Review: %s**\n\n' "$EMOJI" "$VERDICT_UPPER"
+          printf '| Criterion | Score |\n'
+          printf '|-----------|-------|\n'
+          printf '| Implementation Correctness | %s/10 |\n' "$IC"
+          printf '| Idiomaticity | %s/10 |\n' "$ID"
+          printf '| Complexity | %s/10 |\n' "$CX"
+          printf '| Test/Risk Coverage | %s/10 |\n' "$TR"
+          printf '| Security & Safety | %s/10 |\n' "$SS"
+          printf '| Documentation | %s/10 |\n\n' "$DC"
+          printf '**Summary:** %s\n' "$SUMMARY"
 
-        | Criterion | Score |
-        |-----------|-------|
-        | Implementation Correctness | ${IC}/10 |
-        | Idiomaticity | ${ID}/10 |
-        | Complexity | ${CX}/10 |
-        | Test/Risk Coverage | ${TR}/10 |
-        | Security & Safety | ${SS}/10 |
-        | Documentation | ${DC}/10 |
+          if [ "$LARGE_DIFF" = "true" ]; then
+            printf '\n> ⚠️ **Large diff** — review quality may be reduced\n'
+          fi
 
-        **Summary:** ${SUMMARY}"
-
-        if [ "$LARGE_DIFF" = "true" ]; then
-          BODY="${BODY}
-
-        > ⚠️ **Large diff** — review quality may be reduced"
-        fi
-
-        BODY="${BODY}
-
-        <!-- ai-cr:marker -->"
+          printf '\n<!-- ai-cr:marker -->\n'
+        } > "$TMPFILE"
 
         # Delete prior comments with marker
         COMMENT_IDS=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
@@ -100,7 +99,7 @@ runs:
         done
 
         # Post new comment
-        gh pr comment "$PR_NUMBER" --body "$BODY"
+        gh pr comment "$PR_NUMBER" --body-file "$TMPFILE"
 
     - name: Manage labels
       if: steps.review.outputs.verdict != ''
