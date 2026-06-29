@@ -177,9 +177,9 @@ Add the client-side delete hook and a delete button in the consumption limit for
 
 #### Automated
 
-- [ ] 1.1 Unit tests pass for deleteUserLimit service
-- [ ] 1.2 Unit tests pass for DELETE /api/limits endpoint
-- [ ] 1.3 Type checking passes
+- [x] 1.1 Unit tests pass for deleteUserLimit service
+- [x] 1.2 Unit tests pass for DELETE /api/limits endpoint
+- [x] 1.3 Type checking passes
 
 #### Manual
 

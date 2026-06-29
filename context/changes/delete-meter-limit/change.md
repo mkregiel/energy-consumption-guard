@@ -1,7 +1,7 @@
 ---
 change_id: delete-meter-limit
 title: Delete meter limit
-status: planned
+status: implementing
 created: 2026-06-29
 updated: 2026-06-29
 archived_at: null
