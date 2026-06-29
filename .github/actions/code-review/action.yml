@@ -1,0 +1,122 @@
+name: AI Code Review
+description: Run AI code review on a pull request diff and post results
+
+inputs:
+  api-key:
+    description: Cursor API key for the review agent
+    required: true
+  pr-number:
+    description: Pull request number
+    required: true
+  pr-title:
+    description: Pull request title
+    required: true
+  pr-body:
+    description: Pull request description
+    required: false
+    default: ""
+  base-ref:
+    description: Base branch ref for computing the diff
+    required: true
+
+outputs:
+  verdict:
+    description: Review verdict (pass or fail)
+    value: ${{ steps.review.outputs.verdict }}
+  result:
+    description: Full JSON review result
+    value: ${{ steps.review.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+    - name: Run review
+      id: review
+      shell: bash
+      continue-on-error: true
+      run: |
+        REVIEW_DIFF=$(git diff "origin/${{ inputs.base-ref }}...HEAD")
+        export REVIEW_DIFF
+        npx tsx scripts/review.ts
+      env:
+        CURSOR_API_KEY: ${{ inputs.api-key }}
+        REVIEW_PR_TITLE: ${{ inputs.pr-title }}
+        REVIEW_PR_BODY: ${{ inputs.pr-body }}
+
+    - name: Post PR comment
+      if: steps.review.outputs.result != ''
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+        RESULT: ${{ steps.review.outputs.result }}
+        VERDICT: ${{ steps.review.outputs.verdict }}
+        LARGE_DIFF: ${{ steps.review.outputs.REVIEW_LARGE_DIFF }}
+      run: |
+        IC=$(echo "$RESULT" | jq -r '.implementationCorrectness')
+        ID=$(echo "$RESULT" | jq -r '.idiomaticity')
+        CX=$(echo "$RESULT" | jq -r '.complexity')
+        TR=$(echo "$RESULT" | jq -r '.testRiskCoverage')
+        SS=$(echo "$RESULT" | jq -r '.securitySafety')
+        DC=$(echo "$RESULT" | jq -r '.documentation')
+        SUMMARY=$(echo "$RESULT" | jq -r '.summary')
+
+        if [ "$VERDICT" = "pass" ]; then
+          EMOJI="✅"
+          VERDICT_UPPER="PASS"
+        else
+          EMOJI="❌"
+          VERDICT_UPPER="FAIL"
+        fi
+
+        BODY="${EMOJI} **AI Code Review: ${VERDICT_UPPER}**
+
+        | Criterion | Score |
+        |-----------|-------|
+        | Implementation Correctness | ${IC}/10 |
+        | Idiomaticity | ${ID}/10 |
+        | Complexity | ${CX}/10 |
+        | Test/Risk Coverage | ${TR}/10 |
+        | Security & Safety | ${SS}/10 |
+        | Documentation | ${DC}/10 |
+
+        **Summary:** ${SUMMARY}"
+
+        if [ "$LARGE_DIFF" = "true" ]; then
+          BODY="${BODY}
+
+        > ⚠️ **Large diff** — review quality may be reduced"
+        fi
+
+        BODY="${BODY}
+
+        <!-- ai-cr:marker -->"
+
+        # Delete prior comments with marker
+        COMMENT_IDS=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+          --paginate --jq '.[] | select(.body | contains("<!-- ai-cr:marker -->")) | .id') || true
+        for CID in $COMMENT_IDS; do
+          gh api -X DELETE "repos/${GITHUB_REPOSITORY}/issues/comments/${CID}" || true
+        done
+
+        # Post new comment
+        gh pr comment "$PR_NUMBER" --body "$BODY"
+
+    - name: Manage labels
+      if: steps.review.outputs.verdict != ''
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+        VERDICT: ${{ steps.review.outputs.verdict }}
+      run: |
+        gh label create "ai-cr:passed" --color 0E8A16 --force 2>/dev/null || true
+        gh label create "ai-cr:failed" --color D93F0B --force 2>/dev/null || true
+
+        if [ "$VERDICT" = "pass" ]; then
+          gh pr edit "$PR_NUMBER" --add-label "ai-cr:passed"
+          gh pr edit "$PR_NUMBER" --remove-label "ai-cr:failed" 2>/dev/null || true
+        else
+          gh pr edit "$PR_NUMBER" --add-label "ai-cr:failed"
+          gh pr edit "$PR_NUMBER" --remove-label "ai-cr:passed" 2>/dev/null || true
+        fi
