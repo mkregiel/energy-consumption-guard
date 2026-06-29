@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Save, Zap } from "lucide-react";
+import { Save, Trash2, Zap } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
+import { useLimitDelete } from "@/components/hooks/useLimitDelete";
 import { useLimitUpsert } from "@/components/hooks/useLimitUpsert";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ export default function ConsumptionLimitForm({ initialLimit, preview }: Consumpt
   const [successVisible, setSuccessVisible] = useState(false);
 
   const { upsert, isSubmitting, errorMessage, clearErrors } = useLimitUpsert();
+  const { deleteLimit, isDeleting, errorMessage: deleteError } = useLimitDelete();
 
   useEffect(() => {
     if (!successVisible) return;
@@ -51,6 +53,15 @@ export default function ConsumptionLimitForm({ initialLimit, preview }: Consumpt
     if (saved) {
       setLimit(saved);
       setSuccessVisible(true);
+    }
+  }
+
+  async function handleDelete() {
+    const deleted = await deleteLimit();
+    if (deleted) {
+      setLimit(null);
+      setThreshold("");
+      setWindowType("day");
     }
   }
 
@@ -122,6 +133,33 @@ export default function ConsumptionLimitForm({ initialLimit, preview }: Consumpt
             </span>
           )}
         </Button>
+
+        {limit ? (
+          <Button
+            type="button"
+            disabled={isDeleting || isSubmitting}
+            onClick={() => {
+              void handleDelete();
+            }}
+            className={cn(
+              "w-full rounded-lg border border-red-500/30 bg-transparent px-4 py-2 font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300",
+            )}
+          >
+            {isDeleting ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="size-4 animate-spin rounded-full border-2 border-red-400/30 border-t-red-400" />
+                Usuwanie…
+              </span>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                <Trash2 className="size-4" />
+                Usuń limit
+              </span>
+            )}
+          </Button>
+        ) : null}
+
+        <ServerError message={deleteError} />
       </form>
 
       {preview && effectiveThreshold && preview.hasReadings ? (
