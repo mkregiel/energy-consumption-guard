@@ -1,0 +1,74 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: code-review-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository
+      || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Guard — labeled event must be ai-cr:review
+        if: github.event.action == 'labeled' && github.event.label.name != 'ai-cr:review'
+        run: |
+          echo "Label '${{ github.event.label.name }}' is not ai-cr:review — skipping"
+          exit 0
+        shell: bash
+        id: label-guard
+
+      - name: Guard — workflow_dispatch without PR context
+        if: github.event_name == 'workflow_dispatch' && github.event.pull_request == null
+        run: |
+          echo "Manual run without PR context — skipping"
+          exit 0
+        shell: bash
+        id: dispatch-guard
+
+      - uses: actions/checkout@v4
+        if: steps.label-guard.outcome == 'skipped' && steps.dispatch-guard.outcome == 'skipped'
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        if: steps.label-guard.outcome == 'skipped' && steps.dispatch-guard.outcome == 'skipped'
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+        if: steps.label-guard.outcome == 'skipped' && steps.dispatch-guard.outcome == 'skipped'
+        shell: bash
+
+      - uses: ./.github/actions/code-review
+        if: steps.label-guard.outcome == 'skipped' && steps.dispatch-guard.outcome == 'skipped'
+        with:
+          api-key: ${{ secrets.CURSOR_API_KEY }}
+          pr-number: ${{ github.event.pull_request.number }}
+          pr-title: ${{ github.event.pull_request.title }}
+          pr-body: ${{ github.event.pull_request.body }}
+          base-ref: ${{ github.event.pull_request.base.ref }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Cleanup retry label
+        if: >-
+          steps.label-guard.outcome == 'skipped'
+          && github.event.action == 'labeled'
+          && github.event.label.name == 'ai-cr:review'
+        run: gh pr edit "${{ github.event.pull_request.number }}" --remove-label "ai-cr:review"
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}

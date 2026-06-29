@@ -34,6 +34,11 @@ export const ReviewSchema = z.object({
   securitySafety: z
     .number()
     .describe("Security: absence of vulnerabilities and secret leaks (scale 1-10, 1 = unsafe, 10 = safe)"),
+  documentation: z
+    .number()
+    .describe(
+      "Documentation: non-obvious decisions and public surfaces explained where needed (scale 1-10, 1 = opaque, 10 = just enough docs)",
+    ),
   verdict: z.enum(["pass", "fail"]).describe("Binding verdict for the whole change"),
   summary: z.string().describe("Markdown summary (2-3 sentences), ready to use as a PR comment"),
 });
