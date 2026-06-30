@@ -233,31 +233,31 @@ No performance impact. The branded panel reuses static content (SVG icons, text)
 
 #### Automated
 
-- [x] 1.1 Type checking passes
-- [x] 1.2 Linting passes
-- [x] 1.3 AuthLayout.astro file exists
+- [x] 1.1 Type checking passes — 39da281
+- [x] 1.2 Linting passes — 39da281
+- [x] 1.3 AuthLayout.astro file exists — 39da281
 
 #### Manual
 
-- [x] 1.4 Desktop split-panel renders correctly
-- [x] 1.5 Mobile responsive collapse works
-- [x] 1.6 Branded panel content matches homepage theme
-- [x] 1.7 Emerald accent colors on buttons and focus states
+- [x] 1.4 Desktop split-panel renders correctly — 39da281
+- [x] 1.5 Mobile responsive collapse works — 39da281
+- [x] 1.6 Branded panel content matches homepage theme — 39da281
+- [x] 1.7 Emerald accent colors on buttons and focus states — 39da281
 
 ### Phase 2: Polish copy & page migration
 
 #### Automated
 
-- [ ] 2.1 Type checking passes
-- [ ] 2.2 Linting passes
-- [ ] 2.3 All auth pages import AuthLayout
+- [x] 2.1 Type checking passes
+- [x] 2.2 Linting passes
+- [x] 2.3 All auth pages import AuthLayout
 
 #### Manual
 
-- [ ] 2.4 Signin page shows Polish copy and split-panel layout
-- [ ] 2.5 Signup page shows Polish copy and split-panel layout
-- [ ] 2.6 Confirm-email page shows Polish content (dev + prod)
-- [ ] 2.7 Signin ↔ signup navigation links work
-- [ ] 2.8 Form submission works end-to-end
-- [ ] 2.9 Server error messages display correctly
-- [ ] 2.10 Responsive layout works on mobile for all three pages
+- [x] 2.4 Signin page shows Polish copy and split-panel layout
+- [x] 2.5 Signup page shows Polish copy and split-panel layout
+- [x] 2.6 Confirm-email page shows Polish content (dev + prod)
+- [x] 2.7 Signin ↔ signup navigation links work
+- [x] 2.8 Form submission works end-to-end
+- [x] 2.9 Server error messages display correctly
+- [x] 2.10 Responsive layout works on mobile for all three pages
