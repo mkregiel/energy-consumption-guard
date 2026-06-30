@@ -1,7 +1,7 @@
 ---
 change_id: redesign-login-register-page
 title: Redesign login register page
-status: implementing
+status: implemented
 created: 2026-06-30
 updated: 2026-06-30
 

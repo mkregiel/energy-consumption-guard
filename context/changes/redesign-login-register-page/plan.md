@@ -248,16 +248,16 @@ No performance impact. The branded panel reuses static content (SVG icons, text)
 
 #### Automated
 
-- [x] 2.1 Type checking passes
-- [x] 2.2 Linting passes
-- [x] 2.3 All auth pages import AuthLayout
+- [x] 2.1 Type checking passes — 679eee0
+- [x] 2.2 Linting passes — 679eee0
+- [x] 2.3 All auth pages import AuthLayout — 679eee0
 
 #### Manual
 
-- [x] 2.4 Signin page shows Polish copy and split-panel layout
-- [x] 2.5 Signup page shows Polish copy and split-panel layout
-- [x] 2.6 Confirm-email page shows Polish content (dev + prod)
-- [x] 2.7 Signin ↔ signup navigation links work
-- [x] 2.8 Form submission works end-to-end
-- [x] 2.9 Server error messages display correctly
-- [x] 2.10 Responsive layout works on mobile for all three pages
+- [x] 2.4 Signin page shows Polish copy and split-panel layout — 679eee0
+- [x] 2.5 Signup page shows Polish copy and split-panel layout — 679eee0
+- [x] 2.6 Confirm-email page shows Polish content (dev + prod) — 679eee0
+- [x] 2.7 Signin ↔ signup navigation links work — 679eee0
+- [x] 2.8 Form submission works end-to-end — 679eee0
+- [x] 2.9 Server error messages display correctly — 679eee0
+- [x] 2.10 Responsive layout works on mobile for all three pages — 679eee0
