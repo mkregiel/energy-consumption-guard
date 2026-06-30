@@ -259,28 +259,28 @@ No unit tests needed — all changes are presentational Astro templates with no 
 
 #### Automated
 
-- [x] 1.1 TypeScript type check passes
-- [x] 1.2 Build succeeds
+- [x] 1.1 TypeScript type check passes — 817ba0d
+- [x] 1.2 Build succeeds — 817ba0d
 
 #### Manual
 
-- [x] 1.3 Home page shows energy-themed background, no cosmic orbs
-- [x] 1.4 Topbar links are teal/emerald
-- [x] 1.5 Dashboard retains original bg-cosmic — no regression
+- [x] 1.3 Home page shows energy-themed background, no cosmic orbs — 817ba0d
+- [x] 1.4 Topbar links are teal/emerald — 817ba0d
+- [x] 1.5 Dashboard retains original bg-cosmic — no regression — 817ba0d
 
 ### Phase 2: Content and Feature Cards
 
 #### Automated
 
-- [ ] 2.1 TypeScript type check passes
-- [ ] 2.2 Build succeeds
+- [x] 2.1 TypeScript type check passes
+- [x] 2.2 Build succeeds
 
 #### Manual
 
-- [ ] 2.3 Hero shows Polish product name and tagline
-- [ ] 2.4 Feature cards describe product capabilities in Polish
-- [ ] 2.5 CTA buttons are emerald and labeled in Polish
-- [ ] 2.6 Responsive layout works on mobile
+- [x] 2.3 Hero shows Polish product name and tagline
+- [x] 2.4 Feature cards describe product capabilities in Polish
+- [x] 2.5 CTA buttons are emerald and labeled in Polish
+- [x] 2.6 Responsive layout works on mobile
 
 ### Phase 3: Auth-Aware CTA, Footer, and Metadata
 
