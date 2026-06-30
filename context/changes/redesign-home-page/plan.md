@@ -286,15 +286,15 @@ No unit tests needed — all changes are presentational Astro templates with no 
 
 #### Automated
 
-- [x] 3.1 TypeScript type check passes
-- [x] 3.2 Build succeeds
-- [x] 3.3 Existing E2E tests pass
+- [x] 3.1 TypeScript type check passes — 4cd7d8a
+- [x] 3.2 Build succeeds — 4cd7d8a
+- [x] 3.3 Existing E2E tests pass — 4cd7d8a
 
 #### Manual
 
-- [x] 3.4 Logged-out state shows sign-in/up buttons
-- [x] 3.5 Logged-in state shows dashboard CTA
-- [x] 3.6 Topbar shows app name as link
-- [x] 3.7 Footer visible with app name and year
-- [x] 3.8 Page title and lang attribute are Polish
-- [x] 3.9 Dashboard page unaffected
+- [x] 3.4 Logged-out state shows sign-in/up buttons — 4cd7d8a
+- [x] 3.5 Logged-in state shows dashboard CTA — 4cd7d8a
+- [x] 3.6 Topbar shows app name as link — 4cd7d8a
+- [x] 3.7 Footer visible with app name and year — 4cd7d8a
+- [x] 3.8 Page title and lang attribute are Polish — 4cd7d8a
+- [x] 3.9 Dashboard page unaffected — 4cd7d8a
