@@ -8,27 +8,31 @@ const { user } = Astro.locals;
   {
     user ? (
       <>
-        <span class="text-blue-100/70">{user.email}</span>
+        <a href="/" class="font-medium text-white transition-colors hover:text-emerald-200">
+          Monitor Energii
+        </a>
         <div class="flex items-center gap-3">
-          <a href="/dashboard" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-            Dashboard
+          <a href="/dashboard" class="text-emerald-300 transition-colors hover:text-emerald-100 hover:underline">
+            Pulpit
           </a>
           <form method="POST" action="/api/auth/signout">
-            <button type="submit" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-              Sign out
+            <button type="submit" class="text-emerald-300 transition-colors hover:text-emerald-100 hover:underline">
+              Wyloguj
             </button>
           </form>
         </div>
       </>
     ) : (
       <>
-        <span class="text-blue-100/70">Not signed in</span>
+        <a href="/" class="font-medium text-white transition-colors hover:text-emerald-200">
+          Monitor Energii
+        </a>
         <div class="flex gap-3">
-          <a href="/auth/signin" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-            Sign in
+          <a href="/auth/signin" class="text-emerald-300 transition-colors hover:text-emerald-100 hover:underline">
+            Zaloguj się
           </a>
-          <a href="/auth/signup" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-            Sign up
+          <a href="/auth/signup" class="text-emerald-300 transition-colors hover:text-emerald-100 hover:underline">
+            Zarejestruj się
           </a>
         </div>
       </>

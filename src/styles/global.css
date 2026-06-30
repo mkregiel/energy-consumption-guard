@@ -114,6 +114,10 @@
   background-image: linear-gradient(to bottom, #0a0e1a, #0f1529, #0a0e1a);
 }
 
+@utility bg-energy {
+  background-image: linear-gradient(to bottom, #0a1628, #0d2137, #0a1628);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
