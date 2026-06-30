@@ -272,29 +272,29 @@ No unit tests needed — all changes are presentational Astro templates with no 
 
 #### Automated
 
-- [x] 2.1 TypeScript type check passes
-- [x] 2.2 Build succeeds
+- [x] 2.1 TypeScript type check passes — 5658a08
+- [x] 2.2 Build succeeds — 5658a08
 
 #### Manual
 
-- [x] 2.3 Hero shows Polish product name and tagline
-- [x] 2.4 Feature cards describe product capabilities in Polish
-- [x] 2.5 CTA buttons are emerald and labeled in Polish
-- [x] 2.6 Responsive layout works on mobile
+- [x] 2.3 Hero shows Polish product name and tagline — 5658a08
+- [x] 2.4 Feature cards describe product capabilities in Polish — 5658a08
+- [x] 2.5 CTA buttons are emerald and labeled in Polish — 5658a08
+- [x] 2.6 Responsive layout works on mobile — 5658a08
 
 ### Phase 3: Auth-Aware CTA, Footer, and Metadata
 
 #### Automated
 
-- [ ] 3.1 TypeScript type check passes
-- [ ] 3.2 Build succeeds
-- [ ] 3.3 Existing E2E tests pass
+- [x] 3.1 TypeScript type check passes
+- [x] 3.2 Build succeeds
+- [x] 3.3 Existing E2E tests pass
 
 #### Manual
 
-- [ ] 3.4 Logged-out state shows sign-in/up buttons
-- [ ] 3.5 Logged-in state shows dashboard CTA
-- [ ] 3.6 Topbar shows app name as link
-- [ ] 3.7 Footer visible with app name and year
-- [ ] 3.8 Page title and lang attribute are Polish
-- [ ] 3.9 Dashboard page unaffected
+- [x] 3.4 Logged-out state shows sign-in/up buttons
+- [x] 3.5 Logged-in state shows dashboard CTA
+- [x] 3.6 Topbar shows app name as link
+- [x] 3.7 Footer visible with app name and year
+- [x] 3.8 Page title and lang attribute are Polish
+- [x] 3.9 Dashboard page unaffected
